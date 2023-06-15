@@ -9,7 +9,7 @@ const precioInput = document.getElementById('precio');
 const agregarBtn = document.getElementById('agregar');
 const productosTable = document.getElementById('productos');
 const totalTd = document.getElementById('total');
-const generarPDFBtn = document.getElementById('generar-pdf');
+const generarPNGBtn = document.getElementById('generar-pdf');
 
 let productos = [];
 let contadorCotizaciones = 1;
@@ -85,7 +85,7 @@ function limpiarCampos() {
 
 agregarBtn.addEventListener('click', agregarProducto);
 
-generarPDFBtn.addEventListener('click', generarCotizacionImagen);
+generarPNGBtn.addEventListener('click', generarCotizacionImagen);
 
 function generarIdentificadorCotizacion() {
     const identificador = contadorCotizaciones.toString().padStart(3, '0');
