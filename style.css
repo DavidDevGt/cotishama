@@ -1,102 +1,351 @@
-    @import url('https://fonts.googleapis.com/css2?family=Helvetica|Montserrat|Roboto|Poppins&display=swap');
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+:root {
+    --primary: #ffc300;
+    --primary-hover: #ffcd2c;
+    --secondary: #2e2725;
+    --success: #28a745;
+    --success-hover: #218838;
+    --info: #044488;
+    --info-dark: #0026a3;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray: #6c757d;
+    --border-color: #dee2e6;
+    --error: #dc3545;
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Roboto', sans-serif;
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --border-radius: 0.375rem;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-primary);
+    line-height: 1.5;
+    color: var(--dark);
+    background-color: var(--light);
+    padding-bottom: var(--spacing-xl);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  /* Título principal */
+  .title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    text-transform: uppercase;
+  }
+
+  /* Secciones del formulario */
+  .form-section {
+    margin-bottom: var(--spacing-xl);
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+  }
+
+  .form-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--secondary);
+    border-bottom: 2px solid var(--primary);
+    display: inline-block;
+    padding-bottom: var(--spacing-xs);
+  }
+
+  .input-row {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .input-group {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .input-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    color: var(--secondary);
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .input-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(255, 195, 0, 0.2);
+  }
+
+  .input-hint {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--gray);
+    margin-top: var(--spacing-xs);
+  }
+
+  /* Precio Input Styling */
+  .precio-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .currency-symbol {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: var(--gray);
+    font-weight: 500;
+  }
+
+  .precio-input-wrapper input {
+    padding-left: calc(var(--spacing-md) + 1rem);
+  }
+
+  /* Botones */
+  .button-container {
+    text-align: center;
+    margin: var(--spacing-lg) 0;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--secondary);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-success {
+    background-color: var(--success);
+    color: white;
+  }
+
+  .btn-success:hover {
+    background-color: var(--success-hover);
+  }
+
+  .icon {
+    margin-right: var(--spacing-sm);
+  }
+
+  /* Previsualización de la cotización */
+  .cotizacion-preview {
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--spacing-lg);
+  }
+
+  th,
+  td {
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  /* Fila del logo y datos de la empresa */
+  .logo-row td {
+    border: none;
+    text-align: center;
+    padding: var(--spacing-lg) 0;
+  }
+
+  #logo {
+    max-height: 120px;
+    width: auto;
+  }
+
+  /* Fila de información del cliente y fecha */
+  .info-row th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+  }
+
+  .info-row td.data-cell {
+    background-color: #fafafa;
+    font-weight: 500;
+  }
+
+  /* Fila de encabezado de productos */
+  .header-row th {
+    background-color: var(--secondary);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* Fila de totales */
+  .total-row {
+    background-color: #f9f9f9;
+  }
+
+  .total-label {
+    text-align: right;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .total-amount {
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  /* Observaciones */
+  .observaciones-row th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+    width: 200px;
+    text-align: left;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .footer-content {
+    font-size: 1rem;
+    color: var(--gray);
+  }
+
+  .heart {
+    color: var(--error);
+    display: inline-block;
+    animation: heartbeat 1.5s ease infinite;
+  }
+
+  footer a {
+    color: var(--info);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  footer a:hover {
+    color: var(--info-dark);
+  }
+
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1);
     }
-    
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
     .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        text-align: center;
+      padding: var(--spacing-md);
     }
-    
+
     .title {
-        padding: 2rem;
-        font-family: Helvetica, sans-serif;
+      font-size: 2rem;
     }
-    
-    .input-data1,
-    .input-data2 {
-        font-family: Roboto, cursive;
-        margin-top: 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        text-align: center;
+
+    .input-row {
+      flex-direction: column;
+      gap: var(--spacing-md);
     }
-    
+
+    .form-section {
+      padding: var(--spacing-md);
+    }
+
     table {
-        width: 100%;
-        font-family: Helvetica, sans-serif;
-        margin-top: 20px;
-        border-collapse: collapse;
+      font-size: 0.875rem;
     }
-    
-    table th,
-    table td {
-        padding: 10px;
-        border: 1px solid #ccc;
+
+    th,
+    td {
+      padding: var(--spacing-sm);
     }
-    
-    tfoot td {
-        font-weight: bold;
+
+    .observaciones-row td {
+      font-size: 0.875rem;
     }
-    
-    input,
-    button {
-        font-size: 1rem;
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid #2E2725;
-        margin-bottom: 10px;
-    }
-    
-    button {
-        margin-top: 1.5rem;
-        padding: 12px;
-        background-color: #FFC300;
-        color: #000;
-        cursor: pointer;
-    }
-    
-    #nombre,
-    #fecha {
-        font-weight: 500;
-    }
-    
-    #logo {
-        max-height: 150px;
-    }
-    
+  }
+
+  /* Validaciones de formulario */
+  .input-group input:invalid:not(:placeholder-shown) {
+    border-color: var(--error);
+  }
+
+  .input-group input:invalid:not(:placeholder-shown) + .input-hint {
+    color: var(--error);
+  }
+
+  /* Estilos al imprimir */
+  @media print {
+    .form-section:not(.cotizacion-preview),
+    .button-container,
     footer {
-        margin: 2rem;
-        text-align: center;
+      display: none;
     }
-    
-    footer h2 {
-        padding-top: 2rem;
-        font-size: 1rem;
-        font-family: Montserrat, sans-serif;
-        color: #0026a3;
+
+    .container {
+      padding: 0;
     }
-    
-    footer h2 a {
-        text-decoration: none;
-        color: #044488;
+
+    .cotizacion-preview {
+      box-shadow: none;
     }
-    
-    footer h2 a:hover {
-        color: #0026a3;
-    }
-    
-    @media (max-width: 768px) {
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        .input-data1,
-        .input-data2 {
-            display: block;
-        }
-    }
+  }
