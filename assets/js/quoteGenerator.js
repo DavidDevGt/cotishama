@@ -1,76 +1,9 @@
-// Constants
-const CURRENCY = {
-    symbol: 'Q',
-    code: 'GTQ'
-};
+import { QuoteState } from './state.js';
+import { DOMElements } from './dom.js';
+import { QuoteUtils } from './utils.js';
+import { Validations } from './validations.js';
 
-const DOM_IDS = {
-    CLIENT: 'cliente',
-    PRODUCT: 'producto',
-    QUANTITY: 'cantidad',
-    PRICE: 'precio',
-    ADD: 'agregar',
-    PRODUCTS_TABLE: 'productos',
-    TOTAL: 'total',
-    GENERATE: 'generar-pdf',
-    CAPTURE: 'capture',
-    CLIENT_NAME: 'nombre',
-    DATE: 'fecha'
-};
-
-// State Management
-class QuoteState {
-    constructor() {
-        this.products = [];
-        this.quoteCounter = 1;
-    }
-}
-
-// DOM Elements
-class DOMElements {
-    constructor() {
-        this.elements = {};
-        this.initializeElements();
-    }
-
-    initializeElements() {
-        Object.entries(DOM_IDS).forEach(([key, id]) => {
-            this.elements[key.toLowerCase()] = document.getElementById(id);
-        });
-    }
-
-    get(elementKey) {
-        return this.elements[elementKey.toLowerCase()];
-    }
-}
-
-// Utilities
-class QuoteUtils {
-    static formatCurrency(amount) {
-        return `${CURRENCY.symbol}${amount.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${CURRENCY.code}`;
-    }    
-
-    static getInitials(name) {
-        return name.split(' ')
-            .map(word => word.charAt(0).toUpperCase())
-            .join('');
-    }
-
-    static cleanDate(date) {
-        return date.replace(/[/-]/g, '');
-    }
-
-    static generateQuoteIdentifier(counter) {
-        return counter.toString().padStart(3, '0');
-    }
-
-    static getCurrentDate() {
-        return new Date().toLocaleDateString();
-    }
-}
-
-// Main Application
-class QuoteGenerator {
+export class QuoteGenerator {
     constructor() {
         this.state = new QuoteState();
         this.dom = new DOMElements();
@@ -86,29 +19,31 @@ class QuoteGenerator {
     addProduct() {
         const product = {
             nombre: this.dom.get('product').value,
-            cantidad: parseInt(this.dom.get('quantity').value),
-            precio: parseFloat(this.dom.get('price').value),
+            cantidad: this.dom.get('quantity').value,
+            precio: this.dom.get('price').value,
             cliente: this.dom.get('client').value
         };
-
+    
+        if (!Validations.validateForm(product)) {
+            return;
+        }
+    
+        product.cantidad = parseInt(product.cantidad);
+        product.precio = parseFloat(product.precio);
         this.state.products.push(product);
         this.renderProducts();
         this.clearInputs();
     }
-
+    
     renderProducts() {
         const productsTable = this.dom.get('products_table');
         const clientNameElement = this.dom.get('client_name');
         const dateElement = this.dom.get('date');
 
-        // Update header information
         clientNameElement.textContent = this.dom.get('client').value;
         dateElement.textContent = this.currentDate;
 
-        // Clear existing products
         productsTable.innerHTML = '';
-
-        // Calculate and render products
         let total = 0;
 
         this.state.products.forEach((product, index) => {
@@ -141,9 +76,7 @@ class QuoteGenerator {
             const td = document.createElement('td');
             if (cell.text !== undefined) {
                 td.textContent = cell.text;
-                if (cell.className) {
-                    td.classList.add(cell.className);
-                }
+                if (cell.className) td.classList.add(cell.className);
             } else if (cell.element) {
                 td.appendChild(cell.element);
             }
@@ -172,20 +105,15 @@ class QuoteGenerator {
         const table = this.dom.get('capture');
         const deleteCells = table.querySelectorAll('td:nth-child(5)');
 
-        // Hide delete buttons
-        deleteCells.forEach(cell => cell.style.display = 'none');
+        deleteCells.forEach(cell => (cell.style.display = 'none'));
 
         try {
             const canvas = await html2canvas(table);
             const imageUrl = canvas.toDataURL('image/png');
-
             const fileName = this.generateFileName();
             this.downloadImage(imageUrl, fileName);
-        } catch (error) {
-            console.error('Error generating quote image:', error);
         } finally {
-            // Restore delete buttons
-            deleteCells.forEach(cell => cell.style.display = '');
+            deleteCells.forEach(cell => (cell.style.display = ''));
         }
     }
 
@@ -205,8 +133,3 @@ class QuoteGenerator {
         link.click();
     }
 }
-
-// Initialize application
-document.addEventListener('DOMContentLoaded', () => {
-    new QuoteGenerator();
-});
