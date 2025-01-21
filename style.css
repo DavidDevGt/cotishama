@@ -11,6 +11,7 @@
     --gray: #6c757d;
     --border-color: #dee2e6;
     --error: #dc3545;
+    --error-hover: #c82333;
     --font-primary: 'Poppins', sans-serif;
     --font-secondary: 'Roboto', sans-serif;
     --spacing-xs: 0.25rem;
@@ -168,6 +169,15 @@
     background-color: var(--success-hover);
   }
 
+  .btn-danger {
+    background-color: var(--error);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: var(--error-hover);
+  }
+
   .icon {
     margin-right: var(--spacing-sm);
   }
@@ -193,6 +203,10 @@
     text-align: left;
     vertical-align: middle;
   }
+
+  td.money-cell, th.money-cell {
+    text-align: right;
+}
 
   /* Fila del logo y datos de la empresa */
   .logo-row td {
