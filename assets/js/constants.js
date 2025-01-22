@@ -1,9 +1,22 @@
+/**
+* @module constants
+* @description Defines application-wide constants for currency and DOM element IDs
+*/
+
+/**
+* Currency configuration for the application.
+* @constant {Object} CURRENCY
+*/
 export const CURRENCY = {
     symbol: 'Q',
     code: 'GTQ'
-};
-
-export const DOM_IDS = {
+ };
+ 
+ /**
+ * Mapping of DOM element identifiers used throughout the application.
+ * @constant {Object} DOM_IDS
+ */
+ export const DOM_IDS = {
     CLIENT: 'cliente',
     PRODUCT: 'producto',
     QUANTITY: 'cantidad',
@@ -15,4 +28,4 @@ export const DOM_IDS = {
     CAPTURE: 'capture',
     CLIENT_NAME: 'nombre',
     DATE: 'fecha'
-};
+ };
