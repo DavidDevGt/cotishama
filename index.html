@@ -1,147 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generador de Cotizaciones Online para Ferretería Shama">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Preconexiones para recursos externos -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
     <title>Generador de Cotizaciones Online</title>
+    
+    <!-- Estilos críticos primero -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/autocomplete.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="assets/js/html2canvas.min.js"></script>
+    
+    <!-- Estilos no críticos con media query -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css" 
+          media="print" onload="this.media='all'">
+
+    <!-- Scripts con prioridad de carga optimizada -->
+    <script src="assets/js/html2canvas.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js" defer></script>
+    <script type="module" src="assets/js/main.js" defer></script>
 </head>
 
 <body>
     <div class="container">
-        <div class="container">
-            <!-- ENCABEZADO -->
-            <header>
-                <h1 class="title">Generador de Cotizaciones Online</h1>
-            </header>
+        <!-- ENCABEZADO -->
+        <header>
+            <h1 class="title">Generador de Cotizaciones Online</h1>
+        </header>
 
-            <!-- FORMULARIO PRINCIPAL -->
-            <form id="cotizacion-form" novalidate>
-                <!-- DATOS DEL CLIENTE -->
-                <div class="form-section cliente-section">
-                    <h2>Datos del Cliente</h2>
-                    <div class="input-group">
-                        <label for="cliente"><i class="fas fa-user"></i> Nombre del Cliente:</label>
-                        <input type="text" id="cliente" name="cliente" placeholder="Ingrese el nombre del cliente"
-                            required />
-                        <span class="input-hint">Este campo es obligatorio</span>
-                    </div>
+        <!-- FORMULARIO PRINCIPAL -->
+        <form id="cotizacion-form" novalidate>
+            <!-- DATOS DEL CLIENTE -->
+            <div class="form-section cliente-section">
+                <h2>Datos del Cliente</h2>
+                <div class="input-group">
+                    <label for="cliente"><i class="fas fa-user"></i> Nombre del Cliente:</label>
+                    <input type="text" id="cliente" name="cliente" placeholder="Ingrese el nombre del cliente"
+                        required />
+                    <span class="input-hint">Este campo es obligatorio</span>
                 </div>
-
-                <!-- AGREGAR PRODUCTOS -->
-                <div class="form-section productos-section">
-                    <h2>Productos</h2>
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label for="cantidad"><i class="fas fa-hashtag"></i> Cantidad:</label>
-                            <input type="number" id="cantidad" name="cantidad" min="1" placeholder="0" required />
-                            <span class="input-hint">Mínimo 1 unidad</span>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="producto"><i class="fas fa-box"></i> Producto:</label>
-                            <div class="autocomplete-wrapper" style="position: relative;">
-                                <input type="text" id="producto" name="producto" placeholder="Nombre del producto"
-                                    class="autocomplete-input" required />
-                                <div id="sugerencias-productos" class="suggestions-container"></div>
-                            </div>
-                            <span class="input-hint">Describa el producto</span>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="precio"><i class="fas fa-dollar-sign"></i> Precio unitario:</label>
-                            <div class="precio-input-wrapper">
-                                <span class="currency-symbol">Q</span>
-                                <input type="number" id="precio" name="precio" min="0" step="0.01" placeholder="0.00"
-                                    required />
-                            </div>
-                            <span class="input-hint">Ingrese el precio en quetzales</span>
-                        </div>
-                    </div>
-
-                    <div class="button-container">
-                        <button type="button" id="agregar" class="btn-info">
-                            Agregar producto
-                        </button>
-                    </div>
-                </div>
-
-                <!-- TABLA DE COTIZACIÓN -->
-                <div class="cotizacion-preview">
-                    <table id="capture">
-                        <thead>
-                            <!-- LOGO Y DATOS DE LA EMPRESA -->
-                            <tr class="company-header">
-                                <td colspan="4">
-                                    <div class="company-header-content">
-                                        <div class="company-logo">
-                                            <img src="assets/img/logoFShama.png" id="logo" alt="Logo de la empresa" />
-                                        </div>
-                                        <div class="company-info">
-                                            <h2 class="company-name">Ferretería Shama</h2>
-                                            <p class="company-address">
-                                                Dirección: Km 23.1 Ruta al Atlántico, Azacualpilla, Palencia, Guatemala.
-                                            </p>
-                                            <p class="company-website">
-                                                Sitio web: https://fshama.netlify.app
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- INFORMACIÓN DEL CLIENTE Y FECHA -->
-                            <tr class="info-row">
-                                <th>Nombre del Cliente</th>
-                                <td id="nombre" class="data-cell"></td>
-                                <th>Fecha</th>
-                                <td id="fecha" class="data-cell"></td>
-                            </tr>
-
-                            <!-- ENCABEZADO DE PRODUCTOS -->
-                            <tr class="header-row">
-                                <th>Cantidad</th>
-                                <th>Producto</th>
-                                <th class="money-cell">Precio unitario</th>
-                                <th class="money-cell">Subtotal</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="productos"></tbody>
-
-                        <tfoot>
-                            <!-- FILA DE TOTAL -->
-                            <tr class="total-row">
-                                <td colspan="3" class="total-label">Total:</td>
-                                <td id="total" class="total-amount money-cell">Q 0.00</td>
-                            </tr>
-
-                            <!-- FILA DE OBSERVACIONES -->
-                            <tr class="observaciones-row">
-                                <th>Observaciones</th>
-                                <td colspan="3">
-                                    <p style="margin: 0;">
-                                        * Precios sujetos a cambios sin previo aviso.<br />
-                                        * Esta cotización es válida por 7 días.<br />
-                                        * Tiempo de entrega a convenir.
-                                    </p>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </form>
-
-            <!-- BOTÓN PARA GENERAR COTIZACIÓN/PDF -->
-            <div class="button-container">
-                <button id="generar-pdf" class="btn-success">
-                    Descargar Cotización
-                </button>
             </div>
+
+            <!-- AGREGAR PRODUCTOS -->
+            <div class="form-section productos-section">
+                <h2>Productos</h2>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="cantidad"><i class="fas fa-hashtag"></i> Cantidad:</label>
+                        <input type="number" id="cantidad" name="cantidad" min="1" placeholder="0" required />
+                        <span class="input-hint">Mínimo 1 unidad</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="producto"><i class="fas fa-box"></i> Producto:</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="producto" name="producto" placeholder="Nombre del producto"
+                                class="autocomplete-input" required />
+                            <div id="sugerencias-productos" class="suggestions-container"></div>
+                        </div>
+                        <span class="input-hint">Describa el producto</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="precio"><i class="fas fa-dollar-sign"></i> Precio unitario:</label>
+                        <div class="precio-input-wrapper">
+                            <span class="currency-symbol">Q</span>
+                            <input type="number" id="precio" name="precio" min="0" step="0.01" placeholder="0.00"
+                                required />
+                        </div>
+                        <span class="input-hint">Ingrese el precio en quetzales</span>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <button type="button" id="agregar" class="btn-info">
+                        Agregar producto
+                    </button>
+                </div>
+            </div>
+
+            <!-- TABLA DE COTIZACIÓN -->
+            <div class="cotizacion-preview">
+                <table id="capture">
+                    <thead>
+                        <!-- LOGO Y DATOS DE LA EMPRESA -->
+                        <tr class="company-header">
+                            <td colspan="4">
+                                <div class="company-header-content">
+                                    <div class="company-logo">
+                                        <img src="assets/img/logoFShama.png" 
+                                             id="logo" 
+                                             alt="Logo de la empresa"
+                                             width="150"
+                                             height="150"
+                                             loading="lazy" />
+                                    </div>
+                                    <div class="company-info">
+                                        <h2 class="company-name">Ferretería Shama</h2>
+                                        <p class="company-address">
+                                            Dirección: Km 23.1 Ruta al Atlántico, Azacualpilla, Palencia, Guatemala.
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- INFORMACIÓN DEL CLIENTE Y FECHA -->
+                        <tr class="info-row">
+                            <th>Nombre del Cliente</th>
+                            <td id="nombre" class="data-cell"></td>
+                            <th>Fecha</th>
+                            <td id="fecha" class="data-cell"></td>
+                        </tr>
+
+                        <!-- ENCABEZADO DE PRODUCTOS -->
+                        <tr class="header-row">
+                            <th>Cantidad</th>
+                            <th>Producto</th>
+                            <th class="money-cell">Precio unitario</th>
+                            <th class="money-cell">Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="productos"></tbody>
+
+                    <tfoot>
+                        <!-- FILA DE TOTAL -->
+                        <tr class="total-row">
+                            <td colspan="3" class="total-label">Total:</td>
+                            <td id="total" class="total-amount money-cell">Q 0.00</td>
+                        </tr>
+
+                        <!-- FILA DE OBSERVACIONES -->
+                        <tr class="observaciones-row">
+                            <th>Observaciones</th>
+                            <td colspan="3">
+                                <p>
+                                    * Precios sujetos a cambios sin previo aviso.<br>
+                                    * Esta cotización es válida por 7 días.<br>
+                                    * Tiempo de entrega a convenir.
+                                </p>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </form>
+
+        <!-- BOTÓN PARA GENERAR COTIZACIÓN/PDF -->
+        <div class="button-container">
+            <button id="generar-pdf" class="btn-success">
+                Descargar Cotización
+            </button>
         </div>
 
         <!-- FOOTER -->
@@ -149,16 +166,14 @@
             <div class="footer-content">
                 <h2>
                     Made with <span class="heart">♥</span> by
-                    <a href="https://daviddevgt.web.app" target="_blank" rel="noopener noreferrer">
+                    <a href="https://daviddevgt.web.app" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
                         DavidDevGT
                     </a>
                 </h2>
             </div>
         </footer>
-
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
-        <script type="module" src="assets/js/main.js"></script>
+    </div>
 </body>
-
 </html>
