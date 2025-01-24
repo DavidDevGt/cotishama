@@ -69,4 +69,18 @@ export class Validations {
         }
         return true; // Todo válido
     }
+
+    /**
+     * Validates that there are products in the quote.
+     * @static
+     * @param {Array} products - The list of products in the quote
+     * @returns {boolean} False if there are no products, otherwise true
+     */
+    static validateHasProducts(products) {
+        if (!products || products.length === 0) {
+            this.notyf.error('No hay productos en la cotización. Agrega al menos uno para continuar.');
+            return false;
+        }
+        return true;
+    }
 }

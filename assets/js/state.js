@@ -13,7 +13,7 @@ export class QuoteState {
          * @property {string} cliente - The client name associated with the product
          */
         this.products = [];
- 
+
         /**
          * Counter used to generate unique identifiers for quotes.
          * Increments with each quote generation.
@@ -21,4 +21,4 @@ export class QuoteState {
          */
         this.quoteCounter = 1;
     }
- }
+}

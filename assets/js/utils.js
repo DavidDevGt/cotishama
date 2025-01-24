@@ -56,4 +56,16 @@ export class QuoteUtils {
     static getCurrentDate() {
         return new Date().toLocaleDateString();
     }
+
+    /**
+     * Sets an input field to uppercase when typing.
+     * @param {HTMLInputElement} input - The input element to modify
+     * @example
+     * QuoteUtils.setInputUppercase(document.getElementById('client'));
+     */
+    static setUpperCase(input) {
+        input.addEventListener('input', () => {
+            input.value = input.value.toUpperCase();
+        });
+    }
 }

@@ -2,6 +2,8 @@ import { QuoteState } from './state.js';
 import { DOMElements } from './dom.js';
 import { QuoteUtils } from './utils.js';
 import { Validations } from './validations.js';
+import { ProductAutocomplete } from './autocomplete.js';
+import { STYLE } from './constants.js';
 
 /**
  * Class responsible for generating and managing quotes.
@@ -17,7 +19,17 @@ export class QuoteGenerator {
         this.state = new QuoteState();
         this.dom = new DOMElements();
         this.currentDate = QuoteUtils.getCurrentDate();
+        this.initializeAutocomplete();
         this.initializeEventListeners();
+    }
+
+    /**
+     * Initializes the product autocomplete functionality
+     * @private
+     */
+    initializeAutocomplete() {
+        this.autocomplete = new ProductAutocomplete();
+        this.autocomplete.initializeAutocomplete('producto', 'sugerencias-productos');
     }
 
     /**
@@ -27,6 +39,9 @@ export class QuoteGenerator {
     initializeEventListeners() {
         this.dom.get('add').addEventListener('click', () => this.addProduct());
         this.dom.get('generate').addEventListener('click', () => this.generateQuoteImage());
+        // Setear mayusculas a nombre del cliente y producto usando utils
+        QuoteUtils.setUpperCase(this.dom.get('client'));
+        QuoteUtils.setUpperCase(this.dom.get('product'));
     }
 
     /**
@@ -62,9 +77,11 @@ export class QuoteGenerator {
         const productsTable = this.dom.get('products_table');
         const clientNameElement = this.dom.get('client_name');
         const dateElement = this.dom.get('date');
+
         clientNameElement.textContent = this.dom.get('client').value;
         dateElement.textContent = this.currentDate;
         productsTable.innerHTML = '';
+
         let total = 0;
         this.state.products.forEach((product, index) => {
             const subtotal = product.cantidad * product.precio;
@@ -72,8 +89,29 @@ export class QuoteGenerator {
             const row = this.createProductRow(product, subtotal, index);
             productsTable.appendChild(row);
         });
+
+        //const MIN_ROWS = 4;
+        const MIN_ROWS = STYLE.MIN_ROWS;
+        const rowsToAdd = MIN_ROWS - this.state.products.length;
+        if (rowsToAdd > 0) {
+            for (let i = 0; i < rowsToAdd; i++) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.classList.add('empty-row');
+
+                const emptyTd = document.createElement('td');
+                emptyTd.colSpan = 5; // Esto se ajusta al número de columnas en la tabla
+                emptyTd.innerHTML = '&nbsp;';
+
+                emptyRow.appendChild(emptyTd);
+                productsTable.appendChild(emptyRow);
+            }
+        }
+
+
+        // Finalmente, establecemos el total
         this.dom.get('total').textContent = QuoteUtils.formatCurrency(total);
     }
+
 
     /**
      * Creates a table row for a product in the quote.
@@ -111,17 +149,22 @@ export class QuoteGenerator {
     }
 
     /**
-     * Creates a delete button for a product row.
+     * Creates a delete button for a product row with a FontAwesome icon.
      * @private
      * @param {Function} onClick - The callback function to execute when the button is clicked
      * @returns {HTMLButtonElement} The created button element
      */
     createDeleteButton(onClick) {
         const button = document.createElement('button');
-        button.textContent = 'Eliminar';
         button.setAttribute('type', 'button');
         button.classList.add('btn-danger');
+
+        const icon = document.createElement('i');
+        icon.classList.add('fas', 'fa-trash');
+        button.appendChild(icon);
+
         button.addEventListener('click', onClick);
+
         return button;
     }
 
@@ -142,9 +185,14 @@ export class QuoteGenerator {
      * @async
      */
     async generateQuoteImage() {
+        if (!Validations.validateHasProducts(this.state.products)) {
+            return; // Parar el proceso si no hay productos
+        }
+
         const table = this.dom.get('capture');
         const deleteCells = table.querySelectorAll('td:nth-child(5)');
         deleteCells.forEach(cell => (cell.style.display = 'none'));
+
         try {
             const canvas = await html2canvas(table);
             const imageUrl = canvas.toDataURL('image/png');
