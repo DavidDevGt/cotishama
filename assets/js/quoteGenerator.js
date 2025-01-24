@@ -90,7 +90,6 @@ export class QuoteGenerator {
             productsTable.appendChild(row);
         });
 
-        //const MIN_ROWS = 4;
         const MIN_ROWS = STYLE.MIN_ROWS;
         const rowsToAdd = MIN_ROWS - this.state.products.length;
         if (rowsToAdd > 0) {
@@ -106,9 +105,6 @@ export class QuoteGenerator {
                 productsTable.appendChild(emptyRow);
             }
         }
-
-
-        // Finalmente, establecemos el total
         this.dom.get('total').textContent = QuoteUtils.formatCurrency(total);
     }
 
@@ -186,7 +182,7 @@ export class QuoteGenerator {
      */
     async generateQuoteImage() {
         if (!Validations.validateHasProducts(this.state.products)) {
-            return; // Parar el proceso si no hay productos
+            return;
         }
 
         const table = this.dom.get('capture');
