@@ -35,5 +35,5 @@ export const DOM_IDS = {
  * @constant {Object} STYLE
  */
 export const STYLE = {
-   MIN_ROWS: 12,
+   MIN_ROWS: 10,
 }
