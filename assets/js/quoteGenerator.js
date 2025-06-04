@@ -176,26 +176,105 @@ export class QuoteGenerator {
 
     /**
      * Generates a PNG image of the current quote.
-     * Temporarily hides delete buttons during capture.
+     * Temporarily hides delete buttons during capture for a cleaner image.
      * @private
      * @async
+     * @throws {Error} When image generation fails
+     * @returns {Promise<void>}
      */
     async generateQuoteImage() {
         if (!Validations.validateHasProducts(this.state.products)) {
+            console.warn('Cannot generate image: No products available');
             return;
         }
 
         const table = this.dom.get('capture');
+        if (!table) {
+            throw new Error('Capture element not found');
+        }
+
         const deleteCells = table.querySelectorAll('td:nth-child(5)');
-        deleteCells.forEach(cell => (cell.style.display = 'none'));
+        const originalDisplayValues = [];
 
         try {
-            const canvas = await html2canvas(table);
-            const imageUrl = canvas.toDataURL('image/png');
+            deleteCells.forEach((cell, index) => {
+                originalDisplayValues[index] = cell.style.display;
+                cell.style.display = 'none';
+            });
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const canvas = await html2canvas(table, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                removeContainer: true,
+                imageTimeout: 15000,
+                onclone: (clonedDoc) => {
+                    const clonedTable = clonedDoc.querySelector('[data-capture], #capture, .capture');
+                    if (clonedTable) {
+                        clonedTable.style.fontFamily = window.getComputedStyle(table).fontFamily;
+                    }
+                }
+            });
+
+            if (!canvas) {
+                throw new Error('Failed to generate canvas from table');
+            }
+
+            // Generate high-quality image
+            const imageUrl = canvas.toDataURL('image/png', 1.0);
+            if (!imageUrl || imageUrl === 'data:,') {
+                throw new Error('Failed to generate image data');
+            }
+
             const fileName = this.generateFileName();
-            this.downloadImage(imageUrl, fileName);
+            await this.downloadImage(imageUrl, fileName);
+
+            console.log(`Quote image generated successfully: ${fileName}`);
+
+        } catch (error) {
+            console.error('Error generating quote image:', error);
+
+            if (this.showNotification) {
+                this.showNotification('Error al generar la imagen. Por favor, intenta nuevamente.', 'error');
+            }
+
+            throw error;
         } finally {
-            deleteCells.forEach(cell => (cell.style.display = ''));
+            // Restore original display values
+            deleteCells.forEach((cell, index) => {
+                cell.style.display = originalDisplayValues[index] || '';
+            });
+        }
+    }
+
+    /**
+     * Download image with better error handling
+     * @private
+     * @param {string} imageUrl - Data URL of the image
+     * @param {string} fileName - Name for the downloaded file
+     * @returns {Promise<void>}
+     */
+    async downloadImage(imageUrl, fileName) {
+        try {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            if (imageUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(imageUrl);
+            }
+
+        } catch (error) {
+            console.error('Error downloading image:', error);
+            throw new Error('Failed to download image');
         }
     }
 
