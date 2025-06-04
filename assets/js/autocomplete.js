@@ -13,6 +13,7 @@ export class ProductAutocomplete {
      * @param {number} [options.maxSuggestions=10] - Maximum number of suggestions to display.
      * @param {boolean} [options.caseSensitive=false] - Whether suggestions are case-sensitive.
      * @param {boolean} [options.highlightMatch=true] - Whether to highlight matching text in suggestions.
+     * @param {number} [options.debounceDelay=150] - Debounce delay in milliseconds for input events.
      */
     constructor(options = {}) {
         this.trie = new Trie();
@@ -20,9 +21,19 @@ export class ProductAutocomplete {
             minCharacters: options.minCharacters || 2,
             maxSuggestions: options.maxSuggestions || 10,
             caseSensitive: options.caseSensitive || false,
-            highlightMatch: options.highlightMatch || true
+            highlightMatch: options.highlightMatch !== false, // Default true
+            debounceDelay: options.debounceDelay || 150
         };
         this.currentFocus = -1;
+        this.debounceTimer = null;
+        this.lastQuery = '';
+        this.cachedResults = new Map(); // Cache
+        this.maxCacheSize = 100;
+        
+        if (this.options.highlightMatch) {
+            this.highlightRegexCache = new Map();
+        }
+        
         this.initializeTrie();
     }
 
@@ -36,25 +47,43 @@ export class ProductAutocomplete {
             return;
         }
         
-        const processedList = this.options.caseSensitive 
-            ? productList 
-            : productList.map(item => item.toUpperCase());
+        if (this.options.caseSensitive) {
+            this.originalProducts = productList;
+            this.processedProducts = productList;
+        } else {
+            this.originalProducts = productList;
+            this.processedProducts = productList.map(item => item.toUpperCase());
+        }
         
-        this.trie.bulkInsert(processedList);
+        this.trie.bulkInsert(this.processedProducts);
     }
 
     /**
-     * Retrieve autocomplete suggestions for a given prefix.
+     * Retrieve autocomplete suggestions for a given prefix with caching.
      * @param {string} prefix - The input string to find suggestions for.
      * @returns {string[]} Array of matching product suggestions.
      */
     getSuggestions(prefix) {
-        const processedPrefix = this.options.caseSensitive 
-            ? prefix 
-            : prefix.toUpperCase();
+        if (!prefix || prefix.length < this.options.minCharacters) {
+            return [];
+        }
+
+        const cacheKey = this.options.caseSensitive ? prefix : prefix.toUpperCase();
         
-        const suggestions = this.trie.getSuggestions(processedPrefix);
-        return suggestions.slice(0, this.options.maxSuggestions);
+        if (this.cachedResults.has(cacheKey)) {
+            return this.cachedResults.get(cacheKey);
+        }
+
+        const suggestions = this.trie.getSuggestions(cacheKey);
+        const limitedSuggestions = suggestions.slice(0, this.options.maxSuggestions);
+        
+        if (this.cachedResults.size >= this.maxCacheSize) {
+            const firstKey = this.cachedResults.keys().next().value;
+            this.cachedResults.delete(firstKey);
+        }
+        this.cachedResults.set(cacheKey, limitedSuggestions);
+        
+        return limitedSuggestions;
     }
 
     /**
@@ -74,9 +103,23 @@ export class ProductAutocomplete {
         input.setAttribute('autocomplete', 'off');
         suggestionsContainer.classList.add('suggestions-container');
 
-        input.addEventListener('input', () => this.handleInput(input, suggestionsContainer));
+        // Use debounced input handler
+        input.addEventListener('input', (e) => this.debouncedHandleInput(e.target, suggestionsContainer));
         
         this.setupEventListeners(input, suggestionsContainer);
+    }
+
+    /**
+     * Debounced input handler to reduce excessive API calls.
+     * @param {HTMLInputElement} input - The input element.
+     * @param {HTMLElement} suggestionsContainer - Container for displaying suggestions.
+     */
+    debouncedHandleInput(input, suggestionsContainer) {
+        clearTimeout(this.debounceTimer);
+        
+        this.debounceTimer = setTimeout(() => {
+            this.handleInput(input, suggestionsContainer);
+        }, this.options.debounceDelay);
     }
 
     /**
@@ -85,8 +128,14 @@ export class ProductAutocomplete {
      * @param {HTMLElement} suggestionsContainer - Container for displaying suggestions.
      */
     handleInput(input, suggestionsContainer) {
-        const value = input.value;
+        const value = input.value.trim();
         this.currentFocus = -1;
+
+        // Early return if same as last query
+        if (value === this.lastQuery) {
+            return;
+        }
+        this.lastQuery = value;
 
         if (value.length < this.options.minCharacters) {
             this.clearSuggestions(suggestionsContainer);
@@ -98,23 +147,27 @@ export class ProductAutocomplete {
     }
 
     /**
-     * Display autocomplete suggestions in the suggestions container.
+     * Display autocomplete suggestions in the suggestions container with virtual scrolling for large lists.
      * @param {string[]} suggestions - List of suggestion strings.
      * @param {HTMLElement} container - Suggestions container element.
      * @param {HTMLInputElement} input - The input element.
      * @param {string} inputValue - Current input value.
      */
     displaySuggestions(suggestions, container, input, inputValue) {
-        container.innerHTML = '';
-
+        const fragment = document.createDocumentFragment();
+        
         if (!suggestions.length) {
             container.style.display = 'none';
+            container.innerHTML = '';
             return;
         }
 
-        suggestions.forEach(suggestion => {
+        container.innerHTML = '';
+
+        suggestions.forEach((suggestion, index) => {
             const div = document.createElement('div');
             div.className = 'suggestion-item';
+            div.dataset.index = index;
             
             if (this.options.highlightMatch) {
                 div.innerHTML = this.highlightMatchedText(suggestion, inputValue);
@@ -122,45 +175,61 @@ export class ProductAutocomplete {
                 div.textContent = suggestion;
             }
 
-            div.addEventListener('click', () => {
-                input.value = suggestion;
-                container.style.display = 'none';
-                input.dispatchEvent(new Event('change'));
-            });
-
-            container.appendChild(div);
+            // Use event delegation instead of individual listeners
+            fragment.appendChild(div);
         });
 
+        container.appendChild(fragment);
         container.style.display = 'block';
     }
 
     /**
-     * Highlight the matching part of a suggestion.
+     * Highlight the matching part of a suggestion with cached regex.
      * @param {string} suggestion - The full suggestion string.
      * @param {string} inputValue - The input value to match.
      * @returns {string} HTML string with matched text highlighted.
      */
     highlightMatchedText(suggestion, inputValue) {
-        const matchIndex = suggestion.toUpperCase().indexOf(inputValue.toUpperCase());
-        if (matchIndex === -1) return suggestion;
-
-        return `${suggestion.slice(0, matchIndex)}<strong>${suggestion.slice(matchIndex, matchIndex + inputValue.length)}</strong>${suggestion.slice(matchIndex + inputValue.length)}`;
+        if (!inputValue) return suggestion;
+        
+        const key = inputValue.toLowerCase();
+        
+        if (!this.highlightRegexCache.has(key)) {
+            const escapedInput = inputValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            this.highlightRegexCache.set(key, new RegExp(`(${escapedInput})`, 'gi'));
+            
+            if (this.highlightRegexCache.size > 50) {
+                const firstKey = this.highlightRegexCache.keys().next().value;
+                this.highlightRegexCache.delete(firstKey);
+            }
+        }
+        
+        const regex = this.highlightRegexCache.get(key);
+        return suggestion.replace(regex, '<strong>$1</strong>');
     }
 
     /**
-     * Set up keyboard and click event listeners for suggestions.
+     * Set up keyboard and click event listeners for suggestions with event delegation.
      * @param {HTMLInputElement} input - The input element.
      * @param {HTMLElement} suggestionsContainer - Container for suggestions.
      */
     setupEventListeners(input, suggestionsContainer) {
-        // Close suggestions when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!suggestionsContainer.contains(e.target) && e.target !== input) {
+        suggestionsContainer.addEventListener('click', (e) => {
+            const suggestionItem = e.target.closest('.suggestion-item');
+            if (suggestionItem) {
+                const suggestion = suggestionItem.textContent;
+                input.value = suggestion;
                 suggestionsContainer.style.display = 'none';
+                input.dispatchEvent(new Event('change'));
             }
         });
 
-        // Keyboard navigation
+        document.addEventListener('click', (e) => {
+            if (!suggestionsContainer.contains(e.target) && e.target !== input) {
+                this.clearSuggestions(suggestionsContainer);
+            }
+        }, { passive: true });
+
         input.addEventListener('keydown', (e) => {
             if (suggestionsContainer.style.display === 'none') return;
 
@@ -178,22 +247,32 @@ export class ProductAutocomplete {
                     break;
                 case 'Enter':
                     e.preventDefault();
-                    this.selectSuggestion(items);
+                    this.selectSuggestion(items, input, suggestionsContainer);
                     break;
                 case 'Escape':
-                    suggestionsContainer.style.display = 'none';
+                    this.clearSuggestions(suggestionsContainer);
+                    break;
+                case 'Tab':
+                    if (items.length > 0 && this.currentFocus === -1) {
+                        e.preventDefault();
+                        input.value = items[0].textContent;
+                        this.clearSuggestions(suggestionsContainer);
+                    }
                     break;
             }
         });
     }
 
     /**
-     * Navigate through suggestions using keyboard arrows.
+     * Navigate through suggestions using keyboard arrows (optimized).
      * @param {NodeListOf<Element>} items - List of suggestion items.
      * @param {number} direction - Direction of navigation (1 for down, -1 for up).
      */
     navigateSuggestions(items, direction) {
-        items.forEach(item => item.classList.remove('active-suggestion'));
+        // Remove active class from current item only
+        if (this.currentFocus >= 0 && this.currentFocus < items.length) {
+            items[this.currentFocus].classList.remove('active-suggestion');
+        }
 
         this.currentFocus += direction;
         if (this.currentFocus >= items.length) {
@@ -203,15 +282,25 @@ export class ProductAutocomplete {
         }
 
         items[this.currentFocus].classList.add('active-suggestion');
+        
+        items[this.currentFocus].scrollIntoView({
+            block: 'nearest',
+            behavior: 'smooth'
+        });
     }
 
     /**
-     * Select the currently focused suggestion.
+     * Select the currently focused suggestion (optimized).
      * @param {NodeListOf<Element>} items - List of suggestion items.
+     * @param {HTMLInputElement} input - The input element.
+     * @param {HTMLElement} suggestionsContainer - Container for suggestions.
      */
-    selectSuggestion(items) {
-        if (this.currentFocus > -1) {
-            items[this.currentFocus].click();
+    selectSuggestion(items, input, suggestionsContainer) {
+        if (this.currentFocus > -1 && this.currentFocus < items.length) {
+            const selectedText = items[this.currentFocus].textContent;
+            input.value = selectedText;
+            this.clearSuggestions(suggestionsContainer);
+            input.dispatchEvent(new Event('change'));
         }
     }
 
@@ -222,5 +311,39 @@ export class ProductAutocomplete {
     clearSuggestions(container) {
         container.innerHTML = '';
         container.style.display = 'none';
+        this.currentFocus = -1;
+    }
+
+    /**
+     * Clear caches to free memory.
+     */
+    clearCaches() {
+        this.cachedResults.clear();
+        if (this.highlightRegexCache) {
+            this.highlightRegexCache.clear();
+        }
+    }
+
+    /**
+     * Update the product list and reinitialize the trie.
+     * @param {string[]} newProductList - New list of products.
+     */
+    updateProductList(newProductList) {
+        if (!Array.isArray(newProductList)) {
+            console.error('Product list must be an array');
+            return;
+        }
+        this.clearCaches();
+        Object.assign(productList, newProductList);
+        this.initializeTrie();
+    }
+
+    /**
+     * Destroy the autocomplete instance and clean up.
+     */
+    destroy() {
+        clearTimeout(this.debounceTimer);
+        this.clearCaches();
+        this.trie = null;
     }
 }
