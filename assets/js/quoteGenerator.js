@@ -224,25 +224,20 @@ export class QuoteGenerator {
      */
     async generateQuoteImage() {
         if (!this.state.hasProducts()) {
-            // notify user
             Validations.notyf.error('No hay productos en la cotización. Agrega al menos uno para continuar.');
             console.warn('Cannot generate image: No products available');
             return;
         }
 
         const table = this.dom.get('capture');
-        if (!table) {
-            throw new Error('Capture element not found');
-        }
+        if (!table) throw new Error('Capture element not found');
 
-        const deleteCells = this.querySelectorAll('td:nth-child(5)', 'capture');
-        const originalDisplayValues = [];
+        const deleteCells = Array.from(this.querySelectorAll('td:nth-child(5)', 'capture'));
+        const originalDisplayValues = deleteCells.map(cell => cell.style.display);
 
         try {
-            deleteCells.forEach((cell, index) => {
-                originalDisplayValues[index] = cell.style.display;
-                cell.style.display = 'none';
-            });
+            // Hide delete cells
+            deleteCells.forEach(cell => cell.style.display = 'none');
             await new Promise(resolve => setTimeout(resolve, 0));
 
             const canvas = await html2canvas(table, {
@@ -261,28 +256,19 @@ export class QuoteGenerator {
                 }
             });
 
-            if (!canvas) {
-                throw new Error('Failed to generate canvas from table');
-            }
+            if (!canvas) throw new Error('Failed to generate canvas from table');
 
-            // Generate high-quality image
             const imageUrl = canvas.toDataURL('image/png', 1.0);
             if (!imageUrl || imageUrl === 'data:,') {
                 throw new Error('Failed to generate image data');
             }
 
-            const fileName = this.generateFileName();
-            await this.downloadImage(imageUrl, fileName);
-
-            console.log(`Quote image generated successfully: ${fileName}`);
+            await this.downloadImage(imageUrl);
+            console.log(`Quote image generated successfully: ${this.generateFileName()}`);
 
         } catch (error) {
             console.error('Error generating quote image:', error);
-
-            if (this.showNotification) {
-                this.showNotification('Error al generar la imagen. Por favor, intenta nuevamente.', 'error');
-            }
-
+            this.showNotification?.('Error al generar la imagen. Por favor, intenta nuevamente.', 'error');
             throw error;
         } finally {
             // Restore original display values
@@ -293,30 +279,29 @@ export class QuoteGenerator {
     }
 
     /**
-     * Download image with better error handling
+     * Downloads image and handles cleanup
      * @private
      * @param {string} imageUrl - Data URL of the image
-     * @param {string} fileName - Name for the downloaded file
      * @returns {Promise<void>}
      */
-    async downloadImage(imageUrl, fileName) {
-        try {
-            const link = document.createElement('a');
-            link.href = imageUrl;
-            link.download = fileName;
-            link.style.display = 'none';
+    async downloadImage(imageUrl) {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = this.generateFileName();
+        link.style.display = 'none';
 
+        try {
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
 
             if (imageUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(imageUrl);
             }
-
         } catch (error) {
             console.error('Error downloading image:', error);
             throw new Error('Failed to download image');
+        } finally {
+            document.body.removeChild(link);
         }
     }
 
@@ -332,18 +317,5 @@ export class QuoteGenerator {
         const initials = QuoteUtils.getInitials(clientName);
         const identifier = QuoteUtils.generateQuoteIdentifier(this.state.quoteCounter++);
         return `${initials}${cleanDate}-${identifier}.png`;
-    }
-
-    /**
-     * Triggers the download of an image file.
-     * @private
-     * @param {string} url - The data URL of the image
-     * @param {string} fileName - The name to give the downloaded file
-     */
-    downloadImage(url, fileName) {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        link.click();
     }
 }
