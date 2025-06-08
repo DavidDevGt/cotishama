@@ -1,4 +1,4 @@
-import { Trie } from './trie.js';
+import { Trie } from './core/trie.js';
 import { DOMElements } from './dom.js';
 import { productList } from './data/productList.js';
 

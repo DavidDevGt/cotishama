@@ -3,7 +3,7 @@ import { DOMElements } from './dom.js';
 import { QuoteUtils } from './utils.js';
 import { Validations } from './validations.js';
 import { ProductAutocomplete } from './autocomplete.js';
-import { STYLE } from './constants.js';
+import { STYLE, DOM_IDS } from './constants.js';
 
 /**
  * Class responsible for generating and managing quotes.
@@ -24,6 +24,8 @@ export class QuoteGenerator {
         this.currentDate = QuoteUtils.getCurrentDate();
         this.initializeAutocomplete();
         this.initializeEventListeners();
+        this.restrictNumericInput();
+
     }
 
     /**
@@ -42,10 +44,52 @@ export class QuoteGenerator {
     initializeEventListeners() {
         this.dom.on('add', 'click', () => this.addProduct());
         this.dom.on('generate', 'click', () => this.generateQuoteImage());
-        // Setear mayusculas a nombre del cliente y producto usando utils
+
         QuoteUtils.setUpperCase(this.dom.get('client'));
         QuoteUtils.setUpperCase(this.dom.get('product'));
     }
+
+    /**
+     * Restricts the quantity input to only allow positive integers
+     * and max 8 digits.
+     * @private
+     */
+    restrictNumericInput() {
+        const input = this.dom.get('quantity');
+
+        if (!input) {
+            console.error('Element "quantity" not found in cache');
+            return;
+        }
+
+        input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^\d]/g, '');
+            if (e.target.value.length > 8) {
+                e.target.value = e.target.value.slice(0, 8);
+            }
+        });
+
+        input.addEventListener('keypress', (e) => {
+            const char = String.fromCharCode(e.which);
+
+            // max 8 digits and only numbers
+            if (!/\d/.test(char) || input.value.length >= 8) {
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = e.clipboardData.getData('text');
+
+            if (/^\d+$/.test(paste)) {
+                input.value = paste.slice(0, 8); // max 8 digits
+            } else {
+                Validations.notyf.error('Solo se permiten números enteros.');
+            }
+        });
+    }
+
 
     /**
      * Adds a new product to the quote based on form input values.

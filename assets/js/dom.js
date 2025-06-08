@@ -544,4 +544,30 @@ export class DOMElements {
         const root = parentKey ? this.get(parentKey) : document;
         return root ? root.querySelectorAll(selector) : [];
     }
+
+    /**
+     * Adds an event listener to a cached element
+     * @param {string} elementKey - The key of the element
+     * @param {string} eventType - The type of event (e.g., 'click', 'input')
+     * @param {Function} handler - The event handler function
+     * @param {Object} [options] - Optional event listener options
+     * @returns {boolean} True if successful
+     */
+    on(elementKey, eventType, handler, options = {}) {
+        const element = this.get(elementKey);
+        if (!element) {
+            console.error(`Element '${elementKey}' not found when adding event listener`);
+            return false;
+        }
+
+        element.addEventListener(eventType, handler, options);
+        
+        // Store event listener for potential cleanup
+        if (!this.eventListeners.has(element)) {
+            this.eventListeners.set(element, []);
+        }
+        this.eventListeners.get(element).push({ event: eventType, handler, options });
+        
+        return true;
+    }
 }

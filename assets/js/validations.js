@@ -24,16 +24,44 @@ export class Validations {
     }
 
     /**
-     * Validates that a value is a number and meets the minimum value requirement.
-     * @static
-     * @param {string|number} value - The value to validate
-     * @param {number} minValue - The minimum acceptable value
-     * @param {string} errorMessage - The error message to display if validation fails
-     * @throws {Error} If the value is not a number or is less than the minimum value
-     */
+ * Validates that a value is a number and meets the minimum value requirement.
+ * @static
+ * @param {string|number} value - The value to validate
+ * @param {number} minValue - The minimum acceptable value
+ * @param {string} errorMessage - The error message to display if validation fails
+ * @throws {Error} If the value is not a number or is less than the minimum value
+ */
     static validateNumber(value, minValue, errorMessage) {
+        // Verificar que el valor no contenga texto no numérico
+        const stringValue = String(value).trim();
+        if (!/^\d*\.?\d*$/.test(stringValue) || stringValue === '') {
+            this.notyf.error('Solo se permiten números.');
+            throw new Error('Solo se permiten números.');
+        }
+
         const number = parseFloat(value);
         if (isNaN(number) || number < minValue) {
+            this.notyf.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+    }
+
+    /**
+     * Validates that a value is a positive integer (for quantities).
+     * @static
+     * @param {string|number} value - The value to validate
+     * @param {string} errorMessage - The error message to display if validation fails
+     * @throws {Error} If the value is not a positive integer
+     */
+    static validateInteger(value, errorMessage) {
+        const stringValue = String(value).trim();
+        if (!/^\d+$/.test(stringValue) || stringValue === '') {
+            this.notyf.error('Solo se permiten números enteros.');
+            throw new Error('Solo se permiten números enteros.');
+        }
+
+        const number = parseInt(value);
+        if (isNaN(number) || number < 1) {
             this.notyf.error(errorMessage);
             throw new Error(errorMessage);
         }
@@ -59,7 +87,7 @@ export class Validations {
 
             // Validar cantidad (número entero mayor o igual a 1)
             this.validateNotEmpty(cantidad, 'La cantidad es obligatoria.');
-            this.validateNumber(cantidad, 1, 'La cantidad debe ser al menos 1.');
+            this.validateInteger(cantidad, 'La cantidad debe ser al menos 1.');
 
             // Validar precio (número mayor o igual a 0)
             this.validateNotEmpty(precio, 'El precio es obligatorio.');
