@@ -18,7 +18,6 @@ export class QuoteGenerator {
     constructor() {
         this.state = new QuoteState();
         this.dom = new DOMElements();
-        // Bind helper methods from DOMElements
         this.createElement = this.dom.createElement.bind(this.dom);
         this.appendTo = this.dom.append.bind(this.dom);
         this.querySelectorAll = this.dom.querySelectorAll.bind(this.dom);
