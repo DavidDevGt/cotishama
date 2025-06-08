@@ -1,5 +1,5 @@
 import { Trie } from './core/trie.js';
-import { DOMElements } from './dom.js';
+import { DOMElements } from './core/dom.js';
 import { productList } from './data/productList.js';
 
 /**

@@ -24,15 +24,14 @@ export class Validations {
     }
 
     /**
- * Validates that a value is a number and meets the minimum value requirement.
- * @static
- * @param {string|number} value - The value to validate
- * @param {number} minValue - The minimum acceptable value
- * @param {string} errorMessage - The error message to display if validation fails
- * @throws {Error} If the value is not a number or is less than the minimum value
- */
+     * Validates that a value is a number and meets the minimum value requirement.
+     * @static
+     * @param {string|number} value - The value to validate
+     * @param {number} minValue - The minimum acceptable value
+     * @param {string} errorMessage - The error message to display if validation fails
+     * @throws {Error} If the value is not a number or is less than the minimum value
+     */
     static validateNumber(value, minValue, errorMessage) {
-        // Verificar que el valor no contenga texto no numérico
         const stringValue = String(value).trim();
         if (!/^\d*\.?\d*$/.test(stringValue) || stringValue === '') {
             this.notyf.error('Solo se permiten números.');

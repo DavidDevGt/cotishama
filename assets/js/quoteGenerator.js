@@ -1,9 +1,9 @@
-import { QuoteState } from './state.js';
-import { DOMElements } from './dom.js';
+import { QuoteState } from './core/state.js';
+import { DOMElements } from './core/dom.js';
 import { QuoteUtils } from './utils.js';
-import { Validations } from './validations.js';
+import { Validations } from './core/validations.js';
 import { ProductAutocomplete } from './autocomplete.js';
-import { STYLE, DOM_IDS } from './constants.js';
+import { STYLE, DOM_IDS } from './core/constants.js';
 
 /**
  * Class responsible for generating and managing quotes.
