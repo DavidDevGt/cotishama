@@ -61,9 +61,13 @@ export class QuoteGenerator {
             return;
         }
 
+        this.state.setClient(product.cliente);
         product.cantidad = parseInt(product.cantidad);
         product.precio = parseFloat(product.precio);
-        this.state.products.push(product);
+
+        if (!this.state.addProduct(product)) {
+            return;
+        }
         this.renderProducts();
         this.clearInputs();
     }
@@ -82,10 +86,9 @@ export class QuoteGenerator {
         dateElement.textContent = this.currentDate;
         productsTable.innerHTML = '';
 
-        let total = 0;
+        const total = this.state.getTotal();
         this.state.products.forEach((product, index) => {
             const subtotal = product.cantidad * product.precio;
-            total += subtotal;
             const row = this.createProductRow(product, subtotal, index);
             productsTable.appendChild(row);
         });
@@ -98,7 +101,7 @@ export class QuoteGenerator {
                 emptyRow.classList.add('empty-row');
 
                 const emptyTd = document.createElement('td');
-                emptyTd.colSpan = 5; // Esto se ajusta al número de columnas en la tabla
+                emptyTd.colSpan = 5;
                 emptyTd.innerHTML = '&nbsp;';
 
                 emptyRow.appendChild(emptyTd);
@@ -126,7 +129,7 @@ export class QuoteGenerator {
             { text: QuoteUtils.formatCurrency(subtotal), className: 'money-cell' },
             {
                 element: this.createDeleteButton(() => {
-                    this.state.products.splice(index, 1);
+                    this.state.removeProduct(index);
                     this.renderProducts();
                 })
             }
@@ -183,7 +186,9 @@ export class QuoteGenerator {
      * @returns {Promise<void>}
      */
     async generateQuoteImage() {
-        if (!Validations.validateHasProducts(this.state.products)) {
+        if (!this.state.hasProducts()) {
+            // notify user
+            Validations.notyf.error('No hay productos en la cotización. Agrega al menos uno para continuar.');
             console.warn('Cannot generate image: No products available');
             return;
         }
