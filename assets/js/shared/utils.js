@@ -1,4 +1,4 @@
-import { CURRENCY } from './core/constants.js';
+import { CURRENCY } from './../core/constants.js';
 
 /**
  * Utility class providing helper methods for quote-related operations.

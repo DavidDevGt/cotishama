@@ -4,10 +4,9 @@ export class Router {
         this.middlewares = [];
         this.routeHistory = [];
         this.maxHistorySize = 25;
-
         this.currentRoute = null;
         this.currentParams = {};
-
+        
         window.addEventListener('popstate', () => {
             this.navigate(window.location.pathname, false);
         });
@@ -57,21 +56,23 @@ export class Router {
         }
 
         const { route, params } = matched;
-
+        
         const executeHandler = () => {
             if (pushState) {
                 window.history.pushState({}, '', path);
             }
-
+            
+            const previousRoute = this.currentRoute;
             this.currentRoute = route;
             this.currentParams = params;
-
-            // Limit history size
+            
             this.routeHistory.push(route);
             if (this.routeHistory.length > this.maxHistorySize) {
                 this.routeHistory.shift();
             }
-
+            
+            this._dispatchRouteChangeEvent(route, params, previousRoute);
+            
             this.routes[route](params);
         };
 
@@ -86,6 +87,26 @@ export class Router {
     }
 
     /**
+     * Dispatches a custom event when the route changes
+     * @private
+     * @param {string} route The new route
+     * @param {Object} params Route parameters
+     * @param {string} previousRoute The previous route
+     */
+    _dispatchRouteChangeEvent(route, params, previousRoute) {
+        const event = new CustomEvent('routeChanged', {
+            detail: {
+                route,
+                params,
+                previousRoute,
+                path: window.location.pathname
+            }
+        });
+        
+        window.dispatchEvent(event);
+    }
+
+    /**
      * Applies middlewares in order before executing the handler.
      * @private
      * @param {string} path The route path
@@ -93,6 +114,7 @@ export class Router {
      */
     _runMiddlewares(path, done) {
         const stack = [...this.middlewares];
+        
         const next = () => {
             const middleware = stack.shift();
             if (middleware) {
@@ -101,6 +123,7 @@ export class Router {
                 done();
             }
         };
+        
         next();
     }
 
@@ -117,7 +140,7 @@ export class Router {
                 paramNames.push(key);
                 return '([^\\/]+)';
             });
-
+            
             const match = path.match(new RegExp(`^${regex}$`));
             if (match) {
                 const params = {};
@@ -128,5 +151,42 @@ export class Router {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets the current route
+     * @returns {string|null} Current route
+     */
+    getCurrentRoute() {
+        return this.currentRoute;
+    }
+
+    /**
+     * Gets the current route parameters
+     * @returns {Object} Current route parameters
+     */
+    getCurrentParams() {
+        return { ...this.currentParams };
+    }
+
+    /**
+     * Gets the route history
+     * @returns {Array} Array of visited routes
+     */
+    getHistory() {
+        return [...this.routeHistory];
+    }
+
+    /**
+     * Goes back to the previous route in history
+     */
+    goBack() {
+        if (this.routeHistory.length > 1) {
+            this.routeHistory.pop();
+            const previousRoute = this.routeHistory[this.routeHistory.length - 1];
+            this.navigate(previousRoute, false);
+        } else {
+            window.history.back();
+        }
     }
 }

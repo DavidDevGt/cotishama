@@ -1,6 +1,6 @@
 import { QuoteState } from './core/state.js';
 import { DOMElements } from './core/dom.js';
-import { QuoteUtils } from './utils.js';
+import { QuoteUtils } from './shared/utils.js';
 import { Validations } from './core/validations.js';
 import { ProductAutocomplete } from './autocomplete.js';
 import { STYLE, DOM_IDS } from './core/constants.js';
