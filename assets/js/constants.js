@@ -27,7 +27,8 @@ export const DOM_IDS = {
    GENERATE: 'generar-pdf',
    CAPTURE: 'capture',
    CLIENT_NAME: 'nombre',
-   DATE: 'fecha'
+   DATE: 'fecha',
+   SUGGESTIONS_CONTAINER: 'sugerencias-productos'
 };
 
 /**

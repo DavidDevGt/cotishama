@@ -1,4 +1,5 @@
 import { Trie } from './trie.js';
+import { DOMElements } from './dom.js';
 import { productList } from './data/productList.js';
 
 /**
@@ -17,6 +18,7 @@ export class ProductAutocomplete {
      */
     constructor(options = {}) {
         this.trie = new Trie();
+        this.dom = new DOMElements();
         this.options = {
             minCharacters: options.minCharacters || 2,
             maxSuggestions: options.maxSuggestions || 10,
@@ -88,12 +90,12 @@ export class ProductAutocomplete {
 
     /**
      * Set up autocomplete functionality for a specific input element.
-     * @param {string} inputId - ID of the input element.
-     * @param {string} suggestionsContainerId - ID of the container for suggestions.
+     * @param {string} inputKey - Key of the input element in DOM_IDS.
+     * @param {string} suggestionsContainerKey - Key of the suggestions container in DOM_IDS.
      */
-    initializeAutocomplete(inputId, suggestionsContainerId) {
-        const input = document.getElementById(inputId);
-        const suggestionsContainer = document.getElementById(suggestionsContainerId);
+    initializeAutocomplete(inputKey, suggestionsContainerKey) {
+        const input = this.dom.get(inputKey);
+        const suggestionsContainer = this.dom.get(suggestionsContainerKey);
 
         if (!input || !suggestionsContainer) {
             console.error('Required elements not found');
@@ -101,10 +103,10 @@ export class ProductAutocomplete {
         }
 
         input.setAttribute('autocomplete', 'off');
-        suggestionsContainer.classList.add('suggestions-container');
+        this.dom.addClass(suggestionsContainerKey, 'suggestions-container');
 
         // Use debounced input handler
-        input.addEventListener('input', (e) => this.debouncedHandleInput(e.target, suggestionsContainer));
+        this.dom.on(inputKey, 'input', () => this.debouncedHandleInput(input, suggestionsContainer));
         
         this.setupEventListeners(input, suggestionsContainer);
     }
@@ -147,22 +149,29 @@ export class ProductAutocomplete {
     }
 
     /**
-     * Display autocomplete suggestions in the suggestions container with virtual scrolling for large lists.
+     * Clears autocomplete suggestions.
+     * @param {HTMLElement} container - Container element for suggestions.
+     */
+    clearSuggestions() {
+        this.dom.hide('suggestions_container');
+        this.dom.clear('suggestions_container');
+    }
+
+    /**
+     * Display autocomplete suggestions in the suggestions container
      * @param {string[]} suggestions - List of suggestion strings.
-     * @param {HTMLElement} container - Suggestions container element.
-     * @param {HTMLInputElement} input - The input element.
-     * @param {string} inputValue - Current input value.
+     * @param {string} inputKey - Key of the input element for focus handling.
      */
     displaySuggestions(suggestions, container, input, inputValue) {
+        const suggestionContainerKey = 'suggestions_container';
         const fragment = document.createDocumentFragment();
         
         if (!suggestions.length) {
-            container.style.display = 'none';
-            container.innerHTML = '';
+            this.clearSuggestions();
             return;
         }
 
-        container.innerHTML = '';
+        this.dom.clear(suggestionContainerKey);
 
         suggestions.forEach((suggestion, index) => {
             const div = document.createElement('div');
@@ -179,8 +188,9 @@ export class ProductAutocomplete {
             fragment.appendChild(div);
         });
 
-        container.appendChild(fragment);
-        container.style.display = 'block';
+        const containerElement = this.dom.get(suggestionContainerKey);
+        containerElement.appendChild(fragment);
+        this.dom.show(suggestionContainerKey);
     }
 
     /**
@@ -302,16 +312,6 @@ export class ProductAutocomplete {
             this.clearSuggestions(suggestionsContainer);
             input.dispatchEvent(new Event('change'));
         }
-    }
-
-    /**
-     * Clear all suggestions from the container.
-     * @param {HTMLElement} container - Suggestions container element.
-     */
-    clearSuggestions(container) {
-        container.innerHTML = '';
-        container.style.display = 'none';
-        this.currentFocus = -1;
     }
 
     /**

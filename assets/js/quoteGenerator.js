@@ -18,6 +18,10 @@ export class QuoteGenerator {
     constructor() {
         this.state = new QuoteState();
         this.dom = new DOMElements();
+        // Bind helper methods from DOMElements
+        this.createElement = this.dom.createElement.bind(this.dom);
+        this.appendTo = this.dom.append.bind(this.dom);
+        this.querySelectorAll = this.dom.querySelectorAll.bind(this.dom);
         this.currentDate = QuoteUtils.getCurrentDate();
         this.initializeAutocomplete();
         this.initializeEventListeners();
@@ -29,7 +33,7 @@ export class QuoteGenerator {
      */
     initializeAutocomplete() {
         this.autocomplete = new ProductAutocomplete();
-        this.autocomplete.initializeAutocomplete('producto', 'sugerencias-productos');
+        this.autocomplete.initializeAutocomplete('product', 'suggestions_container');
     }
 
     /**
@@ -37,8 +41,8 @@ export class QuoteGenerator {
      * @private
      */
     initializeEventListeners() {
-        this.dom.get('add').addEventListener('click', () => this.addProduct());
-        this.dom.get('generate').addEventListener('click', () => this.generateQuoteImage());
+        this.dom.on('add', 'click', () => this.addProduct());
+        this.dom.on('generate', 'click', () => this.generateQuoteImage());
         // Setear mayusculas a nombre del cliente y producto usando utils
         QuoteUtils.setUpperCase(this.dom.get('client'));
         QuoteUtils.setUpperCase(this.dom.get('product'));
@@ -51,10 +55,10 @@ export class QuoteGenerator {
      */
     addProduct() {
         const product = {
-            nombre: this.dom.get('product').value,
-            cantidad: this.dom.get('quantity').value,
-            precio: this.dom.get('price').value,
-            cliente: this.dom.get('client').value
+            nombre: this.dom.getValue('product'),
+            cantidad: this.dom.getValue('quantity'),
+            precio: this.dom.getValue('price'),
+            cliente: this.dom.getValue('client')
         };
 
         if (!Validations.validateForm(product)) {
@@ -78,37 +82,29 @@ export class QuoteGenerator {
      * @private
      */
     renderProducts() {
-        const productsTable = this.dom.get('products_table');
-        const clientNameElement = this.dom.get('client_name');
-        const dateElement = this.dom.get('date');
-
-        clientNameElement.textContent = this.dom.get('client').value;
-        dateElement.textContent = this.currentDate;
-        productsTable.innerHTML = '';
+        this.dom.setText('client_name', this.dom.getValue('client'));
+        this.dom.setText('date', this.currentDate);
+        this.dom.clear('products_table');
 
         const total = this.state.getTotal();
         this.state.products.forEach((product, index) => {
             const subtotal = product.cantidad * product.precio;
             const row = this.createProductRow(product, subtotal, index);
-            productsTable.appendChild(row);
+            this.appendTo('products_table', row);
         });
 
         const MIN_ROWS = STYLE.MIN_ROWS;
         const rowsToAdd = MIN_ROWS - this.state.products.length;
         if (rowsToAdd > 0) {
             for (let i = 0; i < rowsToAdd; i++) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.classList.add('empty-row');
-
-                const emptyTd = document.createElement('td');
-                emptyTd.colSpan = 5;
-                emptyTd.innerHTML = '&nbsp;';
-
+                // Create empty row using DOM helper
+                const emptyRow = this.createElement('tr', { className: 'empty-row' });
+                const emptyTd = this.createElement('td', { attributes: { colSpan: 5 }, html: '&nbsp;' });
                 emptyRow.appendChild(emptyTd);
-                productsTable.appendChild(emptyRow);
+                this.appendTo('products_table', emptyRow);
             }
         }
-        this.dom.get('total').textContent = QuoteUtils.formatCurrency(total);
+        this.dom.setText('total', QuoteUtils.formatCurrency(total));
     }
 
 
@@ -121,7 +117,7 @@ export class QuoteGenerator {
      * @returns {HTMLTableRowElement} The created table row element
      */
     createProductRow(product, subtotal, index) {
-        const row = document.createElement('tr');
+        const row = this.createElement('tr');
         const cells = [
             { text: product.cantidad },
             { text: product.nombre },
@@ -135,7 +131,7 @@ export class QuoteGenerator {
             }
         ];
         cells.forEach(cell => {
-            const td = document.createElement('td');
+            const td = this.createElement('td');
             if (cell.text !== undefined) {
                 td.textContent = cell.text;
                 if (cell.className) td.classList.add(cell.className);
@@ -172,9 +168,7 @@ export class QuoteGenerator {
      * @private
      */
     clearInputs() {
-        ['product', 'quantity', 'price'].forEach(field => {
-            this.dom.get(field).value = '';
-        });
+        this.dom.clearMultiple(['product', 'quantity', 'price']);
     }
 
     /**
@@ -198,7 +192,7 @@ export class QuoteGenerator {
             throw new Error('Capture element not found');
         }
 
-        const deleteCells = table.querySelectorAll('td:nth-child(5)');
+        const deleteCells = this.querySelectorAll('td:nth-child(5)', 'capture');
         const originalDisplayValues = [];
 
         try {
