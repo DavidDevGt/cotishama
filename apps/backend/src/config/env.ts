@@ -22,7 +22,7 @@ interface Config {
   STORAGE_PATH?: string;
 }
 
-const getEnv = (key: string, defaultValue?: string): string => {
+export const getEnv = (key: string, defaultValue?: string): string => {
   const value = process.env[key];
   if (!value && !defaultValue) {
     throw new Error(`Missing required environment variable: ${key}`);
@@ -30,7 +30,7 @@ const getEnv = (key: string, defaultValue?: string): string => {
   return value || defaultValue || '';
 };
 
-const getEnvNumber = (key: string, defaultValue?: number): number => {
+export const getEnvNumber = (key: string, defaultValue?: number): number => {
   const value = process.env[key];
   if (!value && defaultValue === undefined) {
     throw new Error(`Missing required environment variable: ${key}`);
