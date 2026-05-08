@@ -1,0 +1,17 @@
+# GitGuardian Configuration
+# Ignores false positives from test credentials and documentation
+
+ignore-patterns:
+  - test-secret-key
+  - test-refresh-secret
+  - testing-purposes-only
+
+ignore-paths:
+  - .github/workflows/
+  - tests/
+  - "*.md"
+  - ".env.example"
+  - ".env.test"
+
+# Severity levels
+severity: medium

@@ -5,8 +5,18 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
-    }
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "warn"
+      },
+      "style": {
+        "noNonNullAssertion": "warn"
+      },
+      "complexity": {
+        "noUselessCatch": "warn"
+      }
+    },
+    "ignore": ["**/node_modules", "dist", "coverage"]
   },
   "formatter": {
     "enabled": true,
@@ -14,7 +24,11 @@
     "lineWidth": 100,
     "indentStyle": "space",
     "lineEnding": "lf",
-    "bracketSpacing": true
+    "bracketSpacing": true,
+    "ignore": ["**/node_modules", "dist", "coverage", ".env*"]
+  },
+  "organizeImports": {
+    "ignore": ["**/node_modules", "dist", "coverage"]
   }
 }
 
