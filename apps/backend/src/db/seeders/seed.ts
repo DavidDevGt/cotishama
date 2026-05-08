@@ -1,13 +1,13 @@
 import { db, closeDb } from '../client';
 import { users, clients, products } from '../schema';
-import { hash } from '@hapi/bcrypt';
+import * as bcrypt from 'bcrypt';
 
 async function seedDatabase() {
   try {
     console.log('🌱 Seeding database...');
 
     // Hash password for demo user
-    const hashedPassword = await hash('DemoPassword123', 10);
+    const hashedPassword = await bcrypt.hash('DemoPassword123', 10);
 
     // Create admin user
     await db.insert(users).values({
