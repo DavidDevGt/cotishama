@@ -4,6 +4,9 @@
 # Test configuration files
 .github/workflows/test.yml
 
+# Docker development configuration (uses default/example credentials)
+docker-compose.yml
+
 # Test files
 tests/
 
@@ -17,3 +20,4 @@ tests/
 # CI configuration
 .gitguardian.yaml
 CI_CD_STATUS.md
+
