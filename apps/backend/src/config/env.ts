@@ -41,45 +41,40 @@ export const getEnvNumber = (key: string, defaultValue?: number): number => {
   return value ? Number.parseInt(value, 10) : defaultValue!;
 };
 
-const DEFAULTS = {
-  NODE_ENV: "d" + "evel" + "opment",
-  LOG_LEVEL: "i" + "nfo",
-  STORAGE_TYPE: "l" + "ocal",
-};
+let configInstance: Config | null = null;
 
-function getNodeEnv() {
-  const val = process.env.NODE_ENV;
-  return val || DEFAULTS.NODE_ENV;
+function createConfig(): Config {
+  if (configInstance) return configInstance;
+
+  const env = process.env;
+  const nodeEnv = env["NODE_ENV"];
+  const logLevel = env["LOG_LEVEL"];
+  const storageType = env["STORAGE_TYPE"];
+  const storagePath = env["STORAGE_PATH"];
+
+  configInstance = {
+    NODE_ENV: nodeEnv || getEnv("NODE_ENV", "development"),
+    APP_PORT: getEnvNumber("APP_PORT", 3000),
+    APP_HOST: getEnv("APP_HOST", "0.0.0.0"),
+    LOG_LEVEL: logLevel || getEnv("LOG_LEVEL", "info"),
+    DATABASE_URL: getEnv("DATABASE_URL"),
+    DATABASE_POOL_MIN: getEnvNumber("DATABASE_POOL_MIN", 5),
+    DATABASE_POOL_MAX: getEnvNumber("DATABASE_POOL_MAX", 20),
+    DATABASE_IDLE_TIMEOUT: getEnvNumber("DATABASE_IDLE_TIMEOUT", 30000),
+    DATABASE_CONNECT_TIMEOUT: getEnvNumber("DATABASE_CONNECT_TIMEOUT", 10000),
+    JWT_SECRET: getEnv("JWT_SECRET"),
+    JWT_REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET"),
+    JWT_ACCESS_EXPIRE: getEnvNumber("JWT_ACCESS_EXPIRE", 900000), // 15 minutes
+    JWT_REFRESH_EXPIRE: getEnvNumber("JWT_REFRESH_EXPIRE", 604800000), // 7 days
+    CORS_ORIGINS: getEnv("CORS_ORIGINS", "http://localhost:3000"),
+    STORAGE_TYPE: storageType || getEnv("STORAGE_TYPE", "local"),
+    STORAGE_PATH: storagePath || "./uploads",
+  };
+
+  return configInstance;
 }
 
-function getLogLevel() {
-  const val = process.env.LOG_LEVEL;
-  return val || DEFAULTS.LOG_LEVEL;
-}
-
-function getStorageType() {
-  const val = process.env.STORAGE_TYPE;
-  return val || DEFAULTS.STORAGE_TYPE;
-}
-
-export const config: Config = {
-  NODE_ENV: getNodeEnv(),
-  APP_PORT: getEnvNumber("APP_PORT", 3000),
-  APP_HOST: getEnv("APP_HOST", "0.0.0.0"),
-  LOG_LEVEL: getLogLevel(),
-  DATABASE_URL: getEnv("DATABASE_URL"),
-  DATABASE_POOL_MIN: getEnvNumber("DATABASE_POOL_MIN", 5),
-  DATABASE_POOL_MAX: getEnvNumber("DATABASE_POOL_MAX", 20),
-  DATABASE_IDLE_TIMEOUT: getEnvNumber("DATABASE_IDLE_TIMEOUT", 30000),
-  DATABASE_CONNECT_TIMEOUT: getEnvNumber("DATABASE_CONNECT_TIMEOUT", 10000),
-  JWT_SECRET: getEnv("JWT_SECRET"),
-  JWT_REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET"),
-  JWT_ACCESS_EXPIRE: getEnvNumber("JWT_ACCESS_EXPIRE", 900000), // 15 minutes
-  JWT_REFRESH_EXPIRE: getEnvNumber("JWT_REFRESH_EXPIRE", 604800000), // 7 days
-  CORS_ORIGINS: getEnv("CORS_ORIGINS", "http://localhost:3000"),
-  STORAGE_TYPE: getStorageType(),
-  STORAGE_PATH: process.env.STORAGE_PATH || "./uploads",
-};
+export const config: Config = createConfig();
 
 // Validate critical config on startup
 export const validateConfig = () => {
