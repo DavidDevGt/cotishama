@@ -4,10 +4,7 @@
   "description": "Enterprise-grade quote generator system for Ferretería Shama",
   "type": "module",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "bun run dev:backend & bun run dev:frontend",
     "dev:backend": "cd apps/backend && bun --hot src/index.ts",

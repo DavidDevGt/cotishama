@@ -25,7 +25,7 @@ class StateManager {
   }
 
   get(path) {
-    const keys = path.split('.');
+    const keys = path.split(".");
     let value = this.state;
     for (const key of keys) {
       value = value?.[key];
@@ -34,7 +34,7 @@ class StateManager {
   }
 
   set(path, value) {
-    const keys = path.split('.');
+    const keys = path.split(".");
     let obj = this.state;
 
     for (let i = 0; i < keys.length - 1; i++) {
@@ -75,8 +75,8 @@ class StateManager {
     }
   }
 
-  notify({ type = 'info', message = '' }) {
-    this.set('ui.notification', { type, message, timestamp: Date.now() });
+  notify({ type = "info", message = "" }) {
+    this.set("ui.notification", { type, message, timestamp: Date.now() });
   }
 
   getSnapshot() {

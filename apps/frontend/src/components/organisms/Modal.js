@@ -17,14 +17,14 @@ export class Modal {
   constructor(options = {}) {
     const {
       id = null,
-      title = '',
-      size = 'md', // sm, md, lg, xl
+      title = "",
+      size = "md", // sm, md, lg, xl
       closeButton = true,
       closeOnEscape = true,
       closeOnBackdrop = false,
       onClose = null,
       onConfirm = null,
-      className = '',
+      className = "",
     } = options;
 
     this.id = id;
@@ -43,8 +43,8 @@ export class Modal {
 
   render() {
     // Backdrop
-    const backdrop = document.createElement('div');
-    backdrop.className = 'modal-backdrop';
+    const backdrop = document.createElement("div");
+    backdrop.className = "modal-backdrop";
     backdrop.style.cssText = `
       position: fixed;
       top: 0;
@@ -59,15 +59,15 @@ export class Modal {
     `;
 
     if (this.closeOnBackdrop) {
-      backdrop.addEventListener('click', () => this.close());
+      backdrop.addEventListener("click", () => this.close());
     }
 
     // Modal container
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `modal modal-${this.size} ${this.className}`;
-    container.setAttribute('role', 'dialog');
-    container.setAttribute('aria-modal', 'true');
-    if (this.title) container.setAttribute('aria-labelledby', `${this.id}-title`);
+    container.setAttribute("role", "dialog");
+    container.setAttribute("aria-modal", "true");
+    if (this.title) container.setAttribute("aria-labelledby", `${this.id}-title`);
 
     container.style.cssText = `
       position: fixed;
@@ -88,10 +88,10 @@ export class Modal {
     `;
 
     const sizeMap = {
-      sm: 'width: 320px',
-      md: 'width: 480px',
-      lg: 'width: 640px',
-      xl: 'width: 800px',
+      sm: "width: 320px",
+      md: "width: 480px",
+      lg: "width: 640px",
+      xl: "width: 800px",
     };
     container.style.cssText += sizeMap[this.size] || sizeMap.md;
 
@@ -99,8 +99,8 @@ export class Modal {
 
     // Header
     if (this.title) {
-      const header = document.createElement('div');
-      header.className = 'modal-header';
+      const header = document.createElement("div");
+      header.className = "modal-header";
       header.style.cssText = `
         padding: var(--spacing-lg);
         border-bottom: 1px solid var(--color-border);
@@ -110,7 +110,7 @@ export class Modal {
         gap: var(--spacing-md);
       `;
 
-      const titleEl = document.createElement('h2');
+      const titleEl = document.createElement("h2");
       titleEl.id = `${this.id}-title`;
       titleEl.textContent = this.title;
       titleEl.style.cssText = `
@@ -123,14 +123,14 @@ export class Modal {
 
       // Close button
       if (this.closeButton) {
-        const { Button } = require('../atoms/Button.js');
+        const { Button } = require("../atoms/Button.js");
         const closeBtn = new Button({
-          label: '✕',
-          variant: 'ghost',
-          size: 'sm',
+          label: "✕",
+          variant: "ghost",
+          size: "sm",
           onClick: () => this.close(),
-          ariaLabel: 'Close dialog',
-          title: 'Close (Esc)',
+          ariaLabel: "Close dialog",
+          title: "Close (Esc)",
         }).render();
         header.appendChild(closeBtn);
       }
@@ -139,8 +139,8 @@ export class Modal {
     }
 
     // Content
-    const content = document.createElement('div');
-    content.className = 'modal-content';
+    const content = document.createElement("div");
+    content.className = "modal-content";
     content.style.cssText = `
       padding: var(--spacing-lg);
       overflow-y: auto;
@@ -150,8 +150,8 @@ export class Modal {
     container.appendChild(content);
 
     // Footer (optional)
-    const footer = document.createElement('div');
-    footer.className = 'modal-footer';
+    const footer = document.createElement("div");
+    footer.className = "modal-footer";
     footer.style.cssText = `
       padding: var(--spacing-lg);
       border-top: 1px solid var(--color-border);
@@ -164,8 +164,8 @@ export class Modal {
     container.appendChild(footer);
 
     // Wrapper for backdrop + container
-    const wrapper = document.createElement('div');
-    wrapper.className = 'modal-wrapper';
+    const wrapper = document.createElement("div");
+    wrapper.className = "modal-wrapper";
     wrapper.style.cssText = `
       position: fixed;
       top: 0;
@@ -174,14 +174,14 @@ export class Modal {
       bottom: 0;
       z-index: calc(var(--z-modal) - 1);
     `;
-    wrapper.style.display = 'none';
+    wrapper.style.display = "none";
 
     wrapper.appendChild(backdrop);
     wrapper.appendChild(container);
 
     // Keyboard handling
     this.handleKeyDown = (e) => {
-      if (e.key === 'Escape' && this.closeOnEscape) {
+      if (e.key === "Escape" && this.closeOnEscape) {
         this.close();
       }
     };
@@ -190,8 +190,8 @@ export class Modal {
     wrapper.show = () => this.show(wrapper, backdrop, container);
     wrapper.close = () => this.close(wrapper, backdrop, container);
     wrapper.setContent = (element) => {
-      this.contentElement.innerHTML = '';
-      if (typeof element === 'string') {
+      this.contentElement.innerHTML = "";
+      if (typeof element === "string") {
         this.contentElement.textContent = element;
       } else if (element instanceof HTMLElement) {
         this.contentElement.appendChild(element);
@@ -200,11 +200,11 @@ export class Modal {
 
     wrapper.setFooter = (element) => {
       if (element) {
-        footer.innerHTML = '';
+        footer.innerHTML = "";
         footer.appendChild(element);
-        footer.style.display = 'flex';
+        footer.style.display = "flex";
       } else {
-        footer.style.display = 'none';
+        footer.style.display = "none";
       }
     };
 
@@ -213,35 +213,35 @@ export class Modal {
   }
 
   show(wrapper, backdrop, container) {
-    wrapper.style.display = 'block';
-    backdrop.style.display = 'block';
-    container.style.display = 'flex';
+    wrapper.style.display = "block";
+    backdrop.style.display = "block";
+    container.style.display = "flex";
 
     // Trigger animation
     setTimeout(() => {
-      backdrop.style.opacity = '1';
-      container.style.transform = 'translate(-50%, -50%) scale(1)';
-      container.style.opacity = '1';
+      backdrop.style.opacity = "1";
+      container.style.transform = "translate(-50%, -50%) scale(1)";
+      container.style.opacity = "1";
     }, 10);
 
-    document.addEventListener('keydown', this.handleKeyDown);
-    document.body.style.overflow = 'hidden';
+    document.addEventListener("keydown", this.handleKeyDown);
+    document.body.style.overflow = "hidden";
     this.isVisible = true;
   }
 
   close(wrapper, backdrop, container) {
-    backdrop.style.opacity = '0';
-    container.style.transform = 'translate(-50%, -50%) scale(0.9)';
-    container.style.opacity = '0';
+    backdrop.style.opacity = "0";
+    container.style.transform = "translate(-50%, -50%) scale(0.9)";
+    container.style.opacity = "0";
 
     setTimeout(() => {
-      if (wrapper) wrapper.style.display = 'none';
-      if (backdrop) backdrop.style.display = 'none';
-      if (container) container.style.display = 'none';
+      if (wrapper) wrapper.style.display = "none";
+      if (backdrop) backdrop.style.display = "none";
+      if (container) container.style.display = "none";
     }, 300);
 
-    document.removeEventListener('keydown', this.handleKeyDown);
-    document.body.style.overflow = '';
+    document.removeEventListener("keydown", this.handleKeyDown);
+    document.body.style.overflow = "";
     this.isVisible = false;
 
     if (this.onClose) {
@@ -251,8 +251,8 @@ export class Modal {
 }
 
 // Add Modal styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .modal-wrapper {
       position: fixed;

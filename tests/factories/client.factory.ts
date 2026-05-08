@@ -1,4 +1,4 @@
-import type { InsertClient } from '../../apps/backend/src/db/schema';
+import type { InsertClient } from "../../apps/backend/src/db/schema";
 
 let clientCounter = 0;
 
@@ -9,14 +9,14 @@ export class ClientFactory {
     return {
       name: `Test Client ${clientCounter}`,
       email: `client${clientCounter}@test.local`,
-      phone: '+1-555-000' + String(clientCounter).padStart(4, '0'),
+      phone: "+1-555-000" + String(clientCounter).padStart(4, "0"),
       address: `123 Test Street ${clientCounter}`,
-      city: 'Test City',
-      country: 'Test Country',
-      postalCode: '12345',
-      taxId: `TAX-${clientCounter.toString().padStart(6, '0')}`,
+      city: "Test City",
+      country: "Test Country",
+      postalCode: "12345",
+      taxId: `TAX-${clientCounter.toString().padStart(6, "0")}`,
       contactPerson: `Contact ${clientCounter}`,
-      notes: 'Test client',
+      notes: "Test client",
       isActive: 1,
       createdBy: 1,
       ...overrides,

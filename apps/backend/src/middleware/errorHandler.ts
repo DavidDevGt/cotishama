@@ -3,12 +3,12 @@
  * Centralized error handling
  */
 
-import { Context } from 'hono';
-import { AppError, isAppError } from '../types/errors';
+import type { Context } from "hono";
+import { AppError, isAppError } from "../types/errors";
 
 export const errorHandler = () => {
   return (err: Error, c: Context) => {
-    const requestId = c.get('request_id') || 'unknown';
+    const requestId = c.get("request_id") || "unknown";
     const timestamp = new Date().toISOString();
 
     // Log error
@@ -27,35 +27,35 @@ export const errorHandler = () => {
           metadata: {
             timestamp,
             request_id: requestId,
-            version: 'v1',
+            version: "v1",
           },
         },
-        err.statusCode
+        err.statusCode,
       );
     }
 
     // Handle Zod validation errors
-    if (err.name === 'ZodError') {
+    if (err.name === "ZodError") {
       const zodError = err as any;
       return c.json(
         {
           success: false,
           status_code: 400,
           error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Datos inválidos',
+            code: "VALIDATION_ERROR",
+            message: "Datos inválidos",
             details: zodError.errors?.map((e: any) => ({
-              field: e.path.join('.'),
+              field: e.path.join("."),
               message: e.message,
             })),
           },
           metadata: {
             timestamp,
             request_id: requestId,
-            version: 'v1',
+            version: "v1",
           },
         },
-        400
+        400,
       );
     }
 
@@ -65,16 +65,16 @@ export const errorHandler = () => {
         success: false,
         status_code: 500,
         error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Error interno del servidor',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error interno del servidor",
         },
         metadata: {
           timestamp,
           request_id: requestId,
-          version: 'v1',
+          version: "v1",
         },
       },
-      500
+      500,
     );
   };
 };

@@ -5,7 +5,7 @@
 
 class StorageManager {
   constructor() {
-    this.prefix = 'cotishama_';
+    this.prefix = "cotishama_";
     this.ttlMap = new Map();
   }
 
@@ -20,10 +20,13 @@ class StorageManager {
     try {
       localStorage.setItem(prefixedKey, JSON.stringify(item));
       if (ttl) {
-        this.ttlMap.set(key, setTimeout(() => this.remove(key), ttl));
+        this.ttlMap.set(
+          key,
+          setTimeout(() => this.remove(key), ttl),
+        );
       }
     } catch (error) {
-      console.error('Storage set failed:', error);
+      console.error("Storage set failed:", error);
     }
   }
 
@@ -42,7 +45,7 @@ class StorageManager {
 
       return item.value;
     } catch (error) {
-      console.error('Storage get failed:', error);
+      console.error("Storage get failed:", error);
       return null;
     }
   }

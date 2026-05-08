@@ -1,22 +1,22 @@
-import { describe, afterEach, beforeEach } from 'bun:test';
-import { db, closeDb } from '../apps/backend/src/db/client';
-import { users, clients, products, quotes, quoteDetails } from '../apps/backend/src/db/schema';
+import { describe, afterEach, beforeEach } from "bun:test";
+import { db, closeDb } from "../apps/backend/src/db/client";
+import { users, clients, products, quotes, quoteDetails } from "../apps/backend/src/db/schema";
 
 // Load test environment variables
-const envPath = '.env.test';
+const envPath = ".env.test";
 try {
   const envContent = await Bun.file(envPath).text();
-  const lines = envContent.split('\n');
+  const lines = envContent.split("\n");
   for (const line of lines) {
-    if (line && !line.startsWith('#')) {
-      const [key, ...valueParts] = line.split('=');
+    if (line && !line.startsWith("#")) {
+      const [key, ...valueParts] = line.split("=");
       if (key) {
-        process.env[key.trim()] = valueParts.join('=').trim();
+        process.env[key.trim()] = valueParts.join("=").trim();
       }
     }
   }
 } catch (error) {
-  console.warn('Warning: Could not load .env.test file');
+  console.warn("Warning: Could not load .env.test file");
 }
 
 /**
@@ -33,9 +33,9 @@ export async function setupTestDB() {
     await db.delete(clients);
     await db.delete(users);
 
-    console.log('✓ Test database initialized');
+    console.log("✓ Test database initialized");
   } catch (error) {
-    console.error('✗ Test database setup failed:', error);
+    console.error("✗ Test database setup failed:", error);
     throw error;
   }
 }
@@ -44,12 +44,12 @@ export async function teardownTestDB() {
   try {
     await closeDb();
   } catch (error) {
-    console.error('✗ Test database teardown failed:', error);
+    console.error("✗ Test database teardown failed:", error);
   }
 }
 
 export function withDatabaseSetup(testSuite: (describe: typeof describe) => void) {
-  return describe.suite('with database', (it) => {
+  return describe.suite("with database", (it) => {
     beforeEach(async () => {
       await setupTestDB();
     });
@@ -76,11 +76,11 @@ export function withDatabaseSetup(testSuite: (describe: typeof describe) => void
  */
 
 export const TEST_DATA = {
-  VALID_EMAIL: 'test@example.com',
-  VALID_PASSWORD: 'TestPassword123',
-  INVALID_PASSWORD: 'short',
-  VALID_PHONE: '+1-555-1234567',
-  VALID_TAX_ID: 'TAX-123456',
+  VALID_EMAIL: "test@example.com",
+  VALID_PASSWORD: "TestPassword123",
+  INVALID_PASSWORD: "short",
+  VALID_PHONE: "+1-555-1234567",
+  VALID_TAX_ID: "TAX-123456",
 };
 
 /**
@@ -88,9 +88,9 @@ export const TEST_DATA = {
  */
 
 export function createMockJWT(payload: Record<string, any>): string {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
-  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = 'mock-signature';
+  const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
+  const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signature = "mock-signature";
   return `${header}.${body}.${signature}`;
 }
 
@@ -182,9 +182,7 @@ export const performanceHelper = {
 
   assertUnder: (duration: number, threshold: number, operation: string): void => {
     if (duration > threshold) {
-      throw new Error(
-        `${operation} took ${duration.toFixed(2)}ms, expected under ${threshold}ms`
-      );
+      throw new Error(`${operation} took ${duration.toFixed(2)}ms, expected under ${threshold}ms`);
     }
   },
 };

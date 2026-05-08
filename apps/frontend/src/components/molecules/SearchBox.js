@@ -14,16 +14,16 @@
 export class SearchBox {
   constructor(options = {}) {
     const {
-      placeholder = 'Search...',
-      value = '',
-      size = 'md',
+      placeholder = "Search...",
+      value = "",
+      size = "md",
       onSearch = null,
       onSelect = null,
       onChange = null,
       suggestions = [],
       debounceMs = 300,
       minChars = 1,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -43,9 +43,9 @@ export class SearchBox {
   }
 
   render() {
-    const { Input } = require('../atoms/Input.js');
+    const { Input } = require("../atoms/Input.js");
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `search-box ${this.className}`;
     container.style.cssText = `
       position: relative;
@@ -56,13 +56,13 @@ export class SearchBox {
 
     // Input field
     const input = new Input({
-      type: 'search',
+      type: "search",
       placeholder: this.placeholder,
       value: this.value,
       size: this.size,
-      icon: 'search',
-      iconPosition: 'left',
-      autoComplete: 'off',
+      icon: "search",
+      iconPosition: "left",
+      autoComplete: "off",
       onKeyDown: (e) => this.handleKeyDown(e, input),
       onChange: (e) => this.handleChange(e, input),
     }).render();
@@ -70,8 +70,8 @@ export class SearchBox {
     container.appendChild(input);
 
     // Suggestions dropdown
-    const dropdown = document.createElement('ul');
-    dropdown.className = 'search-suggestions';
+    const dropdown = document.createElement("ul");
+    dropdown.className = "search-suggestions";
     dropdown.style.cssText = `
       position: absolute;
       top: 100%;
@@ -89,13 +89,13 @@ export class SearchBox {
       z-index: var(--z-dropdown);
       box-shadow: var(--shadow-md);
     `;
-    dropdown.setAttribute('role', 'listbox');
-    dropdown.setAttribute('aria-label', 'Search suggestions');
+    dropdown.setAttribute("role", "listbox");
+    dropdown.setAttribute("aria-label", "Search suggestions");
 
     container.appendChild(dropdown);
 
     // Store references
-    container.input = input.querySelector('input') || input;
+    container.input = input.querySelector("input") || input;
     container.dropdown = dropdown;
     container.updateSuggestions = (suggestions) => {
       this.suggestions = suggestions;
@@ -103,9 +103,9 @@ export class SearchBox {
     };
 
     // Click outside to close
-    document.addEventListener('click', (e) => {
+    document.addEventListener("click", (e) => {
       if (!container.contains(e.target)) {
-        dropdown.style.display = 'none';
+        dropdown.style.display = "none";
       }
     });
 
@@ -113,23 +113,23 @@ export class SearchBox {
   }
 
   handleKeyDown(e, input) {
-    const dropdown = input.parentElement.querySelector('.search-suggestions');
+    const dropdown = input.parentElement.querySelector(".search-suggestions");
     const items = dropdown.querySelectorAll('[role="option"]');
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         this.selectedIndex = Math.min(this.selectedIndex + 1, items.length - 1);
         this.highlightItem(items);
         break;
 
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
         this.highlightItem(items);
         break;
 
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         if (this.selectedIndex >= 0) {
           const selected = items[this.selectedIndex];
@@ -139,9 +139,9 @@ export class SearchBox {
         }
         break;
 
-      case 'Escape':
+      case "Escape":
         e.preventDefault();
-        dropdown.style.display = 'none';
+        dropdown.style.display = "none";
         this.selectedIndex = -1;
         break;
     }
@@ -158,16 +158,16 @@ export class SearchBox {
     // Clear debounce timer
     clearTimeout(this.debounceTimer);
 
-    const dropdown = input.parentElement.querySelector('.search-suggestions');
+    const dropdown = input.parentElement.querySelector(".search-suggestions");
 
     if (value.length < this.minChars) {
-      dropdown.style.display = 'none';
+      dropdown.style.display = "none";
       return;
     }
 
     this.debounceTimer = setTimeout(() => {
       this.renderSuggestions(dropdown, input);
-      dropdown.style.display = this.suggestions.length > 0 ? 'block' : 'none';
+      dropdown.style.display = this.suggestions.length > 0 ? "block" : "none";
 
       if (this.onSearch) {
         this.onSearch(value);
@@ -176,13 +176,13 @@ export class SearchBox {
   }
 
   renderSuggestions(dropdown, input) {
-    dropdown.innerHTML = '';
+    dropdown.innerHTML = "";
     this.selectedIndex = -1;
 
     this.suggestions.forEach((suggestion, index) => {
-      const li = document.createElement('li');
-      li.className = 'search-suggestion-item';
-      li.setAttribute('role', 'option');
+      const li = document.createElement("li");
+      li.className = "search-suggestion-item";
+      li.setAttribute("role", "option");
       li.textContent = suggestion;
       li.style.cssText = `
         padding: var(--spacing-sm) var(--spacing-md);
@@ -191,11 +191,11 @@ export class SearchBox {
         border-bottom: 1px solid var(--color-border);
       `;
 
-      li.addEventListener('click', () => {
+      li.addEventListener("click", () => {
         this.selectItem(li, input, dropdown);
       });
 
-      li.addEventListener('mouseenter', () => {
+      li.addEventListener("mouseenter", () => {
         this.selectedIndex = index;
         this.highlightItem(dropdown.querySelectorAll('[role="option"]'));
       });
@@ -207,11 +207,11 @@ export class SearchBox {
   highlightItem(items) {
     items.forEach((item, index) => {
       if (index === this.selectedIndex) {
-        item.style.backgroundColor = 'var(--color-surface)';
-        item.setAttribute('aria-selected', 'true');
+        item.style.backgroundColor = "var(--color-surface)";
+        item.setAttribute("aria-selected", "true");
       } else {
-        item.style.backgroundColor = 'transparent';
-        item.setAttribute('aria-selected', 'false');
+        item.style.backgroundColor = "transparent";
+        item.setAttribute("aria-selected", "false");
       }
     });
   }
@@ -220,7 +220,7 @@ export class SearchBox {
     const value = item.textContent;
     input.value = value;
     this.value = value;
-    dropdown.style.display = 'none';
+    dropdown.style.display = "none";
 
     if (this.onSelect) {
       this.onSelect(value);
@@ -231,8 +231,8 @@ export class SearchBox {
 }
 
 // Add SearchBox styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .search-box {
       position: relative;

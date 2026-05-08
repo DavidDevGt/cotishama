@@ -12,12 +12,12 @@
 export class FormLayout {
   constructor(options = {}) {
     const {
-      title = '',
-      subtitle = '',
-      maxWidth = '500px',
+      title = "",
+      subtitle = "",
+      maxWidth = "500px",
       centered = true,
       showHeader = true,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -32,7 +32,7 @@ export class FormLayout {
   }
 
   render() {
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `form-layout ${this.className}`;
     container.style.cssText = `
       display: flex;
@@ -40,14 +40,14 @@ export class FormLayout {
       min-height: 100vh;
       background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-background) 100%);
       padding: var(--spacing-lg);
-      ${this.centered ? 'align-items: center; justify-content: center;' : ''}
+      ${this.centered ? "align-items: center; justify-content: center;" : ""}
     `;
 
     if (this.id) container.id = this.id;
 
     // Content wrapper
-    const wrapper = document.createElement('div');
-    wrapper.className = 'form-layout-wrapper';
+    const wrapper = document.createElement("div");
+    wrapper.className = "form-layout-wrapper";
     wrapper.style.cssText = `
       width: 100%;
       max-width: ${this.maxWidth};
@@ -58,14 +58,14 @@ export class FormLayout {
 
     // Header (optional)
     if (this.showHeader && this.title) {
-      const header = document.createElement('div');
-      header.className = 'form-layout-header';
+      const header = document.createElement("div");
+      header.className = "form-layout-header";
       header.style.cssText = `
         text-align: center;
         margin-bottom: var(--spacing-lg);
       `;
 
-      const titleEl = document.createElement('h1');
+      const titleEl = document.createElement("h1");
       titleEl.textContent = this.title;
       titleEl.style.cssText = `
         margin: 0 0 var(--spacing-sm) 0;
@@ -76,7 +76,7 @@ export class FormLayout {
       header.appendChild(titleEl);
 
       if (this.subtitle) {
-        const subtitleEl = document.createElement('p');
+        const subtitleEl = document.createElement("p");
         subtitleEl.textContent = this.subtitle;
         subtitleEl.style.cssText = `
           margin: 0;
@@ -90,14 +90,14 @@ export class FormLayout {
     }
 
     // Content area
-    const content = document.createElement('div');
-    content.className = 'form-layout-content';
+    const content = document.createElement("div");
+    content.className = "form-layout-content";
     this.contentElement = content;
     wrapper.appendChild(content);
 
     // Footer (optional)
-    const footer = document.createElement('div');
-    footer.className = 'form-layout-footer';
+    const footer = document.createElement("div");
+    footer.className = "form-layout-footer";
     footer.style.cssText = `
       text-align: center;
       padding-top: var(--spacing-lg);
@@ -110,8 +110,8 @@ export class FormLayout {
 
     // Public methods
     container.setContent = (element) => {
-      content.innerHTML = '';
-      if (typeof element === 'string') {
+      content.innerHTML = "";
+      if (typeof element === "string") {
         content.textContent = element;
       } else if (element instanceof HTMLElement) {
         content.appendChild(element);
@@ -119,12 +119,12 @@ export class FormLayout {
     };
 
     container.setFooter = (element) => {
-      footer.innerHTML = '';
+      footer.innerHTML = "";
       if (element) {
         footer.appendChild(element);
-        footer.style.display = 'block';
+        footer.style.display = "block";
       } else {
-        footer.style.display = 'none';
+        footer.style.display = "none";
       }
     };
 
@@ -135,8 +135,8 @@ export class FormLayout {
 }
 
 // Add FormLayout styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .form-layout {
       display: flex;

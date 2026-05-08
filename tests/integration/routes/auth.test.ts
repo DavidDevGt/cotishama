@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import app from '../../../apps/backend/src/index';
-import { setupTestDB, teardownTestDB, TEST_DATA, responseValidation } from '../../setup';
-import { AuthService } from '../../../apps/backend/src/services/AuthService';
+import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import app from "../../../apps/backend/src/index";
+import { setupTestDB, teardownTestDB, TEST_DATA, responseValidation } from "../../setup";
+import { AuthService } from "../../../apps/backend/src/services/AuthService";
 
-describe('POST /api/v1/auth/login - Integration', () => {
+describe("POST /api/v1/auth/login - Integration", () => {
   let authService: AuthService;
 
   beforeEach(async () => {
@@ -15,23 +15,20 @@ describe('POST /api/v1/auth/login - Integration', () => {
     await teardownTestDB();
   });
 
-  describe('successful login', () => {
+  describe("successful login", () => {
     beforeEach(async () => {
-      await authService.register(
-        TEST_DATA.VALID_EMAIL,
-        TEST_DATA.VALID_PASSWORD
-      );
+      await authService.register(TEST_DATA.VALID_EMAIL, TEST_DATA.VALID_PASSWORD);
     });
 
-    it('should return 200 with tokens on valid credentials', async () => {
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+    it("should return 200 with tokens on valid credentials", async () => {
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
           email: TEST_DATA.VALID_EMAIL,
           password: TEST_DATA.VALID_PASSWORD,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -42,36 +39,36 @@ describe('POST /api/v1/auth/login - Integration', () => {
       expect(data.data.user).toBeDefined();
       expect(data.data.user.email).toBe(TEST_DATA.VALID_EMAIL);
       expect(data.data.accessToken).toBeDefined();
-      expect(data.data.accessToken.split('.').length).toBe(3);
+      expect(data.data.accessToken.split(".").length).toBe(3);
     });
 
-    it('should set refresh token in httpOnly cookie', async () => {
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+    it("should set refresh token in httpOnly cookie", async () => {
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
           email: TEST_DATA.VALID_EMAIL,
           password: TEST_DATA.VALID_PASSWORD,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
-      const setCookieHeader = response.headers.get('set-cookie');
-      expect(setCookieHeader).toContain('refreshToken');
-      expect(setCookieHeader).toContain('HttpOnly');
-      expect(setCookieHeader).toContain('Secure');
+      const setCookieHeader = response.headers.get("set-cookie");
+      expect(setCookieHeader).toContain("refreshToken");
+      expect(setCookieHeader).toContain("HttpOnly");
+      expect(setCookieHeader).toContain("Secure");
     });
 
-    it('should return user without sensitive data', async () => {
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+    it("should return user without sensitive data", async () => {
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
           email: TEST_DATA.VALID_EMAIL,
           password: TEST_DATA.VALID_PASSWORD,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -85,16 +82,16 @@ describe('POST /api/v1/auth/login - Integration', () => {
     });
   });
 
-  describe('error cases', () => {
-    it('should return 401 for non-existent email', async () => {
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+  describe("error cases", () => {
+    it("should return 401 for non-existent email", async () => {
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
-          email: 'nonexistent@example.com',
+          email: "nonexistent@example.com",
           password: TEST_DATA.VALID_PASSWORD,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -104,20 +101,17 @@ describe('POST /api/v1/auth/login - Integration', () => {
       expect(responseValidation.isUnauthorized(data)).toBe(true);
     });
 
-    it('should return 401 for invalid password', async () => {
-      await authService.register(
-        TEST_DATA.VALID_EMAIL,
-        TEST_DATA.VALID_PASSWORD
-      );
+    it("should return 401 for invalid password", async () => {
+      await authService.register(TEST_DATA.VALID_EMAIL, TEST_DATA.VALID_PASSWORD);
 
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
           email: TEST_DATA.VALID_EMAIL,
-          password: 'WrongPassword123',
+          password: "WrongPassword123",
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -127,30 +121,30 @@ describe('POST /api/v1/auth/login - Integration', () => {
       expect(responseValidation.isUnauthorized(data)).toBe(true);
     });
 
-    it('should return 400 for invalid format', async () => {
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+    it("should return 400 for invalid format", async () => {
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
-          email: 'invalid-email',
-          password: 'short',
+          email: "invalid-email",
+          password: "short",
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       expect(response.status).toBe(400);
     });
 
-    it('should return 400 for missing fields', async () => {
-      const response = await app.request('/api/v1/auth/login', {
-        method: 'POST',
+    it("should return 400 for missing fields", async () => {
+      const response = await app.request("/api/v1/auth/login", {
+        method: "POST",
         body: JSON.stringify({
           email: TEST_DATA.VALID_EMAIL,
           // missing password
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -159,7 +153,7 @@ describe('POST /api/v1/auth/login - Integration', () => {
   });
 });
 
-describe('POST /api/v1/auth/register - Integration', () => {
+describe("POST /api/v1/auth/register - Integration", () => {
   beforeEach(async () => {
     await setupTestDB();
   });
@@ -168,17 +162,17 @@ describe('POST /api/v1/auth/register - Integration', () => {
     await teardownTestDB();
   });
 
-  it('should register new user with 201', async () => {
-    const response = await app.request('/api/v1/auth/register', {
-      method: 'POST',
+  it("should register new user with 201", async () => {
+    const response = await app.request("/api/v1/auth/register", {
+      method: "POST",
       body: JSON.stringify({
-        email: 'newuser@example.com',
+        email: "newuser@example.com",
         password: TEST_DATA.VALID_PASSWORD,
-        firstName: 'John',
-        lastName: 'Doe',
+        firstName: "John",
+        lastName: "Doe",
       }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -186,44 +180,41 @@ describe('POST /api/v1/auth/register - Integration', () => {
 
     expect(response.status).toBe(201);
     expect(responseValidation.isSuccessResponse(data)).toBe(true);
-    expect(data.data.user.email).toBe('newuser@example.com');
-    expect(data.data.user.role).toBe('VIEWER');
+    expect(data.data.user.email).toBe("newuser@example.com");
+    expect(data.data.user.role).toBe("VIEWER");
   });
 
-  it('should return 400 for duplicate email', async () => {
+  it("should return 400 for duplicate email", async () => {
     const registerData = {
-      email: 'duplicate@example.com',
+      email: "duplicate@example.com",
       password: TEST_DATA.VALID_PASSWORD,
     };
 
     // First registration
-    await app.request('/api/v1/auth/register', {
-      method: 'POST',
+    await app.request("/api/v1/auth/register", {
+      method: "POST",
       body: JSON.stringify(registerData),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
 
     // Duplicate registration
-    const response = await app.request('/api/v1/auth/register', {
-      method: 'POST',
+    const response = await app.request("/api/v1/auth/register", {
+      method: "POST",
       body: JSON.stringify(registerData),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
 
     expect(response.status).toBe(400);
   });
 });
 
-describe('POST /api/v1/auth/refresh - Integration', () => {
+describe("POST /api/v1/auth/refresh - Integration", () => {
   let refreshToken: string;
 
   beforeEach(async () => {
     await setupTestDB();
     const authService = new AuthService();
-    await authService.register(
-      TEST_DATA.VALID_EMAIL,
-      TEST_DATA.VALID_PASSWORD
-    );
+    await authService.register(TEST_DATA.VALID_EMAIL, TEST_DATA.VALID_PASSWORD);
 
     const loginResult = await authService.login({
       email: TEST_DATA.VALID_EMAIL,
@@ -237,12 +228,12 @@ describe('POST /api/v1/auth/refresh - Integration', () => {
     await teardownTestDB();
   });
 
-  it('should return new access token with 200', async () => {
-    const response = await app.request('/api/v1/auth/refresh', {
-      method: 'POST',
+  it("should return new access token with 200", async () => {
+    const response = await app.request("/api/v1/auth/refresh", {
+      method: "POST",
       body: JSON.stringify({ refreshToken }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -253,12 +244,12 @@ describe('POST /api/v1/auth/refresh - Integration', () => {
     expect(data.data.accessToken).toBeDefined();
   });
 
-  it('should return 401 for invalid refresh token', async () => {
-    const response = await app.request('/api/v1/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({ refreshToken: 'invalid.token' }),
+  it("should return 401 for invalid refresh token", async () => {
+    const response = await app.request("/api/v1/auth/refresh", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken: "invalid.token" }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -266,10 +257,10 @@ describe('POST /api/v1/auth/refresh - Integration', () => {
   });
 });
 
-describe('POST /api/v1/auth/logout - Integration', () => {
-  it('should return 200 with clear cookie', async () => {
-    const response = await app.request('/api/v1/auth/logout', {
-      method: 'POST',
+describe("POST /api/v1/auth/logout - Integration", () => {
+  it("should return 200 with clear cookie", async () => {
+    const response = await app.request("/api/v1/auth/logout", {
+      method: "POST",
     });
 
     const data = await response.json();
@@ -277,8 +268,8 @@ describe('POST /api/v1/auth/logout - Integration', () => {
     expect(response.status).toBe(200);
     expect(responseValidation.isSuccessResponse(data)).toBe(true);
 
-    const setCookieHeader = response.headers.get('set-cookie');
-    expect(setCookieHeader).toContain('refreshToken=');
-    expect(setCookieHeader).toContain('Max-Age=0');
+    const setCookieHeader = response.headers.get("set-cookie");
+    expect(setCookieHeader).toContain("refreshToken=");
+    expect(setCookieHeader).toContain("Max-Age=0");
   });
 });

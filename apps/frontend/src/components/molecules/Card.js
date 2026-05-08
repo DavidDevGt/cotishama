@@ -16,12 +16,12 @@
 export class Card {
   constructor(options = {}) {
     const {
-      title = '',
-      subtitle = '',
-      padding = 'md', // sm, md, lg
-      variant = 'outlined', // outlined, elevated, flat
+      title = "",
+      subtitle = "",
+      padding = "md", // sm, md, lg
+      variant = "outlined", // outlined, elevated, flat
       onClick = null,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -37,25 +37,25 @@ export class Card {
   }
 
   render() {
-    const card = document.createElement('div');
+    const card = document.createElement("div");
     card.className = this.getClasses();
     card.style.cssText = this.getStyles();
 
     if (this.id) card.id = this.id;
-    if (this.onClick) card.addEventListener('click', this.onClick);
+    if (this.onClick) card.addEventListener("click", this.onClick);
 
     // Header
     if (this.title) {
-      const header = document.createElement('div');
-      header.className = 'card-header';
+      const header = document.createElement("div");
+      header.className = "card-header";
       header.style.cssText = `
         margin-bottom: var(--spacing-md);
         border-bottom: 1px solid var(--color-border);
         padding-bottom: var(--spacing-md);
       `;
 
-      const titleEl = document.createElement('h3');
-      titleEl.className = 'card-title';
+      const titleEl = document.createElement("h3");
+      titleEl.className = "card-title";
       titleEl.textContent = this.title;
       titleEl.style.cssText = `
         margin: 0;
@@ -66,8 +66,8 @@ export class Card {
       header.appendChild(titleEl);
 
       if (this.subtitle) {
-        const subtitleEl = document.createElement('p');
-        subtitleEl.className = 'card-subtitle';
+        const subtitleEl = document.createElement("p");
+        subtitleEl.className = "card-subtitle";
         subtitleEl.textContent = this.subtitle;
         subtitleEl.style.cssText = `
           margin: var(--spacing-xs) 0 0;
@@ -81,15 +81,15 @@ export class Card {
     }
 
     // Content container
-    const content = document.createElement('div');
-    content.className = 'card-content';
-    content.id = `${this.id}-content` || 'card-content';
+    const content = document.createElement("div");
+    content.className = "card-content";
+    content.id = `${this.id}-content` || "card-content";
     card.appendChild(content);
 
     // Store reference for later content updates
     card.setContent = (element) => {
-      content.innerHTML = '';
-      if (typeof element === 'string') {
+      content.innerHTML = "";
+      if (typeof element === "string") {
         content.textContent = element;
       } else if (element instanceof HTMLElement) {
         content.appendChild(element);
@@ -103,8 +103,8 @@ export class Card {
       }
 
       if (element) {
-        const footer = document.createElement('div');
-        footer.className = 'card-footer';
+        const footer = document.createElement("div");
+        footer.className = "card-footer";
         footer.style.cssText = `
           margin-top: var(--spacing-md);
           padding-top: var(--spacing-md);
@@ -121,37 +121,37 @@ export class Card {
 
   getClasses() {
     const classes = [
-      'card',
+      "card",
       `card-${this.variant}`,
       `card-padding-${this.padding}`,
-      this.className
+      this.className,
     ];
 
-    return classes.filter(Boolean).join(' ');
+    return classes.filter(Boolean).join(" ");
   }
 
   getStyles() {
     const paddingMap = {
-      sm: 'var(--spacing-sm)',
-      md: 'var(--spacing-md)',
-      lg: 'var(--spacing-lg)',
+      sm: "var(--spacing-sm)",
+      md: "var(--spacing-md)",
+      lg: "var(--spacing-lg)",
     };
 
     const variantStyles = {
       outlined: {
-        'border': '1px solid var(--color-border)',
-        'background-color': 'var(--color-background)',
-        'box-shadow': 'none',
+        border: "1px solid var(--color-border)",
+        "background-color": "var(--color-background)",
+        "box-shadow": "none",
       },
       elevated: {
-        'border': 'none',
-        'background-color': 'var(--color-background)',
-        'box-shadow': 'var(--shadow-sm)',
+        border: "none",
+        "background-color": "var(--color-background)",
+        "box-shadow": "var(--shadow-sm)",
       },
       flat: {
-        'border': 'none',
-        'background-color': 'var(--color-surface)',
-        'box-shadow': 'none',
+        border: "none",
+        "background-color": "var(--color-surface)",
+        "box-shadow": "none",
       },
     };
 
@@ -159,7 +159,9 @@ export class Card {
     const variant = variantStyles[this.variant] || variantStyles.outlined;
 
     return `
-      ${Object.entries(variant).map(([k, v]) => `${k}: ${v}`).join('; ')};
+      ${Object.entries(variant)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("; ")};
       padding: ${padding};
       border-radius: var(--radius-lg);
       transition: all var(--transition-normal);
@@ -168,8 +170,8 @@ export class Card {
 }
 
 // Add Card styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .card {
       border-radius: var(--radius-lg);

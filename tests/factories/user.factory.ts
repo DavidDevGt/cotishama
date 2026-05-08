@@ -1,20 +1,20 @@
-import { hashPassword } from '../../apps/backend/src/utils/password';
-import type { User, InsertUser } from '../../apps/backend/src/db/schema';
+import { hashPassword } from "../../apps/backend/src/utils/password";
+import type { User, InsertUser } from "../../apps/backend/src/db/schema";
 
 let userCounter = 0;
 
 export class UserFactory {
   static async create(overrides?: Partial<InsertUser>): Promise<InsertUser> {
     userCounter++;
-    const password = 'TestPassword123';
+    const password = "TestPassword123";
     const hashedPassword = await hashPassword(password);
 
     return {
       email: `user${userCounter}@test.local`,
       passwordHash: hashedPassword,
       firstName: `User${userCounter}`,
-      lastName: 'Test',
-      role: 'VIEWER',
+      lastName: "Test",
+      role: "VIEWER",
       isActive: 1,
       ...overrides,
     };
@@ -22,14 +22,14 @@ export class UserFactory {
 
   static async createAdmin(overrides?: Partial<InsertUser>): Promise<InsertUser> {
     return this.create({
-      role: 'ADMIN',
+      role: "ADMIN",
       ...overrides,
     });
   }
 
   static async createOperator(overrides?: Partial<InsertUser>): Promise<InsertUser> {
     return this.create({
-      role: 'OPERATOR',
+      role: "OPERATOR",
       ...overrides,
     });
   }

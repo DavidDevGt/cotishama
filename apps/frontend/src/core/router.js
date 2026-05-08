@@ -14,29 +14,29 @@ class Router {
   }
 
   initialize() {
-    window.addEventListener('popstate', () => this.navigate(window.location.pathname));
+    window.addEventListener("popstate", () => this.navigate(window.location.pathname));
   }
 
   async navigate(path) {
     this.currentPath = path;
 
     // Find matching route
-    const handler = this.routes.get(path) || this.routes.get('/404');
+    const handler = this.routes.get(path) || this.routes.get("/404");
 
     if (!handler) {
-      console.error('No route handler found for:', path);
+      console.error("No route handler found for:", path);
       return;
     }
 
     // Update URL if different
     if (window.location.pathname !== path) {
-      window.history.pushState({ path }, '', path);
+      window.history.pushState({ path }, "", path);
     }
 
     try {
       await handler();
     } catch (error) {
-      console.error('Route handler failed:', error);
+      console.error("Route handler failed:", error);
     }
   }
 

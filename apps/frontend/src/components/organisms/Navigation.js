@@ -16,13 +16,13 @@
 export class Navigation {
   constructor(options = {}) {
     const {
-      brand = { label: 'App', href: '/' },
+      brand = { label: "App", href: "/" },
       items = [],
       rightItems = [],
       activeHref = null,
       onItemClick = null,
       mobile = false,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -38,9 +38,9 @@ export class Navigation {
   }
 
   render() {
-    const nav = document.createElement('nav');
+    const nav = document.createElement("nav");
     nav.className = `navigation ${this.className}`;
-    nav.setAttribute('aria-label', 'Main navigation');
+    nav.setAttribute("aria-label", "Main navigation");
     nav.style.cssText = `
       background-color: var(--color-background);
       border-bottom: 1px solid var(--color-border);
@@ -54,8 +54,8 @@ export class Navigation {
     if (this.id) nav.id = this.id;
 
     // Container
-    const container = document.createElement('div');
-    container.className = 'navigation-container';
+    const container = document.createElement("div");
+    container.className = "navigation-container";
     container.style.cssText = `
       display: flex;
       align-items: center;
@@ -75,8 +75,8 @@ export class Navigation {
     container.appendChild(menu);
 
     // Right items
-    const rightSection = document.createElement('div');
-    rightSection.className = 'navigation-right';
+    const rightSection = document.createElement("div");
+    rightSection.className = "navigation-right";
     rightSection.style.cssText = `
       display: flex;
       align-items: center;
@@ -86,18 +86,18 @@ export class Navigation {
 
     if (this.rightItems.length > 0) {
       this.rightItems.forEach((item) => {
-        if (item.type === 'button') {
-          const { Button } = require('../atoms/Button.js');
+        if (item.type === "button") {
+          const { Button } = require("../atoms/Button.js");
           const btn = new Button({
             label: item.label,
-            variant: item.variant || 'secondary',
-            size: 'sm',
+            variant: item.variant || "secondary",
+            size: "sm",
             onClick: item.onClick,
             icon: item.icon,
           }).render();
           rightSection.appendChild(btn);
-        } else if (item.type === 'divider') {
-          const divider = document.createElement('div');
+        } else if (item.type === "divider") {
+          const divider = document.createElement("div");
           divider.style.cssText = `
             width: 1px;
             height: 32px;
@@ -112,15 +112,15 @@ export class Navigation {
 
     // Mobile menu button
     if (this.mobile) {
-      const { Button } = require('../atoms/Button.js');
+      const { Button } = require("../atoms/Button.js");
       const menuBtn = new Button({
-        label: '☰',
-        variant: 'ghost',
-        size: 'sm',
+        label: "☰",
+        variant: "ghost",
+        size: "sm",
         onClick: () => this.toggleMobileMenu(menu),
-        ariaLabel: 'Toggle navigation menu',
-        title: 'Menu',
-        className: 'nav-mobile-btn',
+        ariaLabel: "Toggle navigation menu",
+        title: "Menu",
+        className: "nav-mobile-btn",
       }).render();
       container.appendChild(menuBtn);
     }
@@ -130,10 +130,10 @@ export class Navigation {
   }
 
   renderBrand() {
-    const { Icon } = require('../atoms/Icon.js');
+    const { Icon } = require("../atoms/Icon.js");
 
-    const brand = document.createElement('div');
-    brand.className = 'navigation-brand';
+    const brand = document.createElement("div");
+    brand.className = "navigation-brand";
     brand.style.cssText = `
       display: flex;
       align-items: center;
@@ -149,19 +149,19 @@ export class Navigation {
     if (this.brand.icon) {
       const icon = new Icon({
         name: this.brand.icon,
-        size: 'md',
-        color: 'primary',
+        size: "md",
+        color: "primary",
       }).render();
       brand.appendChild(icon);
     }
 
-    const label = document.createElement('span');
+    const label = document.createElement("span");
     label.textContent = this.brand.label;
     brand.appendChild(label);
 
     if (this.brand.href) {
-      brand.style.cursor = 'pointer';
-      brand.addEventListener('click', (e) => {
+      brand.style.cursor = "pointer";
+      brand.addEventListener("click", (e) => {
         if (this.onItemClick) {
           e.preventDefault();
           this.onItemClick(this.brand);
@@ -173,10 +173,10 @@ export class Navigation {
   }
 
   renderMenu() {
-    const { MenuItem } = require('../molecules/MenuItem.js');
+    const { MenuItem } = require("../molecules/MenuItem.js");
 
-    const menu = document.createElement('ul');
-    menu.className = 'navigation-menu';
+    const menu = document.createElement("ul");
+    menu.className = "navigation-menu";
     menu.style.cssText = `
       display: flex;
       align-items: center;
@@ -198,11 +198,11 @@ export class Navigation {
             this.onItemClick(item);
           }
         },
-        size: 'md',
+        size: "md",
       }).render();
 
-      const li = document.createElement('li');
-      li.style.cssText = 'display: flex;';
+      const li = document.createElement("li");
+      li.style.cssText = "display: flex;";
       li.appendChild(menuItem);
       menu.appendChild(li);
     });
@@ -212,13 +212,13 @@ export class Navigation {
 
   toggleMobileMenu(menu) {
     this.mobileOpen = !this.mobileOpen;
-    menu.style.display = this.mobileOpen ? 'flex' : 'none';
+    menu.style.display = this.mobileOpen ? "flex" : "none";
   }
 }
 
 // Add Navigation styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .navigation {
       background-color: var(--color-background);

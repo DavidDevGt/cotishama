@@ -17,9 +17,7 @@
       "import": "./src/validators/index.ts"
     }
   },
-  "files": [
-    "src"
-  ],
+  "files": ["src"],
   "dependencies": {
     "zod": "^3.22.0"
   }

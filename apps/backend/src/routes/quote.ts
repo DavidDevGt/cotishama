@@ -1,25 +1,25 @@
-import { Hono } from 'hono';
-import { quoteService } from '../services';
-import { authMiddleware, requireRole, getUser } from '../middleware/auth';
-import { ValidationError, NotFoundError, ConflictError } from '../types/errors';
+import { Hono } from "hono";
+import { quoteService } from "../services";
+import { authMiddleware, requireRole, getUser } from "../middleware/auth";
+import { ValidationError, NotFoundError, ConflictError } from "../types/errors";
 
 const router = new Hono();
 
 router.use(authMiddleware);
 
-router.get('/', async (c) => {
+router.get("/", async (c) => {
   try {
     const user = getUser(c);
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = parseInt(c.req.query('limit') || '20');
-    const status = c.req.query('status');
-    const clientId = c.req.query('clientId');
+    const page = Number.parseInt(c.req.query("page") || "1");
+    const limit = Number.parseInt(c.req.query("limit") || "20");
+    const status = c.req.query("status");
+    const clientId = c.req.query("clientId");
 
     const offset = (page - 1) * limit;
     const filters: any = { limit, offset };
 
     if (status) filters.status = status;
-    if (clientId) filters.clientId = parseInt(clientId);
+    if (clientId) filters.clientId = Number.parseInt(clientId);
 
     const quotes = await quoteService.listQuotes(filters);
 
@@ -33,7 +33,7 @@ router.get('/', async (c) => {
   }
 });
 
-router.post('/', async (c) => {
+router.post("/", async (c) => {
   try {
     const user = getUser(c);
     const body = await c.req.json();
@@ -48,37 +48,31 @@ router.post('/', async (c) => {
 
     const quote = await quoteService.createQuote(input, user.id);
 
-    return c.json({
-      success: true,
-      data: quote,
-      status_code: 201,
-    }, 201);
+    return c.json(
+      {
+        success: true,
+        data: quote,
+        status_code: 201,
+      },
+      201,
+    );
   } catch (error) {
     if (error instanceof ValidationError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 400 },
-        400
-      );
+      return c.json({ success: false, error: error.message, status_code: 400 }, 400);
     }
     if (error instanceof NotFoundError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 404 },
-        404
-      );
+      return c.json({ success: false, error: error.message, status_code: 404 }, 404);
     }
     if (error instanceof ConflictError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 409 },
-        409
-      );
+      return c.json({ success: false, error: error.message, status_code: 409 }, 409);
     }
     throw error;
   }
 });
 
-router.get('/:id', async (c) => {
+router.get("/:id", async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = Number.parseInt(c.req.param("id"));
     const user = getUser(c);
 
     const quote = await quoteService.getQuote(id);
@@ -90,18 +84,15 @@ router.get('/:id', async (c) => {
     });
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 404 },
-        404
-      );
+      return c.json({ success: false, error: error.message, status_code: 404 }, 404);
     }
     throw error;
   }
 });
 
-router.put('/:id', async (c) => {
+router.put("/:id", async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = Number.parseInt(c.req.param("id"));
     const user = getUser(c);
     const body = await c.req.json();
 
@@ -114,33 +105,22 @@ router.put('/:id', async (c) => {
     });
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 404 },
-        404
-      );
+      return c.json({ success: false, error: error.message, status_code: 404 }, 404);
     }
     if (error instanceof ValidationError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 400 },
-        400
-      );
+      return c.json({ success: false, error: error.message, status_code: 400 }, 400);
     }
     throw error;
   }
 });
 
-router.patch('/:id/status', async (c) => {
+router.patch("/:id/status", async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = Number.parseInt(c.req.param("id"));
     const user = getUser(c);
     const body = await c.req.json();
 
-    const updated = await quoteService.changeStatus(
-      id,
-      body.status,
-      user.id,
-      body.reason
-    );
+    const updated = await quoteService.changeStatus(id, body.status, user.id, body.reason);
 
     return c.json({
       success: true,
@@ -149,45 +129,33 @@ router.patch('/:id/status', async (c) => {
     });
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 404 },
-        404
-      );
+      return c.json({ success: false, error: error.message, status_code: 404 }, 404);
     }
     if (error instanceof ValidationError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 400 },
-        400
-      );
+      return c.json({ success: false, error: error.message, status_code: 400 }, 400);
     }
     throw error;
   }
 });
 
-router.delete('/:id', async (c) => {
+router.delete("/:id", async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = Number.parseInt(c.req.param("id"));
     const user = getUser(c);
 
     await quoteService.deleteQuote(id);
 
     return c.json({
       success: true,
-      data: { message: 'Quote deleted' },
+      data: { message: "Quote deleted" },
       status_code: 200,
     });
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 404 },
-        404
-      );
+      return c.json({ success: false, error: error.message, status_code: 404 }, 404);
     }
     if (error instanceof ValidationError) {
-      return c.json(
-        { success: false, error: error.message, status_code: 400 },
-        400
-      );
+      return c.json({ success: false, error: error.message, status_code: 400 }, 400);
     }
     throw error;
   }

@@ -13,12 +13,12 @@
 export class Label {
   constructor(options = {}) {
     const {
-      text = '',
-      htmlFor = '',
+      text = "",
+      htmlFor = "",
       required = false,
-      size = 'base',
-      weight = 'medium',
-      className = '',
+      size = "base",
+      weight = "medium",
+      className = "",
       id = null,
       title = null,
     } = options;
@@ -34,7 +34,7 @@ export class Label {
   }
 
   render() {
-    const label = document.createElement('label');
+    const label = document.createElement("label");
 
     if (this.htmlFor) label.htmlFor = this.htmlFor;
     if (this.id) label.id = this.id;
@@ -43,15 +43,15 @@ export class Label {
     label.className = this.getClasses();
     label.style.cssText = this.getStyles();
 
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.textContent = this.text;
     label.appendChild(span);
 
     if (this.required) {
-      const required = document.createElement('span');
-      required.className = 'label-required';
-      required.setAttribute('aria-label', 'required');
-      required.textContent = '*';
+      const required = document.createElement("span");
+      required.className = "label-required";
+      required.setAttribute("aria-label", "required");
+      required.textContent = "*";
       required.style.cssText = `
         color: var(--color-error-500);
         margin-left: var(--spacing-xs);
@@ -65,28 +65,28 @@ export class Label {
 
   getClasses() {
     const classes = [
-      'label',
+      "label",
       `label-${this.size}`,
       `font-weight-${this.weight}`,
-      this.required && 'label-required-parent',
-      this.className
+      this.required && "label-required-parent",
+      this.className,
     ];
 
-    return classes.filter(Boolean).join(' ');
+    return classes.filter(Boolean).join(" ");
   }
 
   getStyles() {
     const fontSizes = {
-      sm: 'var(--font-size-sm)',
-      base: 'var(--font-size-base)',
-      lg: 'var(--font-size-lg)',
+      sm: "var(--font-size-sm)",
+      base: "var(--font-size-base)",
+      lg: "var(--font-size-lg)",
     };
 
     const weights = {
-      regular: 'var(--font-weight-regular)',
-      medium: 'var(--font-weight-medium)',
-      semibold: 'var(--font-weight-semibold)',
-      bold: 'var(--font-weight-bold)',
+      regular: "var(--font-weight-regular)",
+      medium: "var(--font-weight-medium)",
+      semibold: "var(--font-weight-semibold)",
+      bold: "var(--font-weight-bold)",
     };
 
     return `
@@ -102,8 +102,8 @@ export class Label {
 }
 
 // Add label styles to document
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .label {
       display: block;

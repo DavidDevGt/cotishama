@@ -10,7 +10,7 @@ export interface User {
   email: string;
   password_hash: string;
   full_name: string;
-  role: 'ADMIN' | 'OPERATOR' | 'VIEWER';
+  role: "ADMIN" | "OPERATOR" | "VIEWER";
   is_active: boolean;
   last_login?: Date;
   created_at: Date;
@@ -21,7 +21,7 @@ export interface UserPublic {
   id: string;
   email: string;
   full_name: string;
-  role: 'ADMIN' | 'OPERATOR' | 'VIEWER';
+  role: "ADMIN" | "OPERATOR" | "VIEWER";
   is_active: boolean;
 }
 
@@ -76,7 +76,7 @@ export interface Quote {
   quote_number: string;
   client_id: string;
   user_id: string;
-  status: 'draft' | 'sent' | 'approved' | 'rejected' | 'cancelled' | 'expired';
+  status: "draft" | "sent" | "approved" | "rejected" | "cancelled" | "expired";
   subtotal: number;
   tax_percentage: number;
   tax_amount: number;
@@ -128,7 +128,7 @@ export interface AuditLog {
   id: number;
   table_name: string;
   record_id?: string;
-  action: 'INSERT' | 'UPDATE' | 'DELETE';
+  action: "INSERT" | "UPDATE" | "DELETE";
   old_values?: Record<string, unknown>;
   new_values?: Record<string, unknown>;
   user_id?: string;
@@ -156,7 +156,7 @@ export interface InventoryLog {
 export interface JWTPayload {
   sub: string;
   email: string;
-  role: 'ADMIN' | 'OPERATOR' | 'VIEWER';
+  role: "ADMIN" | "OPERATOR" | "VIEWER";
   iat: number;
   exp: number;
 }

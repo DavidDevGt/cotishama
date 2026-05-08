@@ -3,8 +3,8 @@
  * PostgreSQL with connection pooling
  */
 
-import { Client } from 'pg';
-import { config, validateConfig } from './env';
+import { Client } from "pg";
+import { config, validateConfig } from "./env";
 
 let dbClient: Client | null = null;
 
@@ -21,22 +21,22 @@ export const initializeDatabase = async () => {
 
     // Test connection
     await dbClient.connect();
-    console.log('✓ Database connection established');
+    console.log("✓ Database connection established");
 
     // Verify database version
-    const result = await dbClient.query('SELECT version()');
-    console.log('✓ PostgreSQL:', result.rows[0].version.split(',')[0]);
+    const result = await dbClient.query("SELECT version()");
+    console.log("✓ PostgreSQL:", result.rows[0].version.split(",")[0]);
 
     return dbClient;
   } catch (error) {
-    console.error('✗ Database connection failed:', error);
+    console.error("✗ Database connection failed:", error);
     throw error;
   }
 };
 
 export const getDatabase = (): Client => {
   if (!dbClient) {
-    throw new Error('Database not initialized. Call initializeDatabase() first.');
+    throw new Error("Database not initialized. Call initializeDatabase() first.");
   }
   return dbClient;
 };
@@ -45,7 +45,7 @@ export const closeDatabase = async () => {
   if (dbClient) {
     await dbClient.end();
     dbClient = null;
-    console.log('✓ Database connection closed');
+    console.log("✓ Database connection closed");
   }
 };
 
@@ -58,7 +58,7 @@ export const query = async (sql: string, params?: any[]) => {
   try {
     return await db.query(sql, params);
   } catch (error) {
-    console.error('Database query failed:', error);
+    console.error("Database query failed:", error);
     throw error;
   }
 };
@@ -66,19 +66,17 @@ export const query = async (sql: string, params?: any[]) => {
 /**
  * Execute a transaction
  */
-export const transaction = async <T>(
-  callback: (client: Client) => Promise<T>
-): Promise<T> => {
+export const transaction = async <T>(callback: (client: Client) => Promise<T>): Promise<T> => {
   const db = getDatabase();
   const client = await db.connect();
 
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
     const result = await callback(client);
-    await client.query('COMMIT');
+    await client.query("COMMIT");
     return result;
   } catch (error) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     throw error;
   } finally {
     client.release();

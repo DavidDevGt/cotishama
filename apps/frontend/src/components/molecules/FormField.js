@@ -16,28 +16,28 @@
 export class FormField {
   constructor(options = {}) {
     const {
-      label = '',
-      inputType = 'text',
-      name = '',
-      id = '',
-      value = '',
-      placeholder = '',
+      label = "",
+      inputType = "text",
+      name = "",
+      id = "",
+      value = "",
+      placeholder = "",
       required = false,
       disabled = false,
       readonly = false,
       error = null,
-      helpText = '',
+      helpText = "",
       icon = null,
-      size = 'md',
+      size = "md",
       onChange = null,
       onBlur = null,
       onFocus = null,
-      className = '',
+      className = "",
     } = options;
 
     this.label = label;
     this.inputType = inputType;
-    this.name = name || label.toLowerCase().replace(/\s+/g, '-');
+    this.name = name || label.toLowerCase().replace(/\s+/g, "-");
     this.id = id || `${this.name}-field`;
     this.value = value;
     this.placeholder = placeholder;
@@ -55,10 +55,10 @@ export class FormField {
   }
 
   render() {
-    const { Label } = require('../atoms/Label.js');
-    const { Input } = require('../atoms/Input.js');
+    const { Label } = require("../atoms/Label.js");
+    const { Input } = require("../atoms/Input.js");
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `form-field ${this.className}`;
     container.style.cssText = `
       display: flex;
@@ -72,12 +72,12 @@ export class FormField {
       text: this.label,
       htmlFor: this.id,
       required: this.required,
-      size: this.size === 'lg' ? 'base' : 'sm',
+      size: this.size === "lg" ? "base" : "sm",
     }).render();
     container.appendChild(label);
 
     // Input wrapper
-    const inputWrapper = document.createElement('div');
+    const inputWrapper = document.createElement("div");
     inputWrapper.style.cssText = `
       display: flex;
       flex-direction: column;
@@ -96,9 +96,9 @@ export class FormField {
       disabled: this.disabled || false,
       readonly: this.readonly || false,
       size: this.size,
-      state: this.error ? 'error' : 'default',
+      state: this.error ? "error" : "default",
       icon: this.icon,
-      iconPosition: 'left',
+      iconPosition: "left",
       ariaLabel: this.label,
       ariaDescribedBy: this.error ? `${this.id}-error` : this.helpText ? `${this.id}-help` : null,
       onChange: this.onChange,
@@ -109,9 +109,9 @@ export class FormField {
 
     // Error message
     if (this.error) {
-      const errorMsg = document.createElement('p');
+      const errorMsg = document.createElement("p");
       errorMsg.id = `${this.id}-error`;
-      errorMsg.className = 'form-field-error';
+      errorMsg.className = "form-field-error";
       errorMsg.textContent = this.error;
       errorMsg.style.cssText = `
         margin: 0;
@@ -124,9 +124,9 @@ export class FormField {
 
     // Help text
     if (this.helpText && !this.error) {
-      const help = document.createElement('p');
+      const help = document.createElement("p");
       help.id = `${this.id}-help`;
-      help.className = 'form-field-help';
+      help.className = "form-field-help";
       help.textContent = this.helpText;
       help.style.cssText = `
         margin: 0;
@@ -143,8 +143,8 @@ export class FormField {
 }
 
 // Add FormField styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .form-field {
       display: flex;

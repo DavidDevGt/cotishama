@@ -1,6 +1,6 @@
-import * as jwt from 'jsonwebtoken';
-import { getEnv } from '../config/env';
-import type { User } from '../db/schema';
+import * as jwt from "jsonwebtoken";
+import { getEnv } from "../config/env";
+import type { User } from "../db/schema";
 
 interface JWTPayload {
   id: number;
@@ -20,9 +20,9 @@ export function generateAccessToken(user: User): string {
     role: user.role,
   };
 
-  return jwt.sign(payload, getEnv('JWT_SECRET'), {
+  return jwt.sign(payload, getEnv("JWT_SECRET"), {
     expiresIn: ACCESS_TOKEN_EXPIRY,
-    algorithm: 'HS256',
+    algorithm: "HS256",
   });
 }
 
@@ -30,19 +30,19 @@ export function generateRefreshToken(user: User): string {
   const payload = {
     id: user.id,
     email: user.email,
-    type: 'refresh',
+    type: "refresh",
   };
 
-  return jwt.sign(payload, getEnv('JWT_REFRESH_SECRET'), {
+  return jwt.sign(payload, getEnv("JWT_REFRESH_SECRET"), {
     expiresIn: REFRESH_TOKEN_EXPIRY,
-    algorithm: 'HS256',
+    algorithm: "HS256",
   });
 }
 
 export function verifyAccessToken(token: string): JWTPayload | null {
   try {
-    const decoded = jwt.verify(token, getEnv('JWT_SECRET'), {
-      algorithms: ['HS256'],
+    const decoded = jwt.verify(token, getEnv("JWT_SECRET"), {
+      algorithms: ["HS256"],
     });
 
     return decoded as JWTPayload;
@@ -51,17 +51,15 @@ export function verifyAccessToken(token: string): JWTPayload | null {
   }
 }
 
-export function verifyRefreshToken(
-  token: string
-): (JWTPayload & { type: string }) | null {
+export function verifyRefreshToken(token: string): (JWTPayload & { type: string }) | null {
   try {
-    const decoded = jwt.verify(token, getEnv('JWT_REFRESH_SECRET'), {
-      algorithms: ['HS256'],
+    const decoded = jwt.verify(token, getEnv("JWT_REFRESH_SECRET"), {
+      algorithms: ["HS256"],
     });
 
     const payload = decoded as JWTPayload & { type: string };
 
-    if (payload.type !== 'refresh') {
+    if (payload.type !== "refresh") {
       return null; // Not a refresh token
     }
 

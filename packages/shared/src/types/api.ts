@@ -46,7 +46,7 @@ export interface LoginResponse {
     id: string;
     email: string;
     full_name: string;
-    role: 'ADMIN' | 'OPERATOR' | 'VIEWER';
+    role: "ADMIN" | "OPERATOR" | "VIEWER";
   };
   expires_in: number;
 }
@@ -57,7 +57,7 @@ export interface RefreshTokenRequest {
 
 // ===== QUOTE TYPES =====
 
-export type QuoteStatus = 'draft' | 'sent' | 'approved' | 'rejected' | 'cancelled' | 'expired';
+export type QuoteStatus = "draft" | "sent" | "approved" | "rejected" | "cancelled" | "expired";
 
 export interface QuoteDetailInput {
   product_id: string;
@@ -180,7 +180,7 @@ export interface UpdateProductRequest {
 
 export interface AdjustStockRequest {
   quantity: number;
-  operation: 'set' | 'add' | 'subtract';
+  operation: "set" | "add" | "subtract";
   reason?: string;
 }
 
@@ -235,8 +235,8 @@ export interface QuoteFilters {
   status?: QuoteStatus;
   client_id?: string;
   user_id?: string;
-  sort?: 'created_at' | 'total' | 'status';
-  sort_dir?: 'asc' | 'desc';
+  sort?: "created_at" | "total" | "status";
+  sort_dir?: "asc" | "desc";
 }
 
 export interface ClientFilters {

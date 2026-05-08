@@ -1,8 +1,8 @@
-import { Hono } from 'hono';
-import { z } from 'zod';
-import { authService } from '../services/AuthService';
-import { AuthenticationError, ValidationError } from '../types/errors';
-import { LoginSchema } from '@shared/validators/schemas';
+import { Hono } from "hono";
+import { z } from "zod";
+import { authService } from "../services/AuthService";
+import { AuthenticationError, ValidationError } from "../types/errors";
+import { LoginSchema } from "@shared/validators/schemas";
 
 const router = new Hono();
 
@@ -15,13 +15,13 @@ interface RefreshRequest {
   refreshToken: string;
 }
 
-router.post('/login', async (c) => {
+router.post("/login", async (c) => {
   try {
     const body = await c.req.json<LoginRequest>();
 
     const validation = LoginSchema.safeParse(body);
     if (!validation.success) {
-      throw new ValidationError('Invalid credentials format');
+      throw new ValidationError("Invalid credentials format");
     }
 
     const { user, accessToken, refreshToken } = await authService.login({
@@ -29,7 +29,10 @@ router.post('/login', async (c) => {
       password: body.password,
     });
 
-    c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`);
+    c.header(
+      "Set-Cookie",
+      `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`,
+    );
 
     return c.json({
       success: true,
@@ -47,22 +50,25 @@ router.post('/login', async (c) => {
     });
   } catch (error) {
     if (error instanceof AuthenticationError) {
-      return c.json({
-        success: false,
-        error: error.message,
-        status_code: 401,
-      }, 401);
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+          status_code: 401,
+        },
+        401,
+      );
     }
     throw error;
   }
 });
 
-router.post('/refresh', async (c) => {
+router.post("/refresh", async (c) => {
   try {
     const body = await c.req.json<RefreshRequest>();
 
     if (!body.refreshToken) {
-      throw new AuthenticationError('Refresh token is required');
+      throw new AuthenticationError("Refresh token is required");
     }
 
     const accessToken = await authService.refreshToken(body.refreshToken);
@@ -74,27 +80,30 @@ router.post('/refresh', async (c) => {
     });
   } catch (error) {
     if (error instanceof AuthenticationError) {
-      return c.json({
-        success: false,
-        error: error.message,
-        status_code: 401,
-      }, 401);
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+          status_code: 401,
+        },
+        401,
+      );
     }
     throw error;
   }
 });
 
-router.post('/logout', async (c) => {
-  c.header('Set-Cookie', 'refreshToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
+router.post("/logout", async (c) => {
+  c.header("Set-Cookie", "refreshToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0");
 
   return c.json({
     success: true,
-    data: { message: 'Logged out successfully' },
+    data: { message: "Logged out successfully" },
     status_code: 200,
   });
 });
 
-router.post('/register', async (c) => {
+router.post("/register", async (c) => {
   try {
     const body = await c.req.json<{
       email: string;
@@ -109,34 +118,40 @@ router.post('/register', async (c) => {
     });
 
     if (!validation.success) {
-      throw new ValidationError('Invalid registration data');
+      throw new ValidationError("Invalid registration data");
     }
 
     const user = await authService.register(
       body.email,
       body.password,
       body.firstName,
-      body.lastName
+      body.lastName,
     );
 
-    return c.json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
+    return c.json(
+      {
+        success: true,
+        data: {
+          user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          },
         },
+        status_code: 201,
       },
-      status_code: 201,
-    }, 201);
+      201,
+    );
   } catch (error) {
     if (error instanceof AuthenticationError) {
-      return c.json({
-        success: false,
-        error: error.message,
-        status_code: 400,
-      }, 400);
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+          status_code: 400,
+        },
+        400,
+      );
     }
     throw error;
   }

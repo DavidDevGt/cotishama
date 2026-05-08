@@ -15,14 +15,14 @@
 export class DashboardLayout {
   constructor(options = {}) {
     const {
-      title = 'Dashboard',
-      subtitle = '',
-      layout = 'grid', // grid, masonry
+      title = "Dashboard",
+      subtitle = "",
+      layout = "grid", // grid, masonry
       columns = 3,
-      gap = 'md',
+      gap = "md",
       showHeader = true,
       onSearch = null,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -39,9 +39,9 @@ export class DashboardLayout {
   }
 
   render() {
-    const { SearchBox } = require('../molecules/SearchBox.js');
+    const { SearchBox } = require("../molecules/SearchBox.js");
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `dashboard-layout ${this.className}`;
     container.style.cssText = `
       display: flex;
@@ -59,22 +59,22 @@ export class DashboardLayout {
     }
 
     // Content grid
-    const content = document.createElement('div');
+    const content = document.createElement("div");
     content.className = `dashboard-content dashboard-${this.layout}`;
     const gapValues = {
-      sm: 'var(--spacing-sm)',
-      md: 'var(--spacing-md)',
-      lg: 'var(--spacing-lg)',
+      sm: "var(--spacing-sm)",
+      md: "var(--spacing-md)",
+      lg: "var(--spacing-lg)",
     };
 
-    if (this.layout === 'grid') {
+    if (this.layout === "grid") {
       content.style.cssText = `
         display: grid;
         grid-template-columns: repeat(${this.columns}, 1fr);
         gap: ${gapValues[this.gap] || gapValues.md};
         width: 100%;
       `;
-    } else if (this.layout === 'masonry') {
+    } else if (this.layout === "masonry") {
       content.style.cssText = `
         column-count: ${this.columns};
         column-gap: ${gapValues[this.gap] || gapValues.md};
@@ -87,14 +87,14 @@ export class DashboardLayout {
 
     // Public methods
     container.addWidget = (element, columnSpan = 1) => {
-      const widget = document.createElement('div');
-      if (this.layout === 'grid') {
+      const widget = document.createElement("div");
+      if (this.layout === "grid") {
         widget.style.gridColumn = `span ${columnSpan}`;
       } else {
-        widget.style.breakInside = 'avoid';
+        widget.style.breakInside = "avoid";
       }
 
-      if (typeof element === 'string') {
+      if (typeof element === "string") {
         widget.textContent = element;
       } else if (element instanceof HTMLElement) {
         widget.appendChild(element);
@@ -106,7 +106,7 @@ export class DashboardLayout {
     };
 
     container.clearWidgets = () => {
-      this.contentElement.innerHTML = '';
+      this.contentElement.innerHTML = "";
       this.widgets = [];
     };
 
@@ -114,10 +114,10 @@ export class DashboardLayout {
   }
 
   renderHeader() {
-    const { SearchBox } = require('../molecules/SearchBox.js');
+    const { SearchBox } = require("../molecules/SearchBox.js");
 
-    const header = document.createElement('div');
-    header.className = 'dashboard-header';
+    const header = document.createElement("div");
+    header.className = "dashboard-header";
     header.style.cssText = `
       display: flex;
       justify-content: space-between;
@@ -130,15 +130,15 @@ export class DashboardLayout {
     `;
 
     // Title section
-    const titleSection = document.createElement('div');
-    titleSection.className = 'dashboard-header-title';
+    const titleSection = document.createElement("div");
+    titleSection.className = "dashboard-header-title";
     titleSection.style.cssText = `
       display: flex;
       flex-direction: column;
       gap: var(--spacing-xs);
     `;
 
-    const title = document.createElement('h1');
+    const title = document.createElement("h1");
     title.textContent = this.title;
     title.style.cssText = `
       margin: 0;
@@ -149,7 +149,7 @@ export class DashboardLayout {
     titleSection.appendChild(title);
 
     if (this.subtitle) {
-      const subtitle = document.createElement('p');
+      const subtitle = document.createElement("p");
       subtitle.textContent = this.subtitle;
       subtitle.style.cssText = `
         margin: 0;
@@ -164,10 +164,10 @@ export class DashboardLayout {
     // Search box
     if (this.onSearch) {
       const searchBox = new SearchBox({
-        placeholder: 'Search...',
+        placeholder: "Search...",
         onSearch: this.onSearch,
       }).render();
-      searchBox.style.width = '300px';
+      searchBox.style.width = "300px";
       header.appendChild(searchBox);
     }
 
@@ -176,8 +176,8 @@ export class DashboardLayout {
 }
 
 // Add DashboardLayout styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .dashboard-layout {
       display: flex;

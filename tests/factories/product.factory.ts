@@ -1,4 +1,4 @@
-import type { InsertProduct } from '../../apps/backend/src/db/schema';
+import type { InsertProduct } from "../../apps/backend/src/db/schema";
 
 let productCounter = 0;
 
@@ -7,14 +7,14 @@ export class ProductFactory {
     productCounter++;
 
     return {
-      sku: `SKU-${productCounter.toString().padStart(6, '0')}`,
+      sku: `SKU-${productCounter.toString().padStart(6, "0")}`,
       name: `Test Product ${productCounter}`,
       description: `Description for test product ${productCounter}`,
-      category: 'Electronics',
+      category: "Electronics",
       unitPrice: (Math.floor(Math.random() * 900) + 100).toString(),
       quantity: 100,
       minQuantity: 10,
-      supplier: 'Test Supplier',
+      supplier: "Test Supplier",
       isActive: 1,
       createdBy: 1,
       ...overrides,
@@ -47,14 +47,14 @@ export class ProductFactory {
 
   static createExpensive(overrides?: Partial<InsertProduct>): InsertProduct {
     return this.create({
-      unitPrice: '9999.99',
+      unitPrice: "9999.99",
       ...overrides,
     });
   }
 
   static createCheap(overrides?: Partial<InsertProduct>): InsertProduct {
     return this.create({
-      unitPrice: '0.99',
+      unitPrice: "0.99",
       ...overrides,
     });
   }

@@ -16,17 +16,17 @@
 export class Form {
   constructor(options = {}) {
     const {
-      title = '',
-      subtitle = '',
+      title = "",
+      subtitle = "",
       fields = [],
-      submitLabel = 'Submit',
-      submitVariant = 'primary',
+      submitLabel = "Submit",
+      submitVariant = "primary",
       cancelLabel = null,
       onSubmit = null,
       onCancel = null,
       onFieldChange = null,
-      layout = 'vertical', // vertical, horizontal
-      className = '',
+      layout = "vertical", // vertical, horizontal
+      className = "",
       id = null,
     } = options;
 
@@ -48,21 +48,21 @@ export class Form {
   }
 
   render() {
-    const { Card } = require('../molecules/Card.js');
-    const { FormField } = require('../molecules/FormField.js');
-    const { Button } = require('../atoms/Button.js');
+    const { Card } = require("../molecules/Card.js");
+    const { FormField } = require("../molecules/FormField.js");
+    const { Button } = require("../atoms/Button.js");
 
     const card = new Card({
       title: this.title,
       subtitle: this.subtitle,
-      padding: 'lg',
-      variant: 'outlined',
+      padding: "lg",
+      variant: "outlined",
       className: `form-card ${this.className}`,
       id: this.id,
     }).render();
 
     // Form element
-    const form = document.createElement('form');
+    const form = document.createElement("form");
     form.className = `form form-${this.layout}`;
     form.style.cssText = `
       display: flex;
@@ -72,7 +72,7 @@ export class Form {
     `;
 
     // Prevent default submission
-    form.addEventListener('submit', (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       this.handleSubmit();
     });
@@ -81,10 +81,10 @@ export class Form {
     this.fields.forEach((fieldConfig) => {
       const formField = new FormField({
         label: fieldConfig.label,
-        inputType: fieldConfig.type || 'text',
+        inputType: fieldConfig.type || "text",
         name: fieldConfig.name,
         id: fieldConfig.name,
-        value: fieldConfig.value || '',
+        value: fieldConfig.value || "",
         placeholder: fieldConfig.placeholder,
         required: fieldConfig.required,
         disabled: fieldConfig.disabled,
@@ -97,29 +97,29 @@ export class Form {
       this.fieldElements[fieldConfig.name] = formField;
 
       // Track input changes
-      const input = formField.querySelector('input');
+      const input = formField.querySelector("input");
       if (input) {
-        input.addEventListener('change', (e) => {
+        input.addEventListener("change", (e) => {
           this.formData[fieldConfig.name] = e.target.value;
           if (this.onFieldChange) {
             this.onFieldChange(fieldConfig.name, e.target.value);
           }
         });
 
-        input.addEventListener('input', (e) => {
+        input.addEventListener("input", (e) => {
           this.formData[fieldConfig.name] = e.target.value;
         });
 
         // Validation on blur
-        input.addEventListener('blur', () => {
+        input.addEventListener("blur", () => {
           this.validateField(fieldConfig);
         });
       }
     });
 
     // Footer with buttons
-    const footer = document.createElement('div');
-    footer.className = 'form-footer';
+    const footer = document.createElement("div");
+    footer.className = "form-footer";
     footer.style.cssText = `
       display: flex;
       gap: var(--spacing-md);
@@ -133,8 +133,8 @@ export class Form {
     if (this.cancelLabel) {
       const cancelBtn = new Button({
         label: this.cancelLabel,
-        variant: 'secondary',
-        size: 'md',
+        variant: "secondary",
+        size: "md",
         onClick: () => {
           if (this.onCancel) {
             this.onCancel();
@@ -148,8 +148,8 @@ export class Form {
     const submitBtn = new Button({
       label: this.submitLabel,
       variant: this.submitVariant,
-      size: 'md',
-      type: 'submit',
+      size: "md",
+      type: "submit",
     }).render();
     footer.appendChild(submitBtn);
 
@@ -165,7 +165,7 @@ export class Form {
       this.fields.forEach((field) => {
         const input = card.querySelector(`input[name="${field.name}"]`);
         if (input) {
-          input.value = data[field.name] || '';
+          input.value = data[field.name] || "";
         }
       });
     };
@@ -175,7 +175,7 @@ export class Form {
       this.fields.forEach((field) => {
         const fieldElement = this.fieldElements[field.name];
         if (fieldElement) {
-          const errorMsg = fieldElement.querySelector('.form-field-error');
+          const errorMsg = fieldElement.querySelector(".form-field-error");
           if (errorMsg) errorMsg.remove();
         }
       });
@@ -194,10 +194,10 @@ export class Form {
     }
 
     // Email validation
-    if (value && fieldConfig.type === 'email') {
+    if (value && fieldConfig.type === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
-        error = 'Invalid email address';
+        error = "Invalid email address";
       }
     }
 
@@ -252,12 +252,12 @@ export class Form {
         const fieldElement = this.fieldElements[field.name];
         if (fieldElement) {
           // Remove existing error
-          const existingError = fieldElement.querySelector('.form-field-error');
+          const existingError = fieldElement.querySelector(".form-field-error");
           if (existingError) existingError.remove();
 
           // Add new error
-          const errorMsg = document.createElement('p');
-          errorMsg.className = 'form-field-error';
+          const errorMsg = document.createElement("p");
+          errorMsg.className = "form-field-error";
           errorMsg.textContent = this.errors[field.name];
           errorMsg.style.cssText = `
             margin: 0;
@@ -272,8 +272,8 @@ export class Form {
 }
 
 // Add Form styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .form-card {
       width: 100%;

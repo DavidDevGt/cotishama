@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { setupTestDB, teardownTestDB, createMockJWT } from '../setup';
-import { AuthService } from '../../apps/backend/src/services/AuthService';
-import { AuthenticationError } from '../../apps/backend/src/types/errors';
-import { verifyAccessToken, verifyRefreshToken } from '../../apps/backend/src/utils/jwt';
-import { validatePassword } from '../../apps/backend/src/utils/password';
+import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { setupTestDB, teardownTestDB, createMockJWT } from "../setup";
+import { AuthService } from "../../apps/backend/src/services/AuthService";
+import { AuthenticationError } from "../../apps/backend/src/types/errors";
+import { verifyAccessToken, verifyRefreshToken } from "../../apps/backend/src/utils/jwt";
+import { validatePassword } from "../../apps/backend/src/utils/password";
 
-describe('Security Tests - Authentication', () => {
+describe("Security Tests - Authentication", () => {
   let authService: AuthService;
 
   beforeEach(async () => {
@@ -17,51 +17,51 @@ describe('Security Tests - Authentication', () => {
     await teardownTestDB();
   });
 
-  describe('Token Security', () => {
-    it('should reject tampered access tokens', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
-      const token = (await authService.login({
-        email: user.email,
-        password: 'Password123',
-      })).accessToken;
+  describe("Token Security", () => {
+    it("should reject tampered access tokens", async () => {
+      const user = await authService.register("test@example.com", "Password123");
+      const token = (
+        await authService.login({
+          email: user.email,
+          password: "Password123",
+        })
+      ).accessToken;
 
-      const [header, payload, signature] = token.split('.');
-      const tamperedToken = [header, payload, 'tampered-signature'].join('.');
+      const [header, payload, signature] = token.split(".");
+      const tamperedToken = [header, payload, "tampered-signature"].join(".");
 
       const result = verifyAccessToken(tamperedToken);
       expect(result).toBeNull();
     });
 
-    it('should reject modified token payload', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
-      const token = (await authService.login({
-        email: user.email,
-        password: 'Password123',
-      })).accessToken;
+    it("should reject modified token payload", async () => {
+      const user = await authService.register("test@example.com", "Password123");
+      const token = (
+        await authService.login({
+          email: user.email,
+          password: "Password123",
+        })
+      ).accessToken;
 
-      const [header, payload] = token.split('.');
+      const [header, payload] = token.split(".");
 
       // Decode and modify payload
-      const decoded = JSON.parse(
-        Buffer.from(payload, 'base64url').toString()
-      );
-      decoded.role = 'ADMIN'; // Try to escalate privileges
+      const decoded = JSON.parse(Buffer.from(payload, "base64url").toString());
+      decoded.role = "ADMIN"; // Try to escalate privileges
 
-      const modifiedPayload = Buffer.from(
-        JSON.stringify(decoded)
-      ).toString('base64url');
+      const modifiedPayload = Buffer.from(JSON.stringify(decoded)).toString("base64url");
 
-      const tampered = [header, modifiedPayload, 'sig'].join('.');
+      const tampered = [header, modifiedPayload, "sig"].join(".");
 
       const result = verifyAccessToken(tampered);
       expect(result).toBeNull();
     });
 
-    it('should reject refresh token used as access token', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
+    it("should reject refresh token used as access token", async () => {
+      const user = await authService.register("test@example.com", "Password123");
       const { refreshToken } = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       // Try to use refresh token as access token
@@ -69,11 +69,11 @@ describe('Security Tests - Authentication', () => {
       expect(result).toBeNull();
     });
 
-    it('should prevent token reuse attack', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
+    it("should prevent token reuse attack", async () => {
+      const user = await authService.register("test@example.com", "Password123");
       const { accessToken, refreshToken } = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       // Original token should be valid
@@ -83,11 +83,11 @@ describe('Security Tests - Authentication', () => {
       // This test validates the concept - tokens should eventually expire
     });
 
-    it('should set proper token expiration', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
+    it("should set proper token expiration", async () => {
+      const user = await authService.register("test@example.com", "Password123");
       const { accessToken, refreshToken } = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       const accessPayload = verifyAccessToken(accessToken);
@@ -101,52 +101,52 @@ describe('Security Tests - Authentication', () => {
     });
   });
 
-  describe('Password Security', () => {
-    it('should not store plain text passwords', async () => {
-      const plainPassword = 'MyPassword123';
-      const user = await authService.register('test@example.com', plainPassword);
+  describe("Password Security", () => {
+    it("should not store plain text passwords", async () => {
+      const plainPassword = "MyPassword123";
+      const user = await authService.register("test@example.com", plainPassword);
 
       expect(user.passwordHash).not.toBe(plainPassword);
       expect(user.passwordHash).not.toContain(plainPassword);
     });
 
-    it('should use bcrypt hashing with adequate salt rounds', async () => {
-      const plainPassword = 'MyPassword123';
-      const user = await authService.register('test@example.com', plainPassword);
+    it("should use bcrypt hashing with adequate salt rounds", async () => {
+      const plainPassword = "MyPassword123";
+      const user = await authService.register("test@example.com", plainPassword);
 
       // Bcrypt with salt rounds produces hashes starting with $2b$10$ (or similar)
       expect(user.passwordHash).toMatch(/^\$2[aby]\$/);
     });
 
-    it('should prevent credential stuffing attacks', async () => {
-      const password = 'CommonPassword123';
-      await authService.register('user1@example.com', password);
+    it("should prevent credential stuffing attacks", async () => {
+      const password = "CommonPassword123";
+      await authService.register("user1@example.com", password);
 
       // Try to login with same password but different email
       try {
         await authService.login({
-          email: 'user2@example.com',
+          email: "user2@example.com",
           password,
         });
-        expect.unreachable('Should not allow credential reuse');
+        expect.unreachable("Should not allow credential reuse");
       } catch (error) {
         expect(error).toBeInstanceOf(AuthenticationError);
       }
     });
 
-    it('should validate password complexity requirements', async () => {
+    it("should validate password complexity requirements", async () => {
       const weakPasswords = [
-        'short',
-        '12345678', // Only numbers
-        'onlyletters', // Only lowercase
-        'ONLYUPPERCASE', // Only uppercase
+        "short",
+        "12345678", // Only numbers
+        "onlyletters", // Only lowercase
+        "ONLYUPPERCASE", // Only uppercase
       ];
 
       for (const weak of weakPasswords) {
         try {
           // In production, validation should happen during registration
           // This test ensures weak passwords aren't accepted
-          const isValid = await validatePassword(weak, 'somehash');
+          const isValid = await validatePassword(weak, "somehash");
           // Password validation doesn't fail but should be enforced at service level
         } catch (error) {
           // Expected
@@ -155,44 +155,44 @@ describe('Security Tests - Authentication', () => {
     });
   });
 
-  describe('Account Enumeration Prevention', () => {
+  describe("Account Enumeration Prevention", () => {
     beforeEach(async () => {
-      await authService.register('existing@example.com', 'Password123');
+      await authService.register("existing@example.com", "Password123");
     });
 
-    it('should return same error message for invalid email and password', async () => {
+    it("should return same error message for invalid email and password", async () => {
       try {
         await authService.login({
-          email: 'nonexistent@example.com',
-          password: 'Password123',
+          email: "nonexistent@example.com",
+          password: "Password123",
         });
       } catch (error) {
-        expect((error as Error).message).toBe('Invalid email or password');
+        expect((error as Error).message).toBe("Invalid email or password");
       }
 
       try {
         await authService.login({
-          email: 'existing@example.com',
-          password: 'WrongPassword',
+          email: "existing@example.com",
+          password: "WrongPassword",
         });
       } catch (error) {
-        expect((error as Error).message).toBe('Invalid email or password');
+        expect((error as Error).message).toBe("Invalid email or password");
       }
     });
   });
 
-  describe('Session Management', () => {
-    it('should prevent session fixation', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
+  describe("Session Management", () => {
+    it("should prevent session fixation", async () => {
+      const user = await authService.register("test@example.com", "Password123");
 
       const login1 = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       const login2 = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       // Each login should generate different tokens
@@ -200,17 +200,17 @@ describe('Security Tests - Authentication', () => {
       expect(login1.refreshToken).not.toBe(login2.refreshToken);
     });
 
-    it('should invalidate old refresh tokens on new login', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
+    it("should invalidate old refresh tokens on new login", async () => {
+      const user = await authService.register("test@example.com", "Password123");
 
       const login1 = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       const login2 = await authService.login({
         email: user.email,
-        password: 'Password123',
+        password: "Password123",
       });
 
       // Old refresh token should be different from new one
@@ -222,28 +222,28 @@ describe('Security Tests - Authentication', () => {
     });
   });
 
-  describe('Brute Force Attack Prevention', () => {
-    it('should require strong passwords (in production, add rate limiting)', async () => {
+  describe("Brute Force Attack Prevention", () => {
+    it("should require strong passwords (in production, add rate limiting)", async () => {
       // This is a conceptual test - in production use rate limiting middleware
-      const user = await authService.register('test@example.com', 'StrongPass123');
+      const user = await authService.register("test@example.com", "StrongPass123");
 
       // After correct password, login succeeds
       const result = await authService.login({
         email: user.email,
-        password: 'StrongPass123',
+        password: "StrongPass123",
       });
 
       expect(result.accessToken).toBeDefined();
     });
 
-    it('should not expose user existence through timing attacks', async () => {
-      const user = await authService.register('test@example.com', 'Password123');
+    it("should not expose user existence through timing attacks", async () => {
+      const user = await authService.register("test@example.com", "Password123");
 
       const existingUserStart = performance.now();
       try {
         await authService.login({
           email: user.email,
-          password: 'WrongPassword',
+          password: "WrongPassword",
         });
       } catch {}
       const existingUserTime = performance.now() - existingUserStart;
@@ -251,8 +251,8 @@ describe('Security Tests - Authentication', () => {
       const nonExistentStart = performance.now();
       try {
         await authService.login({
-          email: 'nonexistent@example.com',
-          password: 'WrongPassword',
+          email: "nonexistent@example.com",
+          password: "WrongPassword",
         });
       } catch {}
       const nonExistentTime = performance.now() - nonExistentStart;
@@ -264,10 +264,10 @@ describe('Security Tests - Authentication', () => {
     });
   });
 
-  describe('Inactive Account Protection', () => {
-    it('should reject login for inactive accounts', async () => {
-      const plainPassword = 'Password123';
-      const user = await authService.register('inactive@example.com', plainPassword);
+  describe("Inactive Account Protection", () => {
+    it("should reject login for inactive accounts", async () => {
+      const plainPassword = "Password123";
+      const user = await authService.register("inactive@example.com", plainPassword);
 
       // User created as active
       expect(user.isActive).toBe(1);

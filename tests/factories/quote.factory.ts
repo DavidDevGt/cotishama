@@ -1,4 +1,4 @@
-import type { InsertQuote } from '../../apps/backend/src/db/schema';
+import type { InsertQuote } from "../../apps/backend/src/db/schema";
 
 let quoteCounter = 0;
 
@@ -9,15 +9,15 @@ export class QuoteFactory {
     const validUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
     return {
-      quoteNumber: `QT-${now.getFullYear()}-${String(quoteCounter).padStart(6, '0')}`,
+      quoteNumber: `QT-${now.getFullYear()}-${String(quoteCounter).padStart(6, "0")}`,
       clientId: 1,
       createdBy: 1,
-      status: 'DRAFT',
+      status: "DRAFT",
       validUntil,
-      notes: 'Test quote',
-      subtotal: '1000.00',
-      tax: '150.00',
-      total: '1150.00',
+      notes: "Test quote",
+      subtotal: "1000.00",
+      tax: "150.00",
+      total: "1150.00",
       ...overrides,
     };
   }
@@ -32,21 +32,21 @@ export class QuoteFactory {
 
   static createSent(overrides?: Partial<InsertQuote>): InsertQuote {
     return this.create({
-      status: 'SENT',
+      status: "SENT",
       ...overrides,
     });
   }
 
   static createAccepted(overrides?: Partial<InsertQuote>): InsertQuote {
     return this.create({
-      status: 'ACCEPTED',
+      status: "ACCEPTED",
       ...overrides,
     });
   }
 
   static createRejected(overrides?: Partial<InsertQuote>): InsertQuote {
     return this.create({
-      status: 'REJECTED',
+      status: "REJECTED",
       ...overrides,
     });
   }
@@ -56,7 +56,7 @@ export class QuoteFactory {
     const validUntil = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000); // yesterday
 
     return this.create({
-      status: 'EXPIRED',
+      status: "EXPIRED",
       validUntil,
       ...overrides,
     });
@@ -64,16 +64,16 @@ export class QuoteFactory {
 
   static createArchived(overrides?: Partial<InsertQuote>): InsertQuote {
     return this.create({
-      status: 'ARCHIVED',
+      status: "ARCHIVED",
       ...overrides,
     });
   }
 
   static createHighValue(overrides?: Partial<InsertQuote>): InsertQuote {
     return this.create({
-      subtotal: '50000.00',
-      tax: '7500.00',
-      total: '57500.00',
+      subtotal: "50000.00",
+      tax: "7500.00",
+      total: "57500.00",
       ...overrides,
     });
   }

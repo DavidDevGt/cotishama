@@ -1,6 +1,6 @@
-import { eq, and, like, ilike } from 'drizzle-orm';
-import { db } from '../db/client';
-import { clients, type Client, type InsertClient } from '../db/schema';
+import { eq, and, like, ilike } from "drizzle-orm";
+import { db } from "../db/client";
+import { clients, type Client, type InsertClient } from "../db/schema";
 
 export interface ClientFilters {
   name?: string;
@@ -12,26 +12,17 @@ export interface ClientFilters {
 
 export class ClientRepository {
   async create(data: InsertClient): Promise<Client> {
-    const result = await db
-      .insert(clients)
-      .values(data)
-      .returning();
+    const result = await db.insert(clients).values(data).returning();
     return result[0];
   }
 
   async getById(id: number): Promise<Client | null> {
-    const result = await db
-      .select()
-      .from(clients)
-      .where(eq(clients.id, id));
+    const result = await db.select().from(clients).where(eq(clients.id, id));
     return result[0] || null;
   }
 
   async getByEmail(email: string): Promise<Client | null> {
-    const result = await db
-      .select()
-      .from(clients)
-      .where(eq(clients.email, email));
+    const result = await db.select().from(clients).where(eq(clients.email, email));
     return result[0] || null;
   }
 
@@ -80,9 +71,7 @@ export class ClientRepository {
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await db
-      .delete(clients)
-      .where(eq(clients.id, id));
+    const result = await db.delete(clients).where(eq(clients.id, id));
     return !!result;
   }
 }

@@ -1,7 +1,7 @@
-import { eq, and, ilike, gte, lte } from 'drizzle-orm';
-import { db } from '../db/client';
-import { quotes, quoteDetails, type Quote, type InsertQuote } from '../db/schema';
-import type { QuoteDetail, InsertQuoteDetail } from '../db/schema';
+import { eq, and, ilike, gte, lte } from "drizzle-orm";
+import { db } from "../db/client";
+import { quotes, quoteDetails, type Quote, type InsertQuote } from "../db/schema";
+import type { QuoteDetail, InsertQuoteDetail } from "../db/schema";
 
 export interface QuoteFilters {
   status?: string;
@@ -15,26 +15,17 @@ export interface QuoteFilters {
 
 export class QuoteRepository {
   async create(data: InsertQuote): Promise<Quote> {
-    const result = await db
-      .insert(quotes)
-      .values(data)
-      .returning();
+    const result = await db.insert(quotes).values(data).returning();
     return result[0];
   }
 
   async getById(id: number): Promise<Quote | null> {
-    const result = await db
-      .select()
-      .from(quotes)
-      .where(eq(quotes.id, id));
+    const result = await db.select().from(quotes).where(eq(quotes.id, id));
     return result[0] || null;
   }
 
   async getByNumber(quoteNumber: string): Promise<Quote | null> {
-    const result = await db
-      .select()
-      .from(quotes)
-      .where(eq(quotes.quoteNumber, quoteNumber));
+    const result = await db.select().from(quotes).where(eq(quotes.quoteNumber, quoteNumber));
     return result[0] || null;
   }
 
@@ -95,41 +86,28 @@ export class QuoteRepository {
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await db
-      .delete(quotes)
-      .where(eq(quotes.id, id));
+    const result = await db.delete(quotes).where(eq(quotes.id, id));
     return !!result;
   }
 }
 
 export class QuoteDetailRepository {
   async create(data: InsertQuoteDetail): Promise<QuoteDetail> {
-    const result = await db
-      .insert(quoteDetails)
-      .values(data)
-      .returning();
+    const result = await db.insert(quoteDetails).values(data).returning();
     return result[0];
   }
 
   async createBatch(items: InsertQuoteDetail[]): Promise<QuoteDetail[]> {
     if (items.length === 0) return [];
-    return db
-      .insert(quoteDetails)
-      .values(items)
-      .returning();
+    return db.insert(quoteDetails).values(items).returning();
   }
 
   async getByQuoteId(quoteId: number): Promise<QuoteDetail[]> {
-    return db
-      .select()
-      .from(quoteDetails)
-      .where(eq(quoteDetails.quoteId, quoteId));
+    return db.select().from(quoteDetails).where(eq(quoteDetails.quoteId, quoteId));
   }
 
   async deleteByQuoteId(quoteId: number): Promise<boolean> {
-    const result = await db
-      .delete(quoteDetails)
-      .where(eq(quoteDetails.quoteId, quoteId));
+    const result = await db.delete(quoteDetails).where(eq(quoteDetails.quoteId, quoteId));
     return !!result;
   }
 }

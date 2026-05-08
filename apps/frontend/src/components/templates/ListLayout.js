@@ -14,14 +14,14 @@
 export class ListLayout {
   constructor(options = {}) {
     const {
-      title = '',
-      subtitle = '',
+      title = "",
+      subtitle = "",
       actionButton = null,
       showFilters = true,
       showSearch = true,
       onSearch = null,
       onFilter = null,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -39,10 +39,10 @@ export class ListLayout {
   }
 
   render() {
-    const { SearchBox } = require('../molecules/SearchBox.js');
-    const { Button } = require('../atoms/Button.js');
+    const { SearchBox } = require("../molecules/SearchBox.js");
+    const { Button } = require("../atoms/Button.js");
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `list-layout ${this.className}`;
     container.style.cssText = `
       display: flex;
@@ -62,8 +62,8 @@ export class ListLayout {
     container.appendChild(toolbar);
 
     // Table container
-    const tableContainer = document.createElement('div');
-    tableContainer.className = 'list-layout-table';
+    const tableContainer = document.createElement("div");
+    tableContainer.className = "list-layout-table";
     tableContainer.style.cssText = `
       background-color: var(--color-background);
       border-radius: var(--radius-lg);
@@ -75,13 +75,13 @@ export class ListLayout {
 
     // Public methods
     container.setDataTable = (dataTable) => {
-      tableContainer.innerHTML = '';
+      tableContainer.innerHTML = "";
       tableContainer.appendChild(dataTable);
     };
 
     container.setFilters = (filters) => {
       if (this.filtersElement) {
-        this.filtersElement.innerHTML = '';
+        this.filtersElement.innerHTML = "";
         if (Array.isArray(filters)) {
           filters.forEach((filter) => {
             this.filtersElement.appendChild(filter);
@@ -96,10 +96,10 @@ export class ListLayout {
   }
 
   renderHeader() {
-    const { Button } = require('../atoms/Button.js');
+    const { Button } = require("../atoms/Button.js");
 
-    const header = document.createElement('div');
-    header.className = 'list-layout-header';
+    const header = document.createElement("div");
+    header.className = "list-layout-header";
     header.style.cssText = `
       display: flex;
       justify-content: space-between;
@@ -112,15 +112,15 @@ export class ListLayout {
     `;
 
     // Title section
-    const titleSection = document.createElement('div');
-    titleSection.className = 'list-layout-header-title';
+    const titleSection = document.createElement("div");
+    titleSection.className = "list-layout-header-title";
     titleSection.style.cssText = `
       display: flex;
       flex-direction: column;
       gap: var(--spacing-xs);
     `;
 
-    const title = document.createElement('h2');
+    const title = document.createElement("h2");
     title.textContent = this.title;
     title.style.cssText = `
       margin: 0;
@@ -131,7 +131,7 @@ export class ListLayout {
     titleSection.appendChild(title);
 
     if (this.subtitle) {
-      const subtitle = document.createElement('p');
+      const subtitle = document.createElement("p");
       subtitle.textContent = this.subtitle;
       subtitle.style.cssText = `
         margin: 0;
@@ -147,7 +147,7 @@ export class ListLayout {
     if (this.actionButton) {
       const btn = new Button({
         label: this.actionButton.label,
-        variant: this.actionButton.variant || 'primary',
+        variant: this.actionButton.variant || "primary",
         icon: this.actionButton.icon,
         onClick: this.actionButton.onClick,
       }).render();
@@ -158,10 +158,10 @@ export class ListLayout {
   }
 
   renderToolbar() {
-    const { SearchBox } = require('../molecules/SearchBox.js');
+    const { SearchBox } = require("../molecules/SearchBox.js");
 
-    const toolbar = document.createElement('div');
-    toolbar.className = 'list-layout-toolbar';
+    const toolbar = document.createElement("div");
+    toolbar.className = "list-layout-toolbar";
     toolbar.style.cssText = `
       display: flex;
       gap: var(--spacing-md);
@@ -172,17 +172,17 @@ export class ListLayout {
     // Search
     if (this.showSearch) {
       const searchBox = new SearchBox({
-        placeholder: 'Search...',
+        placeholder: "Search...",
         onSearch: this.onSearch,
       }).render();
-      searchBox.style.minWidth = '300px';
+      searchBox.style.minWidth = "300px";
       toolbar.appendChild(searchBox);
     }
 
     // Filters
     if (this.showFilters) {
-      const filters = document.createElement('div');
-      filters.className = 'list-layout-filters';
+      const filters = document.createElement("div");
+      filters.className = "list-layout-filters";
       filters.style.cssText = `
         display: flex;
         gap: var(--spacing-sm);
@@ -197,8 +197,8 @@ export class ListLayout {
 }
 
 // Add ListLayout styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .list-layout {
       display: flex;

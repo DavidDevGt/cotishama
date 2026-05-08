@@ -1,6 +1,6 @@
-import { eq, and, ilike, gte, lte } from 'drizzle-orm';
-import { db } from '../db/client';
-import { products, type Product, type InsertProduct } from '../db/schema';
+import { eq, and, ilike, gte, lte } from "drizzle-orm";
+import { db } from "../db/client";
+import { products, type Product, type InsertProduct } from "../db/schema";
 
 export interface ProductFilters {
   sku?: string;
@@ -15,26 +15,17 @@ export interface ProductFilters {
 
 export class ProductRepository {
   async create(data: InsertProduct): Promise<Product> {
-    const result = await db
-      .insert(products)
-      .values(data)
-      .returning();
+    const result = await db.insert(products).values(data).returning();
     return result[0];
   }
 
   async getById(id: number): Promise<Product | null> {
-    const result = await db
-      .select()
-      .from(products)
-      .where(eq(products.id, id));
+    const result = await db.select().from(products).where(eq(products.id, id));
     return result[0] || null;
   }
 
   async getBySku(sku: string): Promise<Product | null> {
-    const result = await db
-      .select()
-      .from(products)
-      .where(eq(products.sku, sku));
+    const result = await db.select().from(products).where(eq(products.sku, sku));
     return result[0] || null;
   }
 
@@ -104,9 +95,7 @@ export class ProductRepository {
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await db
-      .delete(products)
-      .where(eq(products.id, id));
+    const result = await db.delete(products).where(eq(products.id, id));
     return !!result;
   }
 }

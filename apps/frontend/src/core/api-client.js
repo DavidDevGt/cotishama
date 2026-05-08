@@ -4,7 +4,7 @@
  */
 
 class APIClient {
-  constructor(baseURL = '/api/v1') {
+  constructor(baseURL = "/api/v1") {
     this.baseURL = baseURL;
     this.timeout = 30000;
     this.authToken = null;
@@ -21,12 +21,12 @@ class APIClient {
   async request(method, endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     };
 
     if (this.authToken) {
-      headers['Authorization'] = `Bearer ${this.authToken}`;
+      headers["Authorization"] = `Bearer ${this.authToken}`;
     }
 
     const config = {
@@ -67,23 +67,23 @@ class APIClient {
   }
 
   get(endpoint, options) {
-    return this.request('GET', endpoint, options);
+    return this.request("GET", endpoint, options);
   }
 
   post(endpoint, body, options) {
-    return this.request('POST', endpoint, { ...options, body });
+    return this.request("POST", endpoint, { ...options, body });
   }
 
   put(endpoint, body, options) {
-    return this.request('PUT', endpoint, { ...options, body });
+    return this.request("PUT", endpoint, { ...options, body });
   }
 
   patch(endpoint, body, options) {
-    return this.request('PATCH', endpoint, { ...options, body });
+    return this.request("PATCH", endpoint, { ...options, body });
   }
 
   delete(endpoint, options) {
-    return this.request('DELETE', endpoint, options);
+    return this.request("DELETE", endpoint, options);
   }
 }
 

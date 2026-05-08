@@ -16,11 +16,11 @@
 export class Input {
   constructor(options = {}) {
     const {
-      type = 'text', // text, email, password, number, tel, url, search
-      value = '',
-      placeholder = '',
-      name = '',
-      id = '',
+      type = "text", // text, email, password, number, tel, url, search
+      value = "",
+      placeholder = "",
+      name = "",
+      id = "",
       required = false,
       disabled = false,
       readonly = false,
@@ -29,16 +29,16 @@ export class Input {
       min = null,
       max = null,
       pattern = null,
-      autoComplete = 'off',
-      size = 'md', // sm, md, lg
-      state = 'default', // default, error, success, warning, loading
+      autoComplete = "off",
+      size = "md", // sm, md, lg
+      state = "default", // default, error, success, warning, loading
       icon = null,
-      iconPosition = 'left',
+      iconPosition = "left",
       onChange = null,
       onFocus = null,
       onBlur = null,
       onKeyDown = null,
-      className = '',
+      className = "",
       title = null,
       ariaLabel = null,
       ariaDescribedBy = null,
@@ -73,7 +73,7 @@ export class Input {
   }
 
   render() {
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement("div");
     wrapper.className = this.getWrapperClasses();
     wrapper.style.cssText = `
       display: inline-flex;
@@ -83,12 +83,12 @@ export class Input {
     `;
 
     // Icon left
-    if (this.icon && this.iconPosition === 'left') {
-      const { Icon } = require('./Icon.js');
+    if (this.icon && this.iconPosition === "left") {
+      const { Icon } = require("./Icon.js");
       const icon = new Icon({
         name: this.icon,
-        size: this.size === 'sm' ? 'sm' : this.size === 'lg' ? 'md' : 'sm',
-        color: this.disabled ? 'secondary' : 'primary',
+        size: this.size === "sm" ? "sm" : this.size === "lg" ? "md" : "sm",
+        color: this.disabled ? "secondary" : "primary",
       }).render();
 
       icon.style.cssText += `
@@ -101,7 +101,7 @@ export class Input {
     }
 
     // Input
-    const input = document.createElement('input');
+    const input = document.createElement("input");
     input.type = this.type;
     input.value = this.value;
     input.placeholder = this.placeholder;
@@ -120,24 +120,24 @@ export class Input {
     if (this.pattern) input.pattern = this.pattern;
     if (this.autoComplete) input.autoComplete = this.autoComplete;
     if (this.title) input.title = this.title;
-    if (this.ariaLabel) input.setAttribute('aria-label', this.ariaLabel);
-    if (this.ariaDescribedBy) input.setAttribute('aria-describedby', this.ariaDescribedBy);
+    if (this.ariaLabel) input.setAttribute("aria-label", this.ariaLabel);
+    if (this.ariaDescribedBy) input.setAttribute("aria-describedby", this.ariaDescribedBy);
 
     // Event listeners
-    if (this.onChange) input.addEventListener('change', this.onChange);
-    if (this.onFocus) input.addEventListener('focus', this.onFocus);
-    if (this.onBlur) input.addEventListener('blur', this.onBlur);
-    if (this.onKeyDown) input.addEventListener('keydown', this.onKeyDown);
+    if (this.onChange) input.addEventListener("change", this.onChange);
+    if (this.onFocus) input.addEventListener("focus", this.onFocus);
+    if (this.onBlur) input.addEventListener("blur", this.onBlur);
+    if (this.onKeyDown) input.addEventListener("keydown", this.onKeyDown);
 
     wrapper.appendChild(input);
 
     // Icon right
-    if (this.icon && this.iconPosition === 'right') {
-      const { Icon } = require('./Icon.js');
+    if (this.icon && this.iconPosition === "right") {
+      const { Icon } = require("./Icon.js");
       const icon = new Icon({
         name: this.icon,
-        size: this.size === 'sm' ? 'sm' : this.size === 'lg' ? 'md' : 'sm',
-        color: this.disabled ? 'secondary' : 'primary',
+        size: this.size === "sm" ? "sm" : this.size === "lg" ? "md" : "sm",
+        color: this.disabled ? "secondary" : "primary",
       }).render();
 
       icon.style.cssText += `
@@ -154,94 +154,94 @@ export class Input {
 
   getWrapperClasses() {
     const classes = [
-      'input-wrapper',
+      "input-wrapper",
       `input-wrapper-${this.size}`,
       `input-state-${this.state}`,
-      this.disabled && 'input-disabled',
+      this.disabled && "input-disabled",
       this.icon && `input-icon-${this.iconPosition}`,
     ];
 
-    return classes.filter(Boolean).join(' ');
+    return classes.filter(Boolean).join(" ");
   }
 
   getInputClasses() {
     const classes = [
-      'input',
+      "input",
       `input-${this.size}`,
       `input-${this.state}`,
       this.icon && `input-with-icon-${this.iconPosition}`,
-      this.className
+      this.className,
     ];
 
-    return classes.filter(Boolean).join(' ');
+    return classes.filter(Boolean).join(" ");
   }
 
   getInputStyles() {
     const sizes = {
       sm: {
         padding: `var(--spacing-xs) var(--spacing-sm)`,
-        'font-size': 'var(--font-size-sm)',
-        'min-height': '32px',
+        "font-size": "var(--font-size-sm)",
+        "min-height": "32px",
       },
       md: {
         padding: `var(--spacing-sm) var(--spacing-md)`,
-        'font-size': 'var(--font-size-base)',
-        'min-height': '40px',
+        "font-size": "var(--font-size-base)",
+        "min-height": "40px",
       },
       lg: {
         padding: `var(--spacing-md) var(--spacing-lg)`,
-        'font-size': 'var(--font-size-lg)',
-        'min-height': '48px',
+        "font-size": "var(--font-size-lg)",
+        "min-height": "48px",
       },
     };
 
     const iconPaddingMap = {
-      left: { 'padding-left': '2.5rem' },
-      right: { 'padding-right': '2.5rem' },
+      left: { "padding-left": "2.5rem" },
+      right: { "padding-right": "2.5rem" },
     };
 
     const states = {
       default: {
-        'border-color': 'var(--color-border)',
+        "border-color": "var(--color-border)",
       },
       error: {
-        'border-color': 'var(--color-error-500)',
+        "border-color": "var(--color-error-500)",
       },
       success: {
-        'border-color': 'var(--color-success-500)',
+        "border-color": "var(--color-success-500)",
       },
       warning: {
-        'border-color': 'var(--color-warning-500)',
+        "border-color": "var(--color-warning-500)",
       },
       loading: {
-        'border-color': 'var(--color-primary-500)',
+        "border-color": "var(--color-primary-500)",
       },
     };
 
     const baseStyles = {
-      'font-family': 'inherit',
-      'border': '1px solid',
-      'border-radius': 'var(--radius-md)',
-      'background-color': 'var(--color-background)',
-      'color': 'var(--color-text-primary)',
-      'transition': 'all var(--transition-fast)',
-      'outline': 'none',
-      'width': '100%',
-      'box-sizing': 'border-box',
-      ...sizes[this.size] || sizes.md,
+      "font-family": "inherit",
+      border: "1px solid",
+      "border-radius": "var(--radius-md)",
+      "background-color": "var(--color-background)",
+      color: "var(--color-text-primary)",
+      transition: "all var(--transition-fast)",
+      outline: "none",
+      width: "100%",
+      "box-sizing": "border-box",
+      ...(sizes[this.size] || sizes.md),
       ...(this.icon ? iconPaddingMap[this.iconPosition] : {}),
-      ...states[this.state] || states.default,
+      ...(states[this.state] || states.default),
     };
 
     if (this.disabled) {
-      baseStyles['opacity'] = '0.6';
-      baseStyles['cursor'] = 'not-allowed';
-      baseStyles['background-color'] = 'var(--color-surface)';
+      baseStyles["opacity"] = "0.6";
+      baseStyles["cursor"] = "not-allowed";
+      baseStyles["background-color"] = "var(--color-surface)";
     }
 
     return Object.entries(baseStyles)
       .map(([key, value]) => `${key}: ${value}`)
-      .join('; ');
+      .join("; ");
   }
 
   getValue() {
@@ -262,13 +262,13 @@ export class Input {
 
   validate() {
     // Email validation
-    if (this.type === 'email') {
+    if (this.type === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(this.value);
     }
 
     // URL validation
-    if (this.type === 'url') {
+    if (this.type === "url") {
       try {
         new URL(this.value);
         return true;
@@ -293,8 +293,8 @@ export class Input {
 }
 
 // Add input styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .input {
       font-family: inherit;

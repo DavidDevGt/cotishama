@@ -18,7 +18,7 @@ export class Pagination {
       totalPages = 1,
       onPageChange = null,
       siblingsCount = 1,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -31,11 +31,11 @@ export class Pagination {
   }
 
   render() {
-    const { Button } = require('../atoms/Button.js');
+    const { Button } = require("../atoms/Button.js");
 
-    const nav = document.createElement('nav');
+    const nav = document.createElement("nav");
     nav.className = `pagination ${this.className}`;
-    nav.setAttribute('aria-label', 'Pagination');
+    nav.setAttribute("aria-label", "Pagination");
     nav.style.cssText = `
       display: flex;
       align-items: center;
@@ -50,24 +50,24 @@ export class Pagination {
 
     // Previous button
     const prevBtn = new Button({
-      label: 'Previous',
-      variant: 'secondary',
-      size: 'sm',
+      label: "Previous",
+      variant: "secondary",
+      size: "sm",
       disabled: this.currentPage === 1,
       onClick: () => {
         if (this.currentPage > 1 && this.onPageChange) {
           this.onPageChange(this.currentPage - 1);
         }
       },
-      ariaLabel: 'Go to previous page',
+      ariaLabel: "Go to previous page",
     }).render();
     nav.appendChild(prevBtn);
 
     // Page numbers
     pages.forEach((page) => {
-      if (page === '...') {
-        const ellipsis = document.createElement('span');
-        ellipsis.textContent = '...';
+      if (page === "...") {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "...";
         ellipsis.style.cssText = `
           padding: var(--spacing-xs) var(--spacing-sm);
           color: var(--color-text-secondary);
@@ -76,8 +76,8 @@ export class Pagination {
       } else {
         const pageBtn = new Button({
           label: page.toString(),
-          variant: page === this.currentPage ? 'primary' : 'secondary',
-          size: 'sm',
+          variant: page === this.currentPage ? "primary" : "secondary",
+          size: "sm",
           onClick: () => {
             if (page !== this.currentPage && this.onPageChange) {
               this.onPageChange(page);
@@ -92,22 +92,22 @@ export class Pagination {
 
     // Next button
     const nextBtn = new Button({
-      label: 'Next',
-      variant: 'secondary',
-      size: 'sm',
+      label: "Next",
+      variant: "secondary",
+      size: "sm",
       disabled: this.currentPage === this.totalPages,
       onClick: () => {
         if (this.currentPage < this.totalPages && this.onPageChange) {
           this.onPageChange(this.currentPage + 1);
         }
       },
-      ariaLabel: 'Go to next page',
+      ariaLabel: "Go to next page",
     }).render();
     nav.appendChild(nextBtn);
 
     // Info text
-    const info = document.createElement('span');
-    info.className = 'pagination-info';
+    const info = document.createElement("span");
+    info.className = "pagination-info";
     info.textContent = `Page ${this.currentPage} of ${this.totalPages}`;
     info.style.cssText = `
       font-size: var(--font-size-sm);
@@ -132,7 +132,7 @@ export class Pagination {
 
     // Left dots
     if (shouldShowLeftDots) {
-      pages.push('...');
+      pages.push("...");
     }
 
     // Left siblings
@@ -142,7 +142,7 @@ export class Pagination {
 
     // Right dots
     if (shouldShowRightDots) {
-      pages.push('...');
+      pages.push("...");
     }
 
     // Always show last page (if more than 1)
@@ -156,8 +156,8 @@ export class Pagination {
 }
 
 // Add Pagination styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .pagination {
       display: flex;

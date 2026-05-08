@@ -14,13 +14,7 @@
 
 export class BreadCrumbs {
   constructor(options = {}) {
-    const {
-      items = [],
-      separator = '/',
-      onClick = null,
-      className = '',
-      id = null,
-    } = options;
+    const { items = [], separator = "/", onClick = null, className = "", id = null } = options;
 
     this.items = items;
     this.separator = separator;
@@ -30,9 +24,9 @@ export class BreadCrumbs {
   }
 
   render() {
-    const nav = document.createElement('nav');
+    const nav = document.createElement("nav");
     nav.className = `breadcrumbs ${this.className}`;
-    nav.setAttribute('aria-label', 'Breadcrumb');
+    nav.setAttribute("aria-label", "Breadcrumb");
     nav.style.cssText = `
       display: flex;
       align-items: center;
@@ -43,7 +37,7 @@ export class BreadCrumbs {
 
     if (this.id) nav.id = this.id;
 
-    const ol = document.createElement('ol');
+    const ol = document.createElement("ol");
     ol.style.cssText = `
       display: flex;
       align-items: center;
@@ -55,7 +49,7 @@ export class BreadCrumbs {
     `;
 
     this.items.forEach((item, index) => {
-      const li = document.createElement('li');
+      const li = document.createElement("li");
       li.style.cssText = `
         display: flex;
         align-items: center;
@@ -64,10 +58,10 @@ export class BreadCrumbs {
 
       // Item
       if (item.href && !item.active) {
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = item.href;
         link.textContent = item.label;
-        link.className = 'breadcrumb-link';
+        link.className = "breadcrumb-link";
         link.style.cssText = `
           color: var(--color-primary-500);
           text-decoration: none;
@@ -75,7 +69,7 @@ export class BreadCrumbs {
           cursor: pointer;
         `;
 
-        link.addEventListener('click', (e) => {
+        link.addEventListener("click", (e) => {
           if (this.onClick) {
             e.preventDefault();
             this.onClick(item, index);
@@ -84,16 +78,16 @@ export class BreadCrumbs {
 
         li.appendChild(link);
       } else {
-        const span = document.createElement('span');
+        const span = document.createElement("span");
         span.textContent = item.label;
-        span.className = 'breadcrumb-item';
+        span.className = "breadcrumb-item";
         span.style.cssText = `
-          color: ${item.active ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};
-          font-weight: ${item.active ? 'var(--font-weight-medium)' : 'var(--font-weight-regular)'};
+          color: ${item.active ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
+          font-weight: ${item.active ? "var(--font-weight-medium)" : "var(--font-weight-regular)"};
         `;
 
         if (item.active) {
-          span.setAttribute('aria-current', 'page');
+          span.setAttribute("aria-current", "page");
         }
 
         li.appendChild(span);
@@ -101,10 +95,10 @@ export class BreadCrumbs {
 
       // Separator (except for last item)
       if (index < this.items.length - 1) {
-        const sep = document.createElement('span');
-        sep.className = 'breadcrumb-separator';
+        const sep = document.createElement("span");
+        sep.className = "breadcrumb-separator";
         sep.textContent = this.separator;
-        sep.setAttribute('aria-hidden', 'true');
+        sep.setAttribute("aria-hidden", "true");
         sep.style.cssText = `
           color: var(--color-border);
           user-select: none;
@@ -121,8 +115,8 @@ export class BreadCrumbs {
 }
 
 // Add BreadCrumbs styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .breadcrumbs {
       display: flex;

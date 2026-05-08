@@ -20,13 +20,13 @@ export class MainLayout {
     const {
       navItems = [],
       navRightItems = [],
-      brand = { label: 'Cotishama', href: '/' },
+      brand = { label: "Cotishama", href: "/" },
       sidebarItems = [],
-      sidebarWidth = '250px',
+      sidebarWidth = "250px",
       showSidebar = true,
       onNavClick = null,
       onSidebarClick = null,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -44,10 +44,10 @@ export class MainLayout {
   }
 
   render() {
-    const { Navigation } = require('../organisms/Navigation.js');
-    const { Sidebar } = require('../organisms/Sidebar.js');
+    const { Navigation } = require("../organisms/Navigation.js");
+    const { Sidebar } = require("../organisms/Sidebar.js");
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `main-layout ${this.className}`;
     container.style.cssText = `
       display: flex;
@@ -72,8 +72,8 @@ export class MainLayout {
     container.appendChild(nav);
 
     // Main content area
-    const mainWrapper = document.createElement('div');
-    mainWrapper.className = 'main-wrapper';
+    const mainWrapper = document.createElement("div");
+    mainWrapper.className = "main-wrapper";
     mainWrapper.style.cssText = `
       display: flex;
       flex: 1;
@@ -95,8 +95,8 @@ export class MainLayout {
     }
 
     // Content area
-    const content = document.createElement('main');
-    content.className = 'main-content';
+    const content = document.createElement("main");
+    content.className = "main-content";
     content.style.cssText = `
       flex: 1;
       overflow-y: auto;
@@ -112,8 +112,8 @@ export class MainLayout {
 
     // Public methods
     container.setContent = (element) => {
-      content.innerHTML = '';
-      if (typeof element === 'string') {
+      content.innerHTML = "";
+      if (typeof element === "string") {
         content.textContent = element;
       } else if (element instanceof HTMLElement) {
         content.appendChild(element);
@@ -127,8 +127,8 @@ export class MainLayout {
 }
 
 // Add MainLayout styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .main-layout {
       display: flex;

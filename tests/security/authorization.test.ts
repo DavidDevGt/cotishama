@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { setupTestDB, teardownTestDB } from '../setup';
-import { AuthService } from '../../apps/backend/src/services/AuthService';
-import { AuthorizationError, NotFoundError } from '../../apps/backend/src/types/errors';
-import { ClientService } from '../../apps/backend/src/services/ClientService';
-import { ProductService } from '../../apps/backend/src/services/ProductService';
-import { ClientFactory, ProductFactory } from '../factories';
+import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { setupTestDB, teardownTestDB } from "../setup";
+import { AuthService } from "../../apps/backend/src/services/AuthService";
+import { AuthorizationError, NotFoundError } from "../../apps/backend/src/types/errors";
+import { ClientService } from "../../apps/backend/src/services/ClientService";
+import { ProductService } from "../../apps/backend/src/services/ProductService";
+import { ClientFactory, ProductFactory } from "../factories";
 
-describe('Security Tests - Authorization & RBAC', () => {
+describe("Security Tests - Authorization & RBAC", () => {
   let authService: AuthService;
   let clientService: ClientService;
   let productService: ProductService;
@@ -21,9 +21,9 @@ describe('Security Tests - Authorization & RBAC', () => {
     productService = new ProductService();
 
     // Create users with different roles
-    adminUser = await authService.register('admin@test.com', 'Password123');
-    operatorUser = await authService.register('operator@test.com', 'Password123');
-    viewerUser = await authService.register('viewer@test.com', 'Password123');
+    adminUser = await authService.register("admin@test.com", "Password123");
+    operatorUser = await authService.register("operator@test.com", "Password123");
+    viewerUser = await authService.register("viewer@test.com", "Password123");
 
     // In production, update roles via database admin panel
     // For this test, we use the create method which sets default roles
@@ -33,10 +33,10 @@ describe('Security Tests - Authorization & RBAC', () => {
     await teardownTestDB();
   });
 
-  describe('Resource Access Control', () => {
-    it('should allow authenticated users to access resources', async () => {
+  describe("Resource Access Control", () => {
+    it("should allow authenticated users to access resources", async () => {
       const client = await clientService.createClient(
-        ClientFactory.create({ createdBy: adminUser.id })
+        ClientFactory.create({ createdBy: adminUser.id }),
       );
 
       const retrieved = await clientService.getClient(client.id);
@@ -44,9 +44,9 @@ describe('Security Tests - Authorization & RBAC', () => {
       expect(retrieved.id).toBe(client.id);
     });
 
-    it('should allow viewing own created resources', async () => {
+    it("should allow viewing own created resources", async () => {
       const client = await clientService.createClient(
-        ClientFactory.create({ createdBy: adminUser.id })
+        ClientFactory.create({ createdBy: adminUser.id }),
       );
 
       const retrieved = await clientService.getClient(client.id);
@@ -54,41 +54,41 @@ describe('Security Tests - Authorization & RBAC', () => {
       expect(retrieved.createdBy).toBe(adminUser.id);
     });
 
-    it('should reject access to non-existent resources', async () => {
+    it("should reject access to non-existent resources", async () => {
       try {
         await clientService.getClient(99999);
-        expect.unreachable('Should throw NotFoundError');
+        expect.unreachable("Should throw NotFoundError");
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundError);
       }
     });
   });
 
-  describe('Privilege Escalation Prevention', () => {
-    it('should prevent privilege escalation through registration', async () => {
-      const user = await authService.register('newuser@test.com', 'Password123');
+  describe("Privilege Escalation Prevention", () => {
+    it("should prevent privilege escalation through registration", async () => {
+      const user = await authService.register("newuser@test.com", "Password123");
 
       // New users should be VIEWER, not ADMIN
-      expect(user.role).toBe('VIEWER');
+      expect(user.role).toBe("VIEWER");
     });
 
-    it('should prevent role modification through normal endpoints', async () => {
-      const user = await authService.register('test@test.com', 'Password123');
+    it("should prevent role modification through normal endpoints", async () => {
+      const user = await authService.register("test@test.com", "Password123");
 
       // Try to update role (this would be prevented at endpoint level)
       // In production, role update should require admin middleware
       const originalRole = user.role;
 
       // Note: Database models should validate role values
-      expect(user.role).toBe('VIEWER');
-      expect(user.role).not.toBe('ADMIN');
+      expect(user.role).toBe("VIEWER");
+      expect(user.role).not.toBe("ADMIN");
     });
   });
 
-  describe('Sensitive Operation Protection', () => {
-    it('should require authorization for product deletion', async () => {
+  describe("Sensitive Operation Protection", () => {
+    it("should require authorization for product deletion", async () => {
       const product = await productService.createProduct(
-        ProductFactory.create({ createdBy: adminUser.id })
+        ProductFactory.create({ createdBy: adminUser.id }),
       );
 
       // In production, verify only ADMIN can delete
@@ -97,23 +97,23 @@ describe('Security Tests - Authorization & RBAC', () => {
       expect(retrieved.id).toBe(product.id);
     });
 
-    it('should log sensitive operations', async () => {
+    it("should log sensitive operations", async () => {
       // In production, audit log middleware should track:
       // - Login attempts (success/failure)
       // - Resource creation/modification/deletion
       // - Permission changes
       // - Admin actions
 
-      const user = await authService.register('test@test.com', 'Password123');
+      const user = await authService.register("test@test.com", "Password123");
       expect(user).toBeDefined();
 
       // Operation should be logged (verified through database)
     });
   });
 
-  describe('Information Disclosure Prevention', () => {
-    it('should not expose password hashes in responses', async () => {
-      const user = await authService.register('test@test.com', 'Password123');
+  describe("Information Disclosure Prevention", () => {
+    it("should not expose password hashes in responses", async () => {
+      const user = await authService.register("test@test.com", "Password123");
 
       expect(user.passwordHash).toBeDefined(); // Internal
       expect(user.passwordHash).not.toBeUndefined();
@@ -122,13 +122,13 @@ describe('Security Tests - Authorization & RBAC', () => {
       // This is enforced at endpoint level
     });
 
-    it('should not expose other users data', async () => {
+    it("should not expose other users data", async () => {
       const user1Client = await clientService.createClient(
-        ClientFactory.create({ createdBy: adminUser.id })
+        ClientFactory.create({ createdBy: adminUser.id }),
       );
 
       const user2Client = await clientService.createClient(
-        ClientFactory.create({ createdBy: operatorUser.id })
+        ClientFactory.create({ createdBy: operatorUser.id }),
       );
 
       // Each user should see the resources they have permission to
@@ -140,21 +140,21 @@ describe('Security Tests - Authorization & RBAC', () => {
       expect(client2.id).toBe(user2Client.id);
     });
 
-    it('should not expose error details in production', async () => {
+    it("should not expose error details in production", async () => {
       // In production, generic error messages should be returned
       try {
         await clientService.getClient(99999);
       } catch (error) {
         // Error message should be generic
-        expect((error as Error).message).toContain('not found');
-        expect((error as Error).message).not.toContain('database');
-        expect((error as Error).message).not.toContain('query');
+        expect((error as Error).message).toContain("not found");
+        expect((error as Error).message).not.toContain("database");
+        expect((error as Error).message).not.toContain("query");
       }
     });
   });
 
-  describe('CSRF Token Validation', () => {
-    it('should require CSRF tokens for state-changing operations', async () => {
+  describe("CSRF Token Validation", () => {
+    it("should require CSRF tokens for state-changing operations", async () => {
       // In production, implement CSRF token validation
       // POST/PUT/PATCH/DELETE should require valid CSRF token in headers
       // GET requests should be safe (no state changes)
@@ -167,32 +167,26 @@ describe('Security Tests - Authorization & RBAC', () => {
     });
   });
 
-  describe('CORS & Same-Origin Policy', () => {
-    it('should enforce proper CORS headers in production', async () => {
+  describe("CORS & Same-Origin Policy", () => {
+    it("should enforce proper CORS headers in production", async () => {
       // In production, verify CORS configuration:
       // - Only allow specified origins
       // - Only allow necessary methods
       // - Only expose necessary headers
       // - Set credentials policy correctly
-
       // API should be protected with CORS
     });
   });
 
-  describe('Input Validation & Sanitization', () => {
-    it('should validate email format', async () => {
-      const invalidEmails = [
-        'invalid',
-        'invalid@',
-        '@invalid.com',
-        'invalid..email@test.com',
-      ];
+  describe("Input Validation & Sanitization", () => {
+    it("should validate email format", async () => {
+      const invalidEmails = ["invalid", "invalid@", "@invalid.com", "invalid..email@test.com"];
 
       // In production, Zod schema validation would reject these
       // This test verifies the concept
     });
 
-    it('should prevent SQL injection through input validation', async () => {
+    it("should prevent SQL injection through input validation", async () => {
       const maliciousInputs = [
         "'; DROP TABLE users; --",
         "1' OR '1'='1",
@@ -213,10 +207,10 @@ describe('Security Tests - Authorization & RBAC', () => {
       }
     });
 
-    it('should prevent XSS through output encoding', async () => {
+    it("should prevent XSS through output encoding", async () => {
       const xssPayloads = [
         '<script>alert("XSS")</script>',
-        '<img src=x onerror="alert(\'XSS\')">',
+        "<img src=x onerror=\"alert('XSS')\">",
         'javascript:alert("XSS")',
         '<svg onload=alert("XSS")>',
       ];
@@ -233,7 +227,7 @@ describe('Security Tests - Authorization & RBAC', () => {
       }
     });
 
-    it('should validate data types strictly', async () => {
+    it("should validate data types strictly", async () => {
       // In production, Zod validation ensures:
       // - Numbers are numbers
       // - Dates are valid ISO8601
@@ -241,31 +235,30 @@ describe('Security Tests - Authorization & RBAC', () => {
       // - Strings respect min/max length
 
       const client = ClientFactory.create();
-      expect(typeof client.createdBy).toBe('number');
-      expect(typeof client.email).toBe('string');
-      expect(typeof client.isActive).toBe('number');
+      expect(typeof client.createdBy).toBe("number");
+      expect(typeof client.email).toBe("string");
+      expect(typeof client.isActive).toBe("number");
     });
   });
 
-  describe('Rate Limiting & DoS Prevention', () => {
-    it('should implement rate limiting per IP', async () => {
+  describe("Rate Limiting & DoS Prevention", () => {
+    it("should implement rate limiting per IP", async () => {
       // In production, rate limiter middleware should:
       // - Track requests per IP
       // - Limit login attempts (5 per 15 min)
       // - Limit general API (100 per 15 min)
       // - Return 429 Too Many Requests
-
       // This is implemented in middleware/rateLimit.ts
     });
 
-    it('should prevent brute force attacks on endpoints', async () => {
+    it("should prevent brute force attacks on endpoints", async () => {
       // In production, failed login attempts should be counted
       // After N failures, temporarily lock the account or IP
     });
   });
 
-  describe('Data Validation at Boundaries', () => {
-    it('should validate user input at API boundary', async () => {
+  describe("Data Validation at Boundaries", () => {
+    it("should validate user input at API boundary", async () => {
       // Only validate at system boundaries (user input, external APIs)
       // Don't validate internal data passed between functions
 
@@ -274,7 +267,7 @@ describe('Security Tests - Authorization & RBAC', () => {
       expect(client.name).toBeDefined();
     });
 
-    it('should not trust external API responses blindly', async () => {
+    it("should not trust external API responses blindly", async () => {
       // In production, when calling external APIs:
       // - Validate response structure
       // - Sanitize any returned data

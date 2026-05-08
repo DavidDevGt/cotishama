@@ -30,7 +30,7 @@ export class DataTable {
       onRowClick = null,
       onSelectionChange = null,
       onSort = null,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -49,12 +49,12 @@ export class DataTable {
     this.id = id;
     this.currentPage = 1;
     this.sortColumn = null;
-    this.sortDirection = 'asc';
+    this.sortDirection = "asc";
     this.selectedRows = new Set();
   }
 
   render() {
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.className = `data-table-container ${this.className}`;
     container.style.cssText = `
       overflow-x: auto;
@@ -62,9 +62,9 @@ export class DataTable {
       border: 1px solid var(--color-border);
     `;
 
-    const table = document.createElement('table');
+    const table = document.createElement("table");
     table.className = `data-table`;
-    table.setAttribute('role', 'grid');
+    table.setAttribute("role", "grid");
     table.style.cssText = `
       width: 100%;
       border-collapse: collapse;
@@ -85,7 +85,7 @@ export class DataTable {
 
     // Pagination (if enabled)
     if (this.pageable && this.data.length > this.pageSize) {
-      const { Pagination } = require('../molecules/Pagination.js');
+      const { Pagination } = require("../molecules/Pagination.js");
       const totalPages = Math.ceil(this.data.length / this.pageSize);
       const pagination = new Pagination({
         currentPage: this.currentPage,
@@ -103,17 +103,17 @@ export class DataTable {
   }
 
   renderHead() {
-    const thead = document.createElement('thead');
+    const thead = document.createElement("thead");
     thead.style.cssText = `
       background-color: var(--color-surface);
       border-bottom: 2px solid var(--color-border);
     `;
 
-    const tr = document.createElement('tr');
+    const tr = document.createElement("tr");
 
     // Checkbox column
     if (this.selectable) {
-      const th = document.createElement('th');
+      const th = document.createElement("th");
       th.style.cssText = `
         padding: var(--spacing-md);
         text-align: left;
@@ -121,10 +121,10 @@ export class DataTable {
         color: var(--color-text-primary);
       `;
 
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.setAttribute('aria-label', 'Select all');
-      checkbox.addEventListener('change', (e) => {
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.setAttribute("aria-label", "Select all");
+      checkbox.addEventListener("change", (e) => {
         this.selectAll(e.target.checked);
       });
       th.appendChild(checkbox);
@@ -133,14 +133,14 @@ export class DataTable {
 
     // Column headers
     this.columns.forEach((column) => {
-      const th = document.createElement('th');
+      const th = document.createElement("th");
       th.style.cssText = `
         padding: var(--spacing-md);
         text-align: left;
         font-weight: var(--font-weight-semibold);
         color: var(--color-text-primary);
-        ${column.width ? `width: ${column.width}` : ''}
-        cursor: ${column.sortable ? 'pointer' : 'default'};
+        ${column.width ? `width: ${column.width}` : ""}
+        cursor: ${column.sortable ? "pointer" : "default"};
         user-select: none;
         transition: background-color var(--transition-fast);
       `;
@@ -148,16 +148,16 @@ export class DataTable {
       th.textContent = column.label;
 
       if (column.sortable) {
-        th.addEventListener('click', () => {
+        th.addEventListener("click", () => {
           this.handleSort(column.key);
         });
 
-        th.addEventListener('mouseenter', () => {
-          th.style.backgroundColor = 'var(--color-neutral-100)';
+        th.addEventListener("mouseenter", () => {
+          th.style.backgroundColor = "var(--color-neutral-100)";
         });
 
-        th.addEventListener('mouseleave', () => {
-          th.style.backgroundColor = 'transparent';
+        th.addEventListener("mouseleave", () => {
+          th.style.backgroundColor = "transparent";
         });
       }
 
@@ -169,39 +169,39 @@ export class DataTable {
   }
 
   renderBody() {
-    const tbody = document.createElement('tbody');
+    const tbody = document.createElement("tbody");
 
     const displayData = this.getDisplayData();
 
     displayData.forEach((row, index) => {
-      const tr = document.createElement('tr');
-      tr.setAttribute('role', 'row');
+      const tr = document.createElement("tr");
+      tr.setAttribute("role", "row");
       tr.style.cssText = `
         border-bottom: 1px solid var(--color-border);
-        ${this.striped && index % 2 === 0 ? 'background-color: var(--color-surface)' : ''}
-        ${this.hoverable ? 'transition: background-color var(--transition-fast); cursor: pointer;' : ''}
+        ${this.striped && index % 2 === 0 ? "background-color: var(--color-surface)" : ""}
+        ${this.hoverable ? "transition: background-color var(--transition-fast); cursor: pointer;" : ""}
       `;
 
       if (this.hoverable) {
-        tr.addEventListener('mouseenter', () => {
-          tr.style.backgroundColor = 'var(--color-neutral-100)';
+        tr.addEventListener("mouseenter", () => {
+          tr.style.backgroundColor = "var(--color-neutral-100)";
         });
 
-        tr.addEventListener('mouseleave', () => {
-          tr.style.backgroundColor = this.striped && index % 2 === 0 ? 'var(--color-surface)' : '';
+        tr.addEventListener("mouseleave", () => {
+          tr.style.backgroundColor = this.striped && index % 2 === 0 ? "var(--color-surface)" : "";
         });
       }
 
       // Checkbox column
       if (this.selectable) {
-        const td = document.createElement('td');
-        td.style.cssText = 'padding: var(--spacing-md);';
+        const td = document.createElement("td");
+        td.style.cssText = "padding: var(--spacing-md);";
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
         checkbox.value = row.id;
         checkbox.checked = this.selectedRows.has(row.id);
-        checkbox.addEventListener('change', (e) => {
+        checkbox.addEventListener("change", (e) => {
           this.toggleRowSelection(row.id, e.target.checked);
         });
         td.appendChild(checkbox);
@@ -210,31 +210,31 @@ export class DataTable {
 
       // Data cells
       this.columns.forEach((column) => {
-        const td = document.createElement('td');
-        td.setAttribute('role', 'gridcell');
+        const td = document.createElement("td");
+        td.setAttribute("role", "gridcell");
         td.style.cssText = `
           padding: var(--spacing-md);
           color: var(--color-text-primary);
-          ${column.width ? `width: ${column.width}` : ''}
+          ${column.width ? `width: ${column.width}` : ""}
         `;
 
         const value = row[column.key];
         if (column.render) {
           const rendered = column.render(value, row);
-          if (typeof rendered === 'string') {
+          if (typeof rendered === "string") {
             td.textContent = rendered;
           } else {
             td.appendChild(rendered);
           }
         } else {
-          td.textContent = value || '—';
+          td.textContent = value || "—";
         }
 
         tr.appendChild(td);
       });
 
       if (this.onRowClick) {
-        tr.addEventListener('click', () => {
+        tr.addEventListener("click", () => {
           this.onRowClick(row);
         });
       }
@@ -246,7 +246,7 @@ export class DataTable {
   }
 
   getDisplayData() {
-    let data = [...this.data];
+    const data = [...this.data];
 
     // Sort
     if (this.sortColumn) {
@@ -254,13 +254,11 @@ export class DataTable {
         const aVal = a[this.sortColumn];
         const bVal = b[this.sortColumn];
 
-        if (typeof aVal === 'string') {
-          return this.sortDirection === 'asc'
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
+        if (typeof aVal === "string") {
+          return this.sortDirection === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         }
 
-        return this.sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        return this.sortDirection === "asc" ? aVal - bVal : bVal - aVal;
       });
     }
 
@@ -276,10 +274,10 @@ export class DataTable {
 
   handleSort(column) {
     if (this.sortColumn === column) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
     } else {
       this.sortColumn = column;
-      this.sortDirection = 'asc';
+      this.sortDirection = "asc";
     }
 
     if (this.onSort) {
@@ -315,8 +313,8 @@ export class DataTable {
 }
 
 // Add DataTable styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .data-table-container {
       overflow-x: auto;

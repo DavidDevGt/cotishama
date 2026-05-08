@@ -18,10 +18,10 @@ export class Sidebar {
       items = [],
       collapsible = true,
       collapsed = false,
-      width = '250px',
+      width = "250px",
       onItemClick = null,
       activeHref = null,
-      className = '',
+      className = "",
       id = null,
     } = options;
 
@@ -36,10 +36,10 @@ export class Sidebar {
   }
 
   render() {
-    const { MenuItem } = require('../molecules/MenuItem.js');
-    const { Icon } = require('../atoms/Icon.js');
+    const { MenuItem } = require("../molecules/MenuItem.js");
+    const { Icon } = require("../atoms/Icon.js");
 
-    const aside = document.createElement('aside');
+    const aside = document.createElement("aside");
     aside.className = `sidebar ${this.className}`;
     aside.style.cssText = `
       width: ${this.width};
@@ -51,17 +51,17 @@ export class Sidebar {
       top: 0;
       overflow-y: auto;
       transition: width var(--transition-normal), transform var(--transition-normal);
-      ${this.collapsed ? 'width: 60px' : ''}
+      ${this.collapsed ? "width: 60px" : ""}
     `;
 
     if (this.id) aside.id = this.id;
 
     // Collapse button
     if (this.collapsible) {
-      const collapseBtn = document.createElement('button');
-      collapseBtn.className = 'sidebar-toggle';
-      collapseBtn.setAttribute('aria-label', 'Toggle sidebar');
-      collapseBtn.setAttribute('aria-expanded', !this.collapsed);
+      const collapseBtn = document.createElement("button");
+      collapseBtn.className = "sidebar-toggle";
+      collapseBtn.setAttribute("aria-label", "Toggle sidebar");
+      collapseBtn.setAttribute("aria-expanded", !this.collapsed);
       collapseBtn.style.cssText = `
         display: flex;
         align-items: center;
@@ -78,38 +78,38 @@ export class Sidebar {
       `;
 
       const icon = new Icon({
-        name: this.collapsed ? 'chevron_right' : 'chevron_left',
-        size: 'md',
+        name: this.collapsed ? "chevron_right" : "chevron_left",
+        size: "md",
       }).render();
       collapseBtn.appendChild(icon);
 
       if (!this.collapsed) {
-        const label = document.createElement('span');
-        label.textContent = 'Collapse';
-        label.style.cssText = 'font-size: var(--font-size-sm);';
+        const label = document.createElement("span");
+        label.textContent = "Collapse";
+        label.style.cssText = "font-size: var(--font-size-sm);";
         collapseBtn.appendChild(label);
       }
 
-      collapseBtn.addEventListener('click', () => {
+      collapseBtn.addEventListener("click", () => {
         this.collapsed = !this.collapsed;
-        aside.style.width = this.collapsed ? '60px' : this.width;
-        collapseBtn.setAttribute('aria-expanded', !this.collapsed);
+        aside.style.width = this.collapsed ? "60px" : this.width;
+        collapseBtn.setAttribute("aria-expanded", !this.collapsed);
 
         // Update icon and label
-        const currentIcon = collapseBtn.querySelector('svg');
+        const currentIcon = collapseBtn.querySelector("svg");
         if (currentIcon) currentIcon.remove();
         const newIcon = new Icon({
-          name: this.collapsed ? 'chevron_right' : 'chevron_left',
-          size: 'md',
+          name: this.collapsed ? "chevron_right" : "chevron_left",
+          size: "md",
         }).render();
         collapseBtn.insertBefore(newIcon, collapseBtn.firstChild);
 
-        const label = collapseBtn.querySelector('span');
+        const label = collapseBtn.querySelector("span");
         if (label) label.remove();
         if (!this.collapsed) {
-          const newLabel = document.createElement('span');
-          newLabel.textContent = 'Collapse';
-          newLabel.style.cssText = 'font-size: var(--font-size-sm);';
+          const newLabel = document.createElement("span");
+          newLabel.textContent = "Collapse";
+          newLabel.style.cssText = "font-size: var(--font-size-sm);";
           collapseBtn.appendChild(newLabel);
         }
       });
@@ -118,9 +118,9 @@ export class Sidebar {
     }
 
     // Navigation
-    const nav = document.createElement('nav');
-    nav.className = 'sidebar-nav';
-    nav.setAttribute('aria-label', 'Sidebar navigation');
+    const nav = document.createElement("nav");
+    nav.className = "sidebar-nav";
+    nav.setAttribute("aria-label", "Sidebar navigation");
     nav.style.cssText = `
       display: flex;
       flex-direction: column;
@@ -129,11 +129,11 @@ export class Sidebar {
 
     // Render items
     this.items.forEach((item) => {
-      if (item.type === 'section') {
+      if (item.type === "section") {
         const section = this.renderSection(item);
         nav.appendChild(section);
-      } else if (item.type === 'divider') {
-        const divider = document.createElement('div');
+      } else if (item.type === "divider") {
+        const divider = document.createElement("div");
         divider.style.cssText = `
           height: 1px;
           background-color: var(--color-border);
@@ -152,7 +152,7 @@ export class Sidebar {
               this.onItemClick(item);
             }
           },
-          size: 'md',
+          size: "md",
         }).render();
         nav.appendChild(menuItem);
       }
@@ -164,17 +164,17 @@ export class Sidebar {
   }
 
   renderSection(section) {
-    const { Icon } = require('../atoms/Icon.js');
+    const { Icon } = require("../atoms/Icon.js");
 
-    const container = document.createElement('div');
-    container.className = 'sidebar-section';
+    const container = document.createElement("div");
+    container.className = "sidebar-section";
     container.style.cssText = `
       margin-bottom: var(--spacing-md);
     `;
 
     // Section header (collapsible)
-    const header = document.createElement('button');
-    header.className = 'sidebar-section-header';
+    const header = document.createElement("button");
+    header.className = "sidebar-section-header";
     header.style.cssText = `
       display: flex;
       align-items: center;
@@ -193,22 +193,22 @@ export class Sidebar {
     header.textContent = section.label;
 
     const chevron = new Icon({
-      name: section.expanded ? 'chevron_down' : 'chevron_right',
-      size: 'sm',
+      name: section.expanded ? "chevron_down" : "chevron_right",
+      size: "sm",
     }).render();
     header.appendChild(chevron);
 
     // Content
-    const content = document.createElement('div');
-    content.className = 'sidebar-section-content';
+    const content = document.createElement("div");
+    content.className = "sidebar-section-content";
     content.style.cssText = `
-      display: ${section.expanded ? 'flex' : 'none'};
+      display: ${section.expanded ? "flex" : "none"};
       flex-direction: column;
       gap: var(--spacing-xs);
     `;
 
     section.items.forEach((item) => {
-      const { MenuItem } = require('../molecules/MenuItem.js');
+      const { MenuItem } = require("../molecules/MenuItem.js");
       const menuItem = new MenuItem({
         label: item.label,
         icon: item.icon,
@@ -219,23 +219,23 @@ export class Sidebar {
             this.onItemClick(item);
           }
         },
-        size: 'sm',
-        className: 'sidebar-subsection-item',
+        size: "sm",
+        className: "sidebar-subsection-item",
       }).render();
-      menuItem.style.marginLeft = 'var(--spacing-md)';
+      menuItem.style.marginLeft = "var(--spacing-md)";
       content.appendChild(menuItem);
     });
 
-    header.addEventListener('click', () => {
+    header.addEventListener("click", () => {
       section.expanded = !section.expanded;
-      content.style.display = section.expanded ? 'flex' : 'none';
+      content.style.display = section.expanded ? "flex" : "none";
 
       // Update chevron
-      const currentChevron = header.querySelector('svg');
+      const currentChevron = header.querySelector("svg");
       if (currentChevron) currentChevron.remove();
       const newChevron = new Icon({
-        name: section.expanded ? 'chevron_down' : 'chevron_right',
-        size: 'sm',
+        name: section.expanded ? "chevron_down" : "chevron_right",
+        size: "sm",
       }).render();
       header.appendChild(newChevron);
     });
@@ -248,8 +248,8 @@ export class Sidebar {
 }
 
 // Add Sidebar styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = `
     .sidebar {
       width: 250px;
