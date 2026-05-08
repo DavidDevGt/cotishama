@@ -1,116 +1,274 @@
-# Cotishama 2.0 - Complete Testing Strategy
+# Testing Strategy & Quality Assurance
 
-**Enterprise-Grade Automated Testing Framework**
+## Overview
 
-Comprehensive testing architecture covering unit, integration, E2E, performance, and security testing.
+Cotishama 2.0 implements a comprehensive, multi-layered testing strategy to ensure enterprise-grade quality, reliability, and performance. This document outlines the testing approach, test coverage, and how to execute tests.
 
-## 🎯 Testing Pyramid
-
-```
-        ┌─────────────────────────────┐
-        │   E2E Tests (10%)           │   <5 min
-        │   15-20 scenarios           │
-        ├─────────────────────────────┤
-        │  Integration Tests (25%)    │   <10 min
-        │   60-80 test cases          │
-        ├─────────────────────────────┤
-        │   Unit Tests (65%)          │   <5 min
-        │   200+ test cases           │
-        └─────────────────────────────┘
-        
-    Total Execution: ~20 minutes
-    Coverage: 88%+ code
-    Pass Rate: 100%
-```
-
-## 📊 Testing Distribution
-
-### Backend (Phase 2 - ✅ Completed)
-- ✅ **Unit Tests**: 100+ cases
-- ✅ **Integration Tests**: 50+ cases
-- ✅ **Security Tests**: 40+ cases
-- ✅ **Pass Rate**: 100%
-
-### Frontend (Phase 3 - In Progress)
-- ✅ **Unit Tests**: 80+ component tests
-- ✅ **Integration Tests**: 40+ interaction tests
-- ✅ **E2E Tests**: 20+ scenario tests
-- ✅ **Coverage Target**: 85%+
-
-## 📝 Test Categories
-
-### 1. Unit Tests (Frontend)
-- Component rendering tests (Button, Input, Icon, etc.)
-- Props validation
-- Event handling
-- State management
-- Edge cases
-
-### 2. Integration Tests
-- Component interactions (Form submission, Modal lifecycle)
-- Data binding
-- Error handling
-- Validation workflows
-
-### 3. E2E Tests (Playwright)
-- **Critical Paths**: Auth, Products, Quotes
-- **Smoke Tests**: Page loads, Navigation
-- **Regression**: Form data, Session persistence
-- **Accessibility**: WCAG 2.1 AA compliance
-- **Performance**: Load times, API response
-
-## 🧪 Frontend Test Files
+## Testing Pyramid
 
 ```
-__tests__/
-├── unit/
-│   ├── components/atoms/ (80+ tests)
-│   ├── components/molecules/ (60+ tests)
-│   └── components/organisms/ (40+ tests)
-├── integration/
-│   ├── features/ (40+ tests)
-│   └── pages/ (20+ tests)
-└── e2e/
-    ├── critical-paths/ (20+ scenarios)
-    ├── smoke/ (10+ tests)
-    ├── regression/ (15+ tests)
-    ├── accessibility/ (10+ tests)
-    └── performance/ (5+ tests)
+        ┌─────────────────┐
+        │   E2E Tests     │ (5-10%)
+        │   Playwright    │
+        ├─────────────────┤
+        │Integration Tests│ (15-25%)
+        │   API Tests     │
+        │  Unit Tests     │
+        ├─────────────────┤
+        │  Unit Tests     │ (65-80%)
+        │  Components     │
+        │  Utils/Libs     │
+        └─────────────────┘
 ```
 
-## 🚀 Test Execution
+## Test Categories
+
+### 1. Unit Tests (65-80%)
+
+Test individual functions, components, and utilities in isolation.
+
+**Location:** `tests/unit/**/*.test.ts`
+
+**Coverage:**
+- Authentication utilities (JWT, password hashing)
+- Configuration parsing
+- Data validators
+- UI component behavior
+- Utility functions
+
+**Run:**
+```bash
+bun run test:unit
+bun run test:unit:watch
+```
+
+### 2. Integration Tests (15-25%)
+
+Test API endpoints and component interactions without the frontend.
+
+**Location:** `tests/integration/**/*.test.ts`
+
+**Coverage:**
+- Authentication API endpoints
+- Quote management endpoints
+- Client management endpoints
+- Error handling and validation
+- Database operations
+
+**Run:**
+```bash
+bun run test:integration
+```
+
+### 3. End-to-End Tests (5-10%)
+
+Test complete user flows through the entire application using Playwright.
+
+**Location:** `tests/e2e/**/*.spec.ts`
+
+**Coverage:**
+- User authentication flows
+- Quote creation, editing, deletion
+- Client management workflows
+- Search and filtering
+- PDF export functionality
+- Mobile responsiveness
+- Accessibility compliance
+
+**Run:**
+```bash
+bun run test:e2e            # Headless mode
+bun run test:e2e:ui         # Interactive mode
+bun run test:e2e:debug      # Debug mode
+```
+
+## E2E Test Suites
+
+### Auth Flows (`tests/e2e/auth.spec.ts`)
+
+- Login with valid credentials
+- Error handling (invalid email, wrong password)
+- Session persistence
+- Logout and session clearing
+- Protected route access
+- Token refresh mechanism
+- Form validation
+- Focus management
+
+### Quote Management (`tests/e2e/quotes.spec.ts`)
+
+- Quote list display
+- Create new quote
+- Edit existing quote
+- Delete quote with confirmation
+- Filter by status
+- Search functionality
+- PDF export
+- Data validation
+
+### Client Management (`tests/e2e/clients.spec.ts`)
+
+- Client list display
+- Create client
+- Edit client details
+- Delete client
+- Search by name
+- Sort operations
+- View client details
+- Link quotes to clients
+
+### Performance & Accessibility (`tests/e2e/performance.spec.ts`)
+
+- Page load time < 3 seconds
+- Proper page titles
+- Accessible form labels
+- Keyboard navigation
+- Color contrast ratios
+- Image alt texts
+- Mobile responsiveness (375px viewport)
+- Long content handling
+- Focus indicators
+- API response caching
+
+## API Test Suites
+
+### Authentication Tests (`tests/integration/api-auth.test.ts`)
+
+- User registration
+- User login
+- Credentials validation
+- Token refresh
+- Token verification
+- Protected route access
+- Bearer token validation
+
+### Quotes API (`tests/integration/api-quotes.test.ts`)
+
+- Create quote
+- Retrieve list
+- Retrieve single quote
+- Update quote
+- Delete quote
+- Field validation
+- Pagination
+- Status filtering
+- Search functionality
+
+### Clients API (`tests/integration/api-clients.test.ts`)
+
+- Create client
+- Retrieve list
+- Retrieve single client
+- Update client
+- Delete client
+- Email validation
+- Pagination
+- Search
+- Sorting
+- Client quotes retrieval
+
+## Running Tests
+
+### All Tests
 
 ```bash
-# All tests
-npm run test:all
-
-# By layer
-npm run test:unit          # ~3 min
-npm run test:integration   # ~5 min
-npm run test:e2e          # ~8 min
-npm run test:e2e:critical # ~3 min
-npm run test:e2e:smoke    # ~2 min
-
-# With coverage
-npm run test:coverage
+bun run test:all        # Run all tests
+bun run test:ci         # Run with CI timeouts (15s)
+bun run test:quality    # Unit + Integration + E2E
 ```
 
-## ✅ Success Criteria
+### By Category
 
-- ✅ **100% pass rate** on all tests
-- ✅ **88%+ code coverage** 
-- ✅ **Zero flaky tests**
-- ✅ **100% critical path E2E coverage**
-- ✅ **WCAG 2.1 AA** compliance
-- ✅ **<500ms** interaction response
-- ✅ **<20 minutes** total CI/CD time
+```bash
+bun run test:unit       # Unit tests only
+bun run test:integration # API integration tests
+bun run test:security   # Security tests
+bun run test:e2e        # E2E tests (headless)
+```
 
-## 🛠️ CI/CD Integration
+### Development
 
-Tests run automatically on:
-- **Push**: Unit + Integration tests
-- **PR**: All tests before merge
-- **Nightly**: Full suite + Performance
-- **Release**: Full suite + Security audit
+```bash
+bun run test:unit:watch # Watch unit tests during development
+bun run test:e2e:ui     # Interactive E2E test execution
+bun run test:e2e:debug  # Debug failing E2E tests
+```
 
-**Status: Ready for implementation ✅**
+### Reports
+
+```bash
+bun run test:coverage   # Generate coverage report
+bun run test:report     # View HTML test report
+```
+
+## Test Configuration
+
+### Playwright Configuration (`playwright.config.ts`)
+
+- **Browsers:** Chromium, Firefox, WebKit
+- **Devices:** Desktop Chrome, Firefox, Safari, Mobile Chrome (Pixel 5)
+- **Timeouts:** 30s per test
+- **Retries:** 2 retries on CI, 0 on local
+- **Reporters:** HTML, JSON, JUnit XML
+- **Screenshots:** On failure
+- **Videos:** On failure
+- **Traces:** On first retry
+
+### Test Fixtures (`tests/e2e/fixtures/auth-fixtures.ts`)
+
+- `authenticatedPage` - Pre-authenticated browser session
+- `helpers` - TestHelpers utility class
+- `testEmail` - Unique test email generation
+
+## Test Data
+
+### Test Users
+
+```
+admin:    admin@cotishama.local / Admin123!Secure
+manager:  manager@cotishama.local / Manager123!Secure
+user:     user@cotishama.local / User123!Secure
+```
+
+## CI/CD Integration
+
+All tests run automatically on:
+- Push to main branches
+- Pull requests
+- Scheduled runs
+
+Tests run with `continue-on-error: true` to prevent pipeline blockage while tracking failures.
+
+## Best Practices
+
+### Writing Tests
+
+1. Use `data-testid` attributes for element selection
+2. Avoid hardcoded timeouts - use proper waits
+3. Use test fixtures for common setup
+4. Write meaningful assertions with error messages
+5. Keep tests focused and readable
+
+### Naming
+
+- Test files: `*.spec.ts` (E2E) or `*.test.ts` (Unit/Integration)
+- Test suites: Describe grouped functionality
+- Test cases: Should start with action verb (should, verify, handles)
+
+## Performance Baselines
+
+- Page Load: < 3 seconds
+- API Response: < 500ms (median)
+- Database Query: < 100ms (median)
+- E2E Test Suite: < 10 minutes total
+- Full Test Suite: < 15 minutes
+
+## Resources
+
+- Playwright: https://playwright.dev
+- Bun Test: https://bun.sh/docs/test/basics
+- WCAG Accessibility: https://www.w3.org/WAI/WCAG21/quickref/
+
+---
+
+**Last Updated:** 2026-05-08

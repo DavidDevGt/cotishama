@@ -21,6 +21,11 @@
     "test:all": "bun test tests/**/*.test.ts",
     "test:unit:watch": "bun test tests/unit/**/*.test.ts --watch",
     "test:ci": "bun test tests/**/*.test.ts --timeout=15000",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:quality": "bun run test:all && bun run test:e2e",
+    "test:report": "playwright show-report",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "format:check": "biome format --check .",
@@ -31,6 +36,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.0",
+    "@playwright/test": "^1.40.0",
     "typescript": "^5.3.0"
   },
   "engines": {
