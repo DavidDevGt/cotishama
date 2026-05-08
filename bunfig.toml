@@ -1,0 +1,32 @@
+# Bun configuration for Cotishama 2.0
+
+[build]
+# Entry points for build
+entrypoints = [
+  "apps/backend/src/index.ts",
+  "apps/frontend/src/app.js"
+]
+outdir = "dist"
+minify = { identifiers = true, syntax = true, whitespace = true }
+sourcemap = "external"
+
+[bun]
+# TypeScript configuration
+jsx = "automatic"
+define = ["DEFINE_BUILD_ID=1"]
+loader = {
+  ".html" = "file",
+  ".css" = "file",
+  ".woff2" = "file"
+}
+
+# Bun runtime settings
+hot = true
+preload = []
+
+[install]
+# Trusted hosts for package registry
+trustedHosts = ["npm.js.org", "registry.npmjs.org"]
+
+[define]
+"process.env.NODE_ENV" = "development"

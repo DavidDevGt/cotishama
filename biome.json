@@ -1,0 +1,36 @@
+{
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentSize": 2,
+    "lineWidth": 100,
+    "indentStyle": "space",
+    "lineEnding": "lf",
+    "trailingComma": "es5",
+    "semiColons": "always",
+    "arrowParentheses": "always",
+    "quoteStyle": "single",
+    "bracketSpacing": true,
+    "bracketSameLine": false
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "quoteStyle": "single"
+    }
+  }
+}
