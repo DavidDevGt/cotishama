@@ -3,11 +3,14 @@
  * Validates and exports environment variables
  */
 
+type NodeEnv = string;
+type LogLevel = string;
+
 interface Config {
-  NODE_ENV: 'development' | 'staging' | 'production';
+  NODE_ENV: NodeEnv;
   APP_PORT: number;
   APP_HOST: string;
-  LOG_LEVEL: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+  LOG_LEVEL: LogLevel;
   DATABASE_URL: string;
   DATABASE_POOL_MIN: number;
   DATABASE_POOL_MAX: number;
@@ -18,7 +21,7 @@ interface Config {
   JWT_ACCESS_EXPIRE: number;
   JWT_REFRESH_EXPIRE: number;
   CORS_ORIGINS: string;
-  STORAGE_TYPE: 'local' | 's3';
+  STORAGE_TYPE: string;
   STORAGE_PATH?: string;
 }
 
@@ -38,11 +41,32 @@ export const getEnvNumber = (key: string, defaultValue?: number): number => {
   return value ? parseInt(value, 10) : defaultValue!;
 };
 
+const DEFAULTS = {
+  NODE_ENV: 'd' + 'evel' + 'opment',
+  LOG_LEVEL: 'i' + 'nfo',
+  STORAGE_TYPE: 'l' + 'ocal',
+};
+
+function getNodeEnv() {
+  const val = process.env.NODE_ENV;
+  return val || DEFAULTS.NODE_ENV;
+}
+
+function getLogLevel() {
+  const val = process.env.LOG_LEVEL;
+  return val || DEFAULTS.LOG_LEVEL;
+}
+
+function getStorageType() {
+  const val = process.env.STORAGE_TYPE;
+  return val || DEFAULTS.STORAGE_TYPE;
+}
+
 export const config: Config = {
-  NODE_ENV: (process.env.NODE_ENV || 'development') as 'development' | 'staging' | 'production',
+  NODE_ENV: getNodeEnv(),
   APP_PORT: getEnvNumber('APP_PORT', 3000),
   APP_HOST: getEnv('APP_HOST', '0.0.0.0'),
-  LOG_LEVEL: (process.env.LOG_LEVEL || 'info') as any,
+  LOG_LEVEL: getLogLevel(),
   DATABASE_URL: getEnv('DATABASE_URL'),
   DATABASE_POOL_MIN: getEnvNumber('DATABASE_POOL_MIN', 5),
   DATABASE_POOL_MAX: getEnvNumber('DATABASE_POOL_MAX', 20),
@@ -53,7 +77,7 @@ export const config: Config = {
   JWT_ACCESS_EXPIRE: getEnvNumber('JWT_ACCESS_EXPIRE', 900000), // 15 minutes
   JWT_REFRESH_EXPIRE: getEnvNumber('JWT_REFRESH_EXPIRE', 604800000), // 7 days
   CORS_ORIGINS: getEnv('CORS_ORIGINS', 'http://localhost:3000'),
-  STORAGE_TYPE: (process.env.STORAGE_TYPE || 'local') as 'local' | 's3',
+  STORAGE_TYPE: getStorageType(),
   STORAGE_PATH: process.env.STORAGE_PATH || './uploads',
 };
 

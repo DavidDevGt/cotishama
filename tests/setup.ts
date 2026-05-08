@@ -2,6 +2,23 @@ import { describe, afterEach, beforeEach } from 'bun:test';
 import { db, closeDb } from '../apps/backend/src/db/client';
 import { users, clients, products, quotes, quoteDetails } from '../apps/backend/src/db/schema';
 
+// Load test environment variables
+const envPath = '.env.test';
+try {
+  const envContent = await Bun.file(envPath).text();
+  const lines = envContent.split('\n');
+  for (const line of lines) {
+    if (line && !line.startsWith('#')) {
+      const [key, ...valueParts] = line.split('=');
+      if (key) {
+        process.env[key.trim()] = valueParts.join('=').trim();
+      }
+    }
+  }
+} catch (error) {
+  console.warn('Warning: Could not load .env.test file');
+}
+
 /**
  * Test Database Setup & Teardown
  * Ensures clean database state for each test

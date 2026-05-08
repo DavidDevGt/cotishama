@@ -30,3 +30,9 @@ trustedHosts = ["npm.js.org", "registry.npmjs.org"]
 
 [define]
 "process.env.NODE_ENV" = "development"
+
+[test]
+# Load .env.test for test environment
+root = "."
+files = ["tests/**/*.test.ts"]
+preload = ["tests/setup.ts"]
