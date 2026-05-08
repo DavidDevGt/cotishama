@@ -1,14 +1,41 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: nginx_container
+  postgres:
+    image: postgres:16-alpine
+    container_name: cotishama-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-cotishama}
+      POSTGRES_USER: ${DB_USER:-cotishama}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cotishama_dev}
     ports:
-      - "8080:80"
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html:ro
-      - ./assets:/usr/share/nginx/html/assets:ro
-    restart: always
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cotishama}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cotishama_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: cotishama-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cotishama_network
+
+volumes:
+  postgres_data:
+
+networks:
+  cotishama_network:
+    driver: bridge
