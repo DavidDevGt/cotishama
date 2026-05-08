@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generador de Cotizaciones Enterprise - Ferretería Shama">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Security Headers -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://api.cotishama.local; frame-ancestors 'none';">
+
+  <title>Cotishama - Generador de Cotizaciones</title>
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="assets/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/css/reset.css" as="style">
+  <link rel="preload" href="assets/css/layout.css" as="style">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+</head>
+<body>
+  <div id="app" class="app">
+    <noscript>
+      <div class="error-container">
+        <h1>JavaScript is Required</h1>
+        <p>This application requires JavaScript to be enabled in your browser.</p>
+      </div>
+    </noscript>
+  </div>
+
+  <!-- Application Scripts -->
+  <script type="module" src="src/app.js" defer></script>
+</body>
+</html>

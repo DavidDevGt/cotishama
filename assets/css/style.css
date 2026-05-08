@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&family=Poppins:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&family=Poppins:wght@400;700&display=swap");
 
 :root {
   --primary: #ffc300;
@@ -14,8 +14,8 @@
   --border-color: #dee2e6;
   --error: #dc3545;
   --error-hover: #c82333;
-  --font-primary: 'Poppins', sans-serif;
-  --font-secondary: 'Roboto', sans-serif;
+  --font-primary: "Poppins", sans-serif;
+  --font-secondary: "Roboto", sans-serif;
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -35,7 +35,7 @@
 }
 
 body {
-  font: 400 1rem/1.5 var(--font-secondary);
+  font: 400 1rem / 1.5 var(--font-secondary);
   color: var(--dark);
   background-color: var(--light);
   padding-block-end: var(--space-xl);
@@ -109,7 +109,7 @@ body {
   &:invalid:not(:placeholder-shown) {
     border-color: var(--error);
 
-    +.input-hint {
+    + .input-hint {
       color: var(--error);
     }
   }
@@ -323,7 +323,6 @@ footer a {
 }
 
 @keyframes heartbeat {
-
   0%,
   100% {
     transform: scale(1);
@@ -334,7 +333,7 @@ footer a {
   }
 }
 
-@media (width <=768px) {
+@media (width <= 768px) {
   .container {
     padding: var(--space-md);
   }
@@ -367,7 +366,6 @@ footer a {
 }
 
 @media print {
-
   .form-section:not(.cotizacion-preview),
   .button-container,
   footer {

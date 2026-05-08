@@ -1,0 +1,25 @@
+{
+  "name": "cotishama-frontend",
+  "version": "2.0.0",
+  "description": "Cotishama Frontend - Vanilla JS with Security Focus",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/app.js",
+    "build": "bun build src/app.js --outdir ../../dist/public",
+    "lint": "biome lint src/",
+    "format": "biome format --write src/",
+    "test": "bun test",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "dompurify": "^3.0.6",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@testing-library/dom": "^9.3.0",
+    "@types/bun": "latest",
+    "typescript": "^5.3.0"
+  }
+}

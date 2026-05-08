@@ -1,0 +1,23 @@
+# GitGuardian Ignore File
+# These are test credentials and documentation examples, not real secrets
+
+# Test configuration files
+.github/workflows/test.yml
+
+# Docker development configuration (uses default/example credentials)
+docker-compose.yml
+
+# Test files
+tests/
+
+# Documentation
+*.md
+
+# Environment examples
+.env.example
+.env.test
+
+# CI configuration
+.gitguardian.yaml
+CI_CD_STATUS.md
+

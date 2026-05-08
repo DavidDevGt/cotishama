@@ -1,5 +1,5 @@
-import { QuoteGenerator } from './quoteGenerator.js';
+import { QuoteGenerator } from "./quoteGenerator.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-    new QuoteGenerator();
+document.addEventListener("DOMContentLoaded", () => {
+  new QuoteGenerator();
 });

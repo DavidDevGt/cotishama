@@ -1,0 +1,80 @@
+# ===== Bun =====
+bun.lock*
+*.bun
+
+# ===== Build output =====
+dist/
+build/
+*.tsbuildinfo
+
+# ===== Node/Dependencies =====
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ===== Environment =====
+.env
+.env.local
+.env.*.local
+.env.production
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# ===== Logs =====
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ===== Testing =====
+coverage/
+.nyc_output/
+*.lcov
+
+# ===== Database =====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== Runtime =====
+tmp/
+temp/
+cache/
+.cache/
+
+# ===== Uploads/Storage =====
+uploads/
+public/uploads/
+
+# ===== OS =====
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ===== Docker =====
+.docker/
+docker-compose.override.yml
+
+# ===== Production =====
+.env.production
+.env.production.local
+
+# ===== Generated files =====
+.env.generated
+tsconfig.tsbuildinfo

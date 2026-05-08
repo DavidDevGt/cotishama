@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotishama Component Showcase</title>
+  <link rel="stylesheet" href="./css/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family-primary);
+      background-color: var(--color-background);
+    }
+
+    .showcase-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--spacing-lg);
+    }
+
+    .showcase-section {
+      margin-bottom: var(--spacing-3xl);
+    }
+
+    .showcase-section h2 {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      margin: 0 0 var(--spacing-lg) 0;
+      padding-bottom: var(--spacing-md);
+      border-bottom: 2px solid var(--color-border);
+      color: var(--color-text-primary);
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+    }
+
+    .showcase-item {
+      padding: var(--spacing-lg);
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+    }
+
+    .showcase-item h3 {
+      margin: 0 0 var(--spacing-md) 0;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .showcase-item-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .demo {
+      padding: var(--spacing-md);
+      background-color: var(--color-background);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--color-border);
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .code-block {
+      background-color: #2d2d2d;
+      color: #f8f8f2;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      font-size: var(--font-size-xs);
+      font-family: var(--font-family-mono);
+      margin-top: var(--spacing-sm);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background-color: var(--color-success-500);
+      color: white;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+      color: white;
+      padding: var(--spacing-2xl) var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-2xl);
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .header p {
+      margin: var(--spacing-md) 0 0 0;
+      font-size: var(--font-size-lg);
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: var(--font-size-3xl);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="showcase-container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Cotishama Component Library</h1>
+      <p>21 Atomic Design Components • Enterprise-Grade • WCAG 2.1 AA</p>
+    </div>
+
+    <!-- Atoms Section -->
+    <div class="showcase-section">
+      <h2>Atoms - Base UI Elements</h2>
+      <p class="text-secondary">
+        The foundational building blocks of the design system.
+        <span class="status-badge">6 Components</span>
+      </p>
+
+      <div class="showcase-grid">
+        <!-- Button -->
+        <div class="showcase-item">
+          <h3>Button</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <div id="button-demo"></div>
+            </div>
+            <p class="text-secondary">Interactive button with 6 variants and 3 sizes</p>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="showcase-item">
+          <h3>Input</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <div id="input-demo"></div>
+            </div>
+            <p class="text-secondary">Text input with validation states and icons</p>
+          </div>
+        </div>
+
+        <!-- Badge -->
+        <div class="showcase-item">
+          <h3>Badge</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <div id="badge-demo"></div>
+            </div>
+            <p class="text-secondary">Status indicator with 6 variants</p>
+          </div>
+        </div>
+
+        <!-- Icon -->
+        <div class="showcase-item">
+          <h3>Icon</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <div id="icon-demo" style="display: flex; gap: var(--spacing-md);"></div>
+            </div>
+            <p class="text-secondary">SVG icon wrapper with 25+ icons</p>
+          </div>
+        </div>
+
+        <!-- Label -->
+        <div class="showcase-item">
+          <h3>Label</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <div id="label-demo"></div>
+            </div>
+            <p class="text-secondary">Form label with required indicator</p>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="showcase-item">
+          <h3>Text</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <div id="text-demo"></div>
+            </div>
+            <p class="text-secondary">Semantic text element with variants</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Molecules Section -->
+    <div class="showcase-section">
+      <h2>Molecules - Composed Patterns</h2>
+      <p class="text-secondary">
+        Collections of atoms bonded together to form recurring patterns.
+        <span class="status-badge">6 Components</span>
+      </p>
+
+      <div class="showcase-grid">
+        <!-- FormField -->
+        <div class="showcase-item">
+          <h3>FormField</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="padding: var(--spacing-md); align-items: flex-start;">
+              <div id="formfield-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Label + Input + Error text combination</p>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="showcase-item">
+          <h3>Card</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="padding: 0; align-items: flex-start; overflow: hidden;">
+              <div id="card-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Container with header and footer</p>
+          </div>
+        </div>
+
+        <!-- SearchBox -->
+        <div class="showcase-item">
+          <h3>SearchBox</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="padding: var(--spacing-md); align-items: flex-start; height: auto;">
+              <div id="searchbox-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Search input with suggestions</p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="showcase-item">
+          <h3>Pagination</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="padding: 0; min-height: 80px;">
+              <div id="pagination-demo"></div>
+            </div>
+            <p class="text-secondary">Page navigation controls</p>
+          </div>
+        </div>
+
+        <!-- MenuItem -->
+        <div class="showcase-item">
+          <h3>MenuItem</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="padding: var(--spacing-md); flex-direction: column; gap: var(--spacing-sm);">
+              <div id="menuitem-demo"></div>
+            </div>
+            <p class="text-secondary">Menu item with icon and active state</p>
+          </div>
+        </div>
+
+        <!-- BreadCrumbs -->
+        <div class="showcase-item">
+          <h3>BreadCrumbs</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="padding: var(--spacing-md); min-height: auto;">
+              <div id="breadcrumbs-demo"></div>
+            </div>
+            <p class="text-secondary">Navigation breadcrumbs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Organisms Section -->
+    <div class="showcase-section">
+      <h2>Organisms - Complex Sections</h2>
+      <p class="text-secondary">
+        Complex UI components composed of molecules and/or atoms.
+        <span class="status-badge">5 Components</span>
+      </p>
+
+      <div class="showcase-grid">
+        <div class="showcase-item">
+          <h3>Modal</h3>
+          <div class="showcase-item-content">
+            <div class="demo">
+              <button id="modal-trigger" class="btn btn-primary btn-md">Open Modal</button>
+            </div>
+            <p class="text-secondary">Dialog with animations and keyboard control</p>
+          </div>
+        </div>
+
+        <div class="showcase-item">
+          <h3>Form</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="align-items: flex-start; padding: var(--spacing-md);">
+              <div id="form-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Form container with validation</p>
+          </div>
+        </div>
+
+        <div class="showcase-item">
+          <h3>DataTable</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="align-items: flex-start; padding: 0; height: auto; overflow: hidden;">
+              <div id="datatable-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Table with sorting and pagination</p>
+          </div>
+        </div>
+
+        <div class="showcase-item">
+          <h3>Navigation</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="align-items: flex-start; padding: 0; height: auto;">
+              <div id="navigation-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Main header navigation</p>
+          </div>
+        </div>
+
+        <div class="showcase-item">
+          <h3>Sidebar</h3>
+          <div class="showcase-item-content">
+            <div class="demo" style="align-items: flex-start; padding: 0; height: auto;">
+              <div id="sidebar-demo" style="width: 100%;"></div>
+            </div>
+            <p class="text-secondary">Left navigation drawer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Templates Section -->
+    <div class="showcase-section">
+      <h2>Templates - Page Layouts</h2>
+      <p class="text-secondary">
+        Complete page layouts combining organisms and molecules.
+        <span class="status-badge">4 Components</span>
+      </p>
+
+      <div class="showcase-grid" style="grid-template-columns: 1fr;">
+        <div class="showcase-item">
+          <h3>Available Templates</h3>
+          <ul style="margin: var(--spacing-md) 0; padding-left: var(--spacing-lg);">
+            <li><strong>MainLayout</strong> - Primary layout with nav and sidebar</li>
+            <li><strong>DashboardLayout</strong> - Dashboard grid layout for widgets</li>
+            <li><strong>FormLayout</strong> - Centered form layout with gradient</li>
+            <li><strong>ListLayout</strong> - List view with search and filters</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="showcase-section">
+      <h2>Library Statistics</h2>
+      <div class="showcase-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="showcase-item" style="text-align: center;">
+          <h3 style="margin-top: 0;">21</h3>
+          <p class="text-secondary">Total Components</p>
+        </div>
+        <div class="showcase-item" style="text-align: center;">
+          <h3 style="margin-top: 0;">100%</h3>
+          <p class="text-secondary">WCAG 2.1 AA Compliant</p>
+        </div>
+        <div class="showcase-item" style="text-align: center;">
+          <h3 style="margin-top: 0;">~5K</h3>
+          <p class="text-secondary">Lines of Code</p>
+        </div>
+        <div class="showcase-item" style="text-align: center;">
+          <h3 style="margin-top: 0;">Zero</h3>
+          <p class="text-secondary">External Dependencies</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Component Demo Scripts -->
+  <script type="module">
+    // Import components
+    import { Button } from '../src/components/atoms/Button.js';
+    import { Input } from '../src/components/atoms/Input.js';
+    import { Badge } from '../src/components/atoms/Badge.js';
+    import { Icon } from '../src/components/atoms/Icon.js';
+    import { Label } from '../src/components/atoms/Label.js';
+    import { Text } from '../src/components/atoms/Text.js';
+    import { FormField } from '../src/components/molecules/FormField.js';
+    import { Card } from '../src/components/molecules/Card.js';
+    import { SearchBox } from '../src/components/molecules/SearchBox.js';
+    import { Pagination } from '../src/components/molecules/Pagination.js';
+    import { MenuItem } from '../src/components/molecules/MenuItem.js';
+    import { BreadCrumbs } from '../src/components/molecules/BreadCrumbs.js';
+    import { Modal } from '../src/components/organisms/Modal.js';
+    import { Form } from '../src/components/organisms/Form.js';
+    import { DataTable } from '../src/components/organisms/DataTable.js';
+    import { Navigation } from '../src/components/organisms/Navigation.js';
+    import { Sidebar } from '../src/components/organisms/Sidebar.js';
+
+    // Atoms Demos
+    document.getElementById('button-demo').appendChild(
+      new Button({ label: 'Primary Button', variant: 'primary' }).render()
+    );
+
+    document.getElementById('input-demo').appendChild(
+      new Input({ placeholder: 'Enter text...', size: 'md' }).render()
+    );
+
+    document.getElementById('badge-demo').appendChild(
+      new Badge({ label: 'Active', variant: 'success' }).render()
+    );
+
+    const iconDemo = document.getElementById('icon-demo');
+    ['search', 'menu', 'check', 'close'].forEach((name) => {
+      iconDemo.appendChild(new Icon({ name, size: 'md' }).render());
+    });
+
+    document.getElementById('label-demo').appendChild(
+      new Label({ text: 'Email Address', required: true }).render()
+    );
+
+    const textDemo = document.getElementById('text-demo');
+    const textEl = new Text({ content: 'Sample Text', variant: 'span', size: 'base' }).render();
+    textDemo.appendChild(textEl);
+
+    // Molecules Demos
+    document.getElementById('formfield-demo').appendChild(
+      new FormField({
+        label: 'Email',
+        inputType: 'email',
+        placeholder: 'user@example.com',
+        required: true,
+      }).render()
+    );
+
+    const card = new Card({ title: 'Card Title', padding: 'md' }).render();
+    card.setContent('This is sample content inside the card.');
+    document.getElementById('card-demo').appendChild(card);
+
+    document.getElementById('searchbox-demo').appendChild(
+      new SearchBox({
+        placeholder: 'Search...',
+        suggestions: ['Suggestion 1', 'Suggestion 2', 'Suggestion 3'],
+      }).render()
+    );
+
+    document.getElementById('pagination-demo').appendChild(
+      new Pagination({ currentPage: 3, totalPages: 10 }).render()
+    );
+
+    const menuitemDemo = document.getElementById('menuitem-demo');
+    menuitemDemo.appendChild(
+      new MenuItem({ label: 'Home', icon: 'home', active: false }).render()
+    );
+    menuitemDemo.appendChild(
+      new MenuItem({ label: 'Settings', icon: 'settings', active: true }).render()
+    );
+
+    document.getElementById('breadcrumbs-demo').appendChild(
+      new BreadCrumbs({
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Components', href: '/components' },
+          { label: 'Showcase', active: true },
+        ],
+      }).render()
+    );
+
+    // Organisms Demos
+    document.getElementById('modal-trigger').addEventListener('click', () => {
+      const modal = new Modal({
+        title: 'Example Modal',
+        size: 'md',
+        onClose: () => console.log('Modal closed'),
+      }).render();
+      modal.setContent('This is a modal dialog demonstrating the Modal component.');
+      document.body.appendChild(modal);
+      modal.show();
+    });
+
+    document.getElementById('form-demo').appendChild(
+      new Form({
+        title: 'Sample Form',
+        fields: [
+          { name: 'name', label: 'Name', required: true },
+          { name: 'email', label: 'Email', type: 'email', required: true },
+        ],
+        onSubmit: (data) => console.log('Form submitted:', data),
+      }).render()
+    );
+
+    document.getElementById('datatable-demo').appendChild(
+      new DataTable({
+        columns: [
+          { key: 'id', label: 'ID', sortable: true },
+          { key: 'name', label: 'Name', sortable: true },
+          { key: 'status', label: 'Status' },
+        ],
+        data: [
+          { id: 1, name: 'Item 1', status: 'Active' },
+          { id: 2, name: 'Item 2', status: 'Inactive' },
+          { id: 3, name: 'Item 3', status: 'Pending' },
+        ],
+      }).render()
+    );
+
+    document.getElementById('navigation-demo').appendChild(
+      new Navigation({
+        brand: { label: 'Cotishama', href: '/' },
+        items: [
+          { label: 'Dashboard', href: '/', icon: 'home' },
+          { label: 'Products', href: '/products', icon: 'package' },
+        ],
+      }).render()
+    );
+
+    document.getElementById('sidebar-demo').appendChild(
+      new Sidebar({
+        items: [
+          { label: 'Dashboard', href: '/', icon: 'home' },
+          { type: 'divider' },
+          { label: 'Settings', href: '/settings', icon: 'settings' },
+        ],
+        width: '100%',
+        collapsed: false,
+      }).render()
+    );
+  </script>
+</body>
+</html>

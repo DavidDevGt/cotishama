@@ -1,0 +1,43 @@
+# GitGuardian Configuration
+# https://docs.gitguardian.com/ggshield-docs/integrations/git-hooks/configuration
+
+version: 2
+
+# Policies to apply
+policies:
+  - name: "Ignore test credentials"
+    patterns:
+      - "test-secret"
+      - "testing-purposes"
+      - "test-refresh"
+
+# Matches to ignore
+matches-ignore:
+  - match: "test-secret-key-for-testing-purposes"
+    reason: "Test credentials in CI configuration"
+    expires_at: null
+
+# Paths to ignore
+paths-ignore:
+  - path: ".github/workflows/"
+    reason: "CI configuration with test secrets"
+  - path: "tests/"
+    reason: "Test files with mock credentials"
+  - path: "*.md"
+    reason: "Documentation"
+  - path: ".env.example"
+    reason: "Example environment file"
+  - path: ".env.test"
+    reason: "Test environment file"
+
+# Secrets engine configuration
+secrets:
+  # List of patterns to ignore (secrets that are known false positives)
+  ignore-patterns:
+    - value: "test-secret-key"
+    - value: "testing-purposes-only"
+    - value: "test-refresh-secret"
+
+# Severity: low, medium, high, critical
+secret-severity: medium
+

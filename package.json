@@ -1,0 +1,45 @@
+{
+  "name": "cotishama-v2",
+  "version": "2.0.0",
+  "description": "Enterprise-grade quote generator system for Ferretería Shama",
+  "type": "module",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "bun run dev:backend & bun run dev:frontend",
+    "dev:backend": "cd apps/backend && bun --hot src/index.ts",
+    "dev:frontend": "cd apps/frontend && bun run dev",
+    "build": "bun run build:backend && bun run build:frontend",
+    "build:backend": "cd apps/backend && bun build src/index.ts --target bun --outdir ../../dist",
+    "build:frontend": "cd apps/frontend && bun build src/app.js --outdir ../../dist",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "test:unit": "bun test tests/unit/**/*.test.ts",
+    "test:integration": "bun test tests/integration/**/*.test.ts",
+    "test:security": "bun test tests/security/**/*.test.ts",
+    "test:all": "bun test tests/**/*.test.ts",
+    "test:unit:watch": "bun test tests/unit/**/*.test.ts --watch",
+    "test:ci": "bun test tests/**/*.test.ts --timeout=15000",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:quality": "bun run test:all && bun run test:e2e",
+    "test:report": "playwright show-report",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format --check .",
+    "type-check": "tsc --noEmit",
+    "db:migrate": "cd apps/backend && bun run db:migrate",
+    "db:reset": "cd apps/backend && bun run db:reset",
+    "db:seed": "cd apps/backend && bun run db:seed"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.0",
+    "@playwright/test": "^1.40.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "bun": ">= 1.0.0"
+  }
+}
