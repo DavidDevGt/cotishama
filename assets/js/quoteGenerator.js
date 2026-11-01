@@ -3,7 +3,19 @@ import { DOMElements } from './dom.js';
 import { QuoteUtils } from './utils.js';
 import { Validations } from './validations.js';
 import { ProductAutocomplete } from './autocomplete.js';
+import { DraftStorage } from './draft.js';
 import { STYLE } from './constants.js';
+
+/** Maps validation field names to the keys used in DOMElements. */
+const INPUT_KEYS = {
+    cliente: 'client',
+    producto: 'product',
+    cantidad: 'quantity',
+    precio: 'price'
+};
+
+/** Localized labels for the buttons that change state. */
+const GENERATE_LABEL = 'Descargar cotización (PNG)';
 
 /**
  * Class responsible for generating and managing quotes.
@@ -13,14 +25,20 @@ import { STYLE } from './constants.js';
 export class QuoteGenerator {
     /**
      * Initializes a new instance of QuoteGenerator.
-     * Sets up initial state, DOM elements, and event listeners.
+     * Sets up state, DOM references, event listeners and restores any saved draft.
      */
     constructor() {
         this.state = new QuoteState();
         this.dom = new DOMElements();
+        this.draft = new DraftStorage();
         this.currentDate = QuoteUtils.getCurrentDate();
+        this.isGenerating = false;
+
+        // Autocomplete se registra primero para que su keydown se ejecute antes que el nuestro.
         this.initializeAutocomplete();
         this.initializeEventListeners();
+        this.restoreDraft();
+        this.renderProducts();
     }
 
     /**
@@ -33,84 +51,206 @@ export class QuoteGenerator {
     }
 
     /**
-     * Sets up event listeners for the main functionality buttons.
+     * Sets up event listeners for the form, keyboard flow and action buttons.
      * @private
      */
     initializeEventListeners() {
-        this.dom.get('add').addEventListener('click', () => this.addProduct());
-        this.dom.get('generate').addEventListener('click', () => this.generateQuoteImage());
-        // Setear mayusculas a nombre del cliente y producto usando utils
-        QuoteUtils.setUpperCase(this.dom.get('client'));
-        QuoteUtils.setUpperCase(this.dom.get('product'));
+        const dom = this.dom;
+
+        // Mayúsculas en cliente y producto (se registra antes de los listeners de abajo).
+        QuoteUtils.setUpperCase(dom.get('client'));
+        QuoteUtils.setUpperCase(dom.get('product'));
+
+        // Enter fluye: producto → cantidad → precio → agregar.
+        dom.get('product').addEventListener('keydown', (e) => this.onProductKeydown(e));
+        dom.get('quantity').addEventListener('keydown', (e) => this.onQuantityKeydown(e));
+        dom.get('price').addEventListener('keydown', (e) => this.onPriceKeydown(e));
+
+        // Editar el cliente se refleja al instante en la cotización.
+        dom.get('client').addEventListener('input', () => this.onClientInput());
+
+        // Quita el error de un campo en cuanto el usuario empieza a corregirlo.
+        Object.values(INPUT_KEYS).forEach((key) => {
+            dom.get(key).addEventListener('input', () => this.clearFieldError(key));
+        });
+
+        // Ningún envío nativo del formulario: todo se maneja aquí.
+        dom.get('form').addEventListener('submit', (e) => e.preventDefault());
+
+        dom.get('add').addEventListener('click', () => this.addProduct());
+        dom.get('generate').addEventListener('click', () => this.generateQuoteImage());
+        dom.get('new_quote').addEventListener('click', () => this.startNewQuote());
+    }
+
+    /* ------------------------------------------------------------------
+     * Teclado
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Product field: Enter moves to quantity. When a suggestion is highlighted,
+     * the autocomplete already consumed the event, so this does nothing.
+     * @private
+     * @param {KeyboardEvent} e
+     */
+    onProductKeydown(e) {
+        if (e.key !== 'Enter' || e.defaultPrevented) return;
+        e.preventDefault();
+        this.dom.get('quantity').focus();
     }
 
     /**
-     * Adds a new product to the quote based on form input values.
-     * Validates the input before adding the product and updates the display.
+     * Quantity field: Enter moves to price.
+     * @private
+     * @param {KeyboardEvent} e
+     */
+    onQuantityKeydown(e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        this.dom.get('price').focus();
+    }
+
+    /**
+     * Price field: Enter adds the product.
+     * @private
+     * @param {KeyboardEvent} e
+     */
+    onPriceKeydown(e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        this.addProduct();
+    }
+
+    /* ------------------------------------------------------------------
+     * Errores en línea
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Shows an error next to a field and marks it visually.
+     * @private
+     * @param {string} key - DOM key of the input (e.g. 'client')
+     * @param {string} message - Message to show in the field hint
+     */
+    showFieldError(key, message) {
+        const input = this.dom.get(key);
+        const group = input.closest('.input-group');
+        const hint = group.querySelector('.input-hint');
+
+        if (!hint.dataset.defaultText) {
+            hint.dataset.defaultText = hint.textContent;
+        }
+        hint.textContent = message;
+        group.classList.add('is-invalid');
+        input.setAttribute('aria-invalid', 'true');
+    }
+
+    /**
+     * Removes the error state of a field and restores its original hint.
+     * @private
+     * @param {string} key - DOM key of the input
+     */
+    clearFieldError(key) {
+        const input = this.dom.get(key);
+        const group = input.closest('.input-group');
+        const hint = group.querySelector('.input-hint');
+
+        if (hint.dataset.defaultText) {
+            hint.textContent = hint.dataset.defaultText;
+        }
+        group.classList.remove('is-invalid');
+        input.removeAttribute('aria-invalid');
+    }
+
+    /* ------------------------------------------------------------------
+     * Productos
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Validates the product form and adds the product to the quote.
+     * On error, shows the message next to the field and focuses it.
      * @private
      */
     addProduct() {
-        const product = {
-            nombre: this.dom.get('product').value,
+        const values = {
+            cliente: this.dom.get('client').value.trim(),
+            producto: this.dom.get('product').value.trim(),
             cantidad: this.dom.get('quantity').value,
-            precio: this.dom.get('price').value,
-            cliente: this.dom.get('client').value
+            precio: this.dom.get('price').value
         };
 
-        if (!Validations.validateForm(product)) {
+        const error = Validations.getFormError(values);
+        if (error) {
+            const key = INPUT_KEYS[error.field];
+            this.showFieldError(key, error.message);
+            this.dom.get(key).focus();
             return;
         }
 
-        this.state.setClient(product.cliente);
-        product.cantidad = parseInt(product.cantidad);
-        product.precio = parseFloat(product.precio);
+        this.state.setClient(values.cliente);
+        const added = this.state.addProduct({
+            nombre: values.producto,
+            cantidad: parseInt(values.cantidad, 10),
+            precio: parseFloat(values.precio)
+        });
 
-        if (!this.state.addProduct(product)) {
+        if (!added) {
+            Validations.notyf.error('No se pudo agregar el producto. Revisa los datos.');
             return;
         }
-        this.renderProducts();
-        this.clearInputs();
+
+        this.renderProducts(this.state.products.length - 1);
+        this.saveDraft();
+        this.clearProductInputs();
+        this.dom.get('product').focus();
     }
 
     /**
-     * Renders the current list of products in the quote table.
-     * Updates client name, date, and total amount.
+     * Removes a product by index and refreshes the table.
      * @private
+     * @param {number} index
      */
-    renderProducts() {
-        const productsTable = this.dom.get('products_table');
-        const clientNameElement = this.dom.get('client_name');
-        const dateElement = this.dom.get('date');
+    removeProduct(index) {
+        this.state.removeProduct(index);
+        this.renderProducts();
+        this.saveDraft();
+    }
 
-        clientNameElement.textContent = this.dom.get('client').value;
-        dateElement.textContent = this.currentDate;
+    /**
+     * Renders the product table, client name, date, total and action buttons.
+     * @private
+     * @param {number|null} [highlightIndex=null] - Row to flash as newly added
+     */
+    renderProducts(highlightIndex = null) {
+        const productsTable = this.dom.get('products_table');
+
+        this.dom.get('client_name').textContent = this.dom.get('client').value.trim();
+        this.dom.get('date').textContent = this.currentDate;
         productsTable.innerHTML = '';
 
-        const total = this.state.getTotal();
         this.state.products.forEach((product, index) => {
             const subtotal = product.cantidad * product.precio;
             const row = this.createProductRow(product, subtotal, index);
+            if (index === highlightIndex) {
+                row.classList.add('row-new');
+            }
             productsTable.appendChild(row);
         });
 
-        const MIN_ROWS = STYLE.MIN_ROWS;
-        const rowsToAdd = MIN_ROWS - this.state.products.length;
-        if (rowsToAdd > 0) {
-            for (let i = 0; i < rowsToAdd; i++) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.classList.add('empty-row');
+        const rowsToAdd = STYLE.MIN_ROWS - this.state.products.length;
+        for (let i = 0; i < rowsToAdd; i++) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.classList.add('empty-row');
 
-                const emptyTd = document.createElement('td');
-                emptyTd.colSpan = 5;
-                emptyTd.innerHTML = '&nbsp;';
+            const emptyTd = document.createElement('td');
+            emptyTd.colSpan = 5;
+            emptyTd.innerHTML = '&nbsp;';
 
-                emptyRow.appendChild(emptyTd);
-                productsTable.appendChild(emptyRow);
-            }
+            emptyRow.appendChild(emptyTd);
+            productsTable.appendChild(emptyRow);
         }
-        this.dom.get('total').textContent = QuoteUtils.formatCurrency(total);
-    }
 
+        this.dom.get('total').textContent = QuoteUtils.formatCurrency(this.state.getTotal());
+        this.updateActionState();
+    }
 
     /**
      * Creates a table row for a product in the quote.
@@ -128,10 +268,7 @@ export class QuoteGenerator {
             { text: QuoteUtils.formatCurrency(product.precio), className: 'money-cell' },
             { text: QuoteUtils.formatCurrency(subtotal), className: 'money-cell' },
             {
-                element: this.createDeleteButton(() => {
-                    this.state.removeProduct(index);
-                    this.renderProducts();
-                })
+                element: this.createDeleteButton(() => this.removeProduct(index), product.nombre)
             }
         ];
         cells.forEach(cell => {
@@ -148,18 +285,22 @@ export class QuoteGenerator {
     }
 
     /**
-     * Creates a delete button for a product row with a FontAwesome icon.
+     * Creates a delete button for a product row.
      * @private
-     * @param {Function} onClick - The callback function to execute when the button is clicked
-     * @returns {HTMLButtonElement} The created button element
+     * @param {Function} onClick - Callback executed on click
+     * @param {string} productName - Used for the accessible label
+     * @returns {HTMLButtonElement}
      */
-    createDeleteButton(onClick) {
+    createDeleteButton(onClick, productName) {
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
-        button.classList.add('btn-danger');
+        button.setAttribute('aria-label', `Eliminar ${productName}`);
+        button.setAttribute('title', 'Eliminar producto');
+        button.classList.add('btn-danger', 'btn-icon');
 
         const icon = document.createElement('i');
         icon.classList.add('fas', 'fa-trash');
+        icon.setAttribute('aria-hidden', 'true');
         button.appendChild(icon);
 
         button.addEventListener('click', onClick);
@@ -168,37 +309,137 @@ export class QuoteGenerator {
     }
 
     /**
-     * Clears all input fields in the product form.
+     * Clears the product fields but keeps the client name.
      * @private
      */
-    clearInputs() {
+    clearProductInputs() {
         ['product', 'quantity', 'price'].forEach(field => {
             this.dom.get(field).value = '';
+            this.clearFieldError(field);
+        });
+    }
+
+    /* ------------------------------------------------------------------
+     * Cliente, borrador y nueva cotización
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Keeps the preview and the saved draft in sync with the client name.
+     * @private
+     */
+    onClientInput() {
+        const name = this.dom.get('client').value.trim();
+        this.state.setClient(name);
+        this.dom.get('client_name').textContent = name;
+        this.saveDraft();
+    }
+
+    /**
+     * Saves client, products and the quote counter to localStorage.
+     * @private
+     */
+    saveDraft() {
+        this.draft.save({
+            client: this.dom.get('client').value,
+            products: this.state.products.map(({ nombre, cantidad, precio }) => ({ nombre, cantidad, precio })),
+            counter: this.state.quoteCounter
         });
     }
 
     /**
-     * Generates a PNG image of the current quote.
-     * Temporarily hides delete buttons during capture for a cleaner image.
+     * Loads the saved draft, ignoring any malformed entries.
+     * @private
+     */
+    restoreDraft() {
+        const data = this.draft.load();
+        if (!data) return;
+
+        this.dom.get('client').value = typeof data.client === 'string' ? data.client : '';
+        this.state.setClient(this.dom.get('client').value.trim());
+
+        const products = Array.isArray(data.products) ? data.products : [];
+        products.forEach((p) => {
+            const valid = p
+                && typeof p.nombre === 'string' && p.nombre.trim() !== ''
+                && Number.isInteger(p.cantidad) && p.cantidad >= 1
+                && Number.isFinite(p.precio) && p.precio > 0;
+            if (valid) {
+                this.state.addProduct({ nombre: p.nombre, cantidad: p.cantidad, precio: p.precio });
+            }
+        });
+
+        if (Number.isInteger(data.counter) && data.counter >= 1) {
+            this.state.quoteCounter = data.counter;
+        }
+    }
+
+    /**
+     * Starts a new quote: clears client and products after confirmation.
+     * The quote counter is kept so file names stay unique.
+     * @private
+     */
+    startNewQuote() {
+        const hasData = this.state.hasProducts() || this.dom.get('client').value.trim() !== '';
+        if (hasData && !window.confirm('¿Empezar una cotización nueva? Se borrarán el cliente y los productos.')) {
+            return;
+        }
+
+        this.dom.get('client').value = '';
+        this.state.clearProducts();
+        this.state.setClient('');
+        this.clearProductInputs();
+        this.clearFieldError('client');
+        this.renderProducts();
+        this.draft.clear();
+        this.saveDraft();
+        this.dom.get('client').focus();
+    }
+
+    /**
+     * Enables or disables the action buttons depending on the quote contents.
+     * @private
+     */
+    updateActionState() {
+        const hasProducts = this.state.hasProducts();
+        const generate = this.dom.get('generate');
+        generate.disabled = !hasProducts || this.isGenerating;
+        generate.title = hasProducts ? '' : 'Agrega al menos un producto para descargar';
+    }
+
+    /* ------------------------------------------------------------------
+     * Imagen
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Generates a PNG image of the current quote and starts the download.
+     * Hides the delete buttons during capture and shows a loading state.
      * @private
      * @async
-     * @throws {Error} When image generation fails
      * @returns {Promise<void>}
      */
     async generateQuoteImage() {
+        if (this.isGenerating) return;
+
         if (!this.state.hasProducts()) {
-            // notify user
-            Validations.notyf.error('No hay productos en la cotización. Agrega al menos uno para continuar.');
-            console.warn('Cannot generate image: No products available');
+            Validations.notyf.error('Agrega al menos un producto antes de descargar.');
+            return;
+        }
+
+        if (!this.dom.get('client').value.trim()) {
+            this.showFieldError('client', 'Escribe el nombre del cliente para nombrar el archivo.');
+            this.dom.get('client').focus();
             return;
         }
 
         const table = this.dom.get('capture');
         if (!table) {
-            throw new Error('Capture element not found');
+            Validations.notyf.error('No se encontró la cotización para generar la imagen.');
+            return;
         }
 
-        const deleteCells = table.querySelectorAll('td:nth-child(5)');
+        this.setGenerating(true);
+        // Oculta la columna de acciones (botón borrar y su encabezado) solo en la imagen.
+        const deleteCells = table.querySelectorAll('td:nth-child(5), th:nth-child(5)');
         const originalDisplayValues = [];
 
         try {
@@ -215,86 +456,42 @@ export class QuoteGenerator {
                 allowTaint: false,
                 logging: false,
                 removeContainer: true,
-                imageTimeout: 15000,
-                onclone: (clonedDoc) => {
-                    const clonedTable = clonedDoc.querySelector('[data-capture], #capture, .capture');
-                    if (clonedTable) {
-                        clonedTable.style.fontFamily = window.getComputedStyle(table).fontFamily;
-                    }
-                }
+                imageTimeout: 15000
             });
 
-            if (!canvas) {
-                throw new Error('Failed to generate canvas from table');
-            }
-
-            // Generate high-quality image
             const imageUrl = canvas.toDataURL('image/png', 1.0);
             if (!imageUrl || imageUrl === 'data:,') {
                 throw new Error('Failed to generate image data');
             }
 
+            // Se genera el nombre una sola vez: incrementa el contador de cotizaciones.
             const fileName = this.generateFileName();
-            await this.downloadImage(imageUrl, fileName);
-
-            console.log(`Quote image generated successfully: ${fileName}`);
-
+            this.downloadImage(imageUrl, fileName);
+            this.saveDraft();
+            Validations.notyf.success('Cotización descargada.');
         } catch (error) {
             console.error('Error generating quote image:', error);
-
-            if (this.showNotification) {
-                this.showNotification('Error al generar la imagen. Por favor, intenta nuevamente.', 'error');
-            }
-
-            throw error;
+            Validations.notyf.error('No se pudo generar la imagen. Intenta de nuevo.');
         } finally {
-            // Restore original display values
             deleteCells.forEach((cell, index) => {
                 cell.style.display = originalDisplayValues[index] || '';
             });
+            this.setGenerating(false);
         }
     }
 
     /**
-     * Download image with better error handling
+     * Shows or hides the loading state of the download button.
      * @private
-     * @param {string} imageUrl - Data URL of the image
-     * @param {string} fileName - Name for the downloaded file
-     * @returns {Promise<void>}
+     * @param {boolean} active
      */
-    async downloadImage(imageUrl, fileName) {
-        try {
-            const link = document.createElement('a');
-            link.href = imageUrl;
-            link.download = fileName;
-            link.style.display = 'none';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            if (imageUrl.startsWith('blob:')) {
-                URL.revokeObjectURL(imageUrl);
-            }
-
-        } catch (error) {
-            console.error('Error downloading image:', error);
-            throw new Error('Failed to download image');
-        }
-    }
-
-    /**
-     * Generates a filename for the quote image based on client initials,
-     * current date, and quote counter.
-     * @private
-     * @returns {string} The generated filename
-     */
-    generateFileName() {
-        const clientName = this.dom.get('client').value;
-        const cleanDate = QuoteUtils.cleanDate(this.currentDate);
-        const initials = QuoteUtils.getInitials(clientName);
-        const identifier = QuoteUtils.generateQuoteIdentifier(this.state.quoteCounter++);
-        return `${initials}${cleanDate}-${identifier}.png`;
+    setGenerating(active) {
+        this.isGenerating = active;
+        const button = this.dom.get('generate');
+        button.innerHTML = active
+            ? '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Generando…'
+            : GENERATE_LABEL;
+        this.updateActionState();
     }
 
     /**
@@ -307,6 +504,25 @@ export class QuoteGenerator {
         const link = document.createElement('a');
         link.href = url;
         link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
         link.click();
+        link.remove();
+    }
+
+    /**
+     * Generates a filename from client initials, current date and quote counter.
+     * @private
+     * @returns {string}
+     */
+    generateFileName() {
+        const clientName = this.dom.get('client').value.trim();
+        // AAAAMMDD en hora local: ordena bien y no depende del idioma del navegador.
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        const cleanDate = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+        const initials = QuoteUtils.getInitials(clientName);
+        const identifier = QuoteUtils.generateQuoteIdentifier(this.state.quoteCounter++);
+        return `${initials}${cleanDate}-${identifier}.png`;
     }
 }

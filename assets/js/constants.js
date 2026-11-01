@@ -25,6 +25,8 @@ export const DOM_IDS = {
    PRODUCTS_TABLE: 'productos',
    TOTAL: 'total',
    GENERATE: 'generar-pdf',
+   NEW_QUOTE: 'nueva-cotizacion',
+   FORM: 'cotizacion-form',
    CAPTURE: 'capture',
    CLIENT_NAME: 'nombre',
    DATE: 'fecha'

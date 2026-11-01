@@ -246,8 +246,14 @@ export class ProductAutocomplete {
                     this.navigateSuggestions(items, -1);
                     break;
                 case 'Enter':
-                    e.preventDefault();
-                    this.selectSuggestion(items, input, suggestionsContainer);
+                    // Solo consume Enter si hay una sugerencia resaltada; si no, cierra la lista
+                    // y deja que el formulario avance al siguiente campo.
+                    if (this.currentFocus > -1) {
+                        e.preventDefault();
+                        this.selectSuggestion(items, input, suggestionsContainer);
+                    } else {
+                        this.clearSuggestions(suggestionsContainer);
+                    }
                     break;
                 case 'Escape':
                     this.clearSuggestions(suggestionsContainer);

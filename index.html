@@ -57,7 +57,7 @@
                 <div class="input-row">
                     <div class="input-group">
                         <label for="cantidad"><i class="fas fa-hashtag"></i> Cantidad:</label>
-                        <input type="number" id="cantidad" name="cantidad" min="1" placeholder="0" required />
+                        <input type="number" id="cantidad" name="cantidad" min="1" step="1" inputmode="numeric" placeholder="0" required />
                         <span class="input-hint">Mínimo 1 unidad</span>
                     </div>
 
@@ -65,17 +65,17 @@
                         <label for="producto"><i class="fas fa-box"></i> Producto:</label>
                         <div class="autocomplete-wrapper">
                             <input type="text" id="producto" name="producto" placeholder="Nombre del producto"
-                                class="autocomplete-input" required />
+                                class="autocomplete-input" required autocomplete="off" />
                             <div id="sugerencias-productos" class="suggestions-container"></div>
                         </div>
-                        <span class="input-hint">Describa el producto</span>
+                        <span class="input-hint">Escribe 2 letras o más para ver sugerencias</span>
                     </div>
 
                     <div class="input-group">
                         <label for="precio"><i class="fas fa-dollar-sign"></i> Precio unitario:</label>
                         <div class="precio-input-wrapper">
                             <span class="currency-symbol">Q</span>
-                            <input type="number" id="precio" name="precio" min="0" step="0.01" placeholder="0.00"
+                            <input type="number" id="precio" name="precio" min="0" step="0.01" inputmode="decimal" placeholder="0.00"
                                 required />
                         </div>
                         <span class="input-hint">Ingrese el precio en quetzales</span>
@@ -95,7 +95,7 @@
                     <thead>
                         <!-- LOGO Y DATOS DE LA EMPRESA -->
                         <tr class="company-header">
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="company-header-content">
                                     <div class="company-logo">
                                         <img src="assets/img/logoFShama.png" 
@@ -121,6 +121,7 @@
                             <td id="nombre" class="data-cell"></td>
                             <th>Fecha</th>
                             <td id="fecha" class="data-cell"></td>
+                            <td class="col-actions"></td>
                         </tr>
 
                         <!-- ENCABEZADO DE PRODUCTOS -->
@@ -129,6 +130,7 @@
                             <th>Producto</th>
                             <th class="money-cell">Precio unitario</th>
                             <th class="money-cell">Subtotal</th>
+                            <th class="col-actions"></th>
                         </tr>
                     </thead>
 
@@ -139,12 +141,13 @@
                         <tr class="total-row">
                             <td colspan="3" class="total-label">Total:</td>
                             <td id="total" class="total-amount money-cell">Q 0.00</td>
+                            <td class="col-actions"></td>
                         </tr>
 
                         <!-- FILA DE OBSERVACIONES -->
                         <tr class="observaciones-row">
                             <th>Observaciones</th>
-                            <td colspan="3">
+                            <td colspan="4">
                                 <p>
                                     * Precios sujetos a cambios sin previo aviso.<br>
                                     * Esta cotización es válida por 7 días.<br>
@@ -158,11 +161,15 @@
         </form>
 
         <!-- BOTÓN PARA GENERAR COTIZACIÓN/PDF -->
-        <div class="button-container">
-            <button id="generar-pdf" class="btn-success">
-                Descargar Cotización
+        <div class="button-container button-group">
+            <button type="button" id="nueva-cotizacion" class="btn-outline">
+                <i class="fas fa-file-circle-plus" aria-hidden="true"></i> Nueva cotización
+            </button>
+            <button type="button" id="generar-pdf" class="btn-success" disabled>
+                Descargar cotización (PNG)
             </button>
         </div>
+        <p class="save-hint">Tu avance se guarda automáticamente en este navegador.</p>
 
         <!-- FOOTER -->
         <footer>

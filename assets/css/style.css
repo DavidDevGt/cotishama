@@ -122,6 +122,27 @@ body {
   margin-block-start: var(--space-xs);
 }
 
+/* Error de validación en línea (se muestra junto al campo) */
+.input-group.is-invalid {
+  input,
+  .autocomplete-input {
+    border-color: var(--error);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--error) 15%, transparent);
+  }
+
+  .input-hint {
+    color: var(--error);
+    font-weight: 500;
+  }
+}
+
+.save-hint {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--gray);
+  margin-block-end: var(--space-xl);
+}
+
 .precio-input-wrapper {
   position: relative;
   display: flex;
@@ -185,6 +206,48 @@ button {
   }
 }
 
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.btn-outline {
+  background: white;
+  color: var(--secondary);
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    background-color: var(--light);
+    border-color: var(--gray);
+  }
+}
+
+/* Botón de icono compacto (eliminar producto) */
+button.btn-icon {
+  padding: var(--space-xs) var(--space-sm);
+}
+
+/* Fila recién agregada: destello breve para que el usuario la note */
+@keyframes row-flash {
+  from {
+    background-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+tr.row-new td {
+  animation: row-flash 1.2s ease-out;
+}
+
 .icon {
   margin-inline-end: var(--space-sm);
 }
@@ -194,6 +257,7 @@ button {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: var(--space-lg);
+  overflow-x: auto; /* en móvil la tabla no debe romper el ancho de la página */
 }
 
 table {
@@ -293,6 +357,29 @@ td {
   border: none !important;
 }
 
+.col-actions {
+  inline-size: 3.5rem;
+  text-align: center;
+  padding-inline: var(--space-sm);
+}
+
+/* Las celdas de acciones heredan el fondo de su fila */
+.header-row .col-actions {
+  background-color: var(--secondary);
+}
+
+.info-row .col-actions {
+  background-color: #f2f2f2;
+}
+
+.total-row .col-actions {
+  background-color: #f9f9f9;
+}
+
+.company-header-content {
+  inline-size: 100%;
+}
+
 footer {
   margin-block-start: var(--space-xl);
   padding-block: var(--space-xl);
@@ -370,6 +457,7 @@ footer a {
 
   .form-section:not(.cotizacion-preview),
   .button-container,
+  .save-hint,
   footer {
     display: none;
   }
