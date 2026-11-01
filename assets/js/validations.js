@@ -42,16 +42,44 @@ export class Validations {
             return { field: 'producto', message: 'Escribe o elige un producto.' };
         }
 
-        const quantity = Number(cantidad);
-        if (cantidad === '' || !Number.isInteger(quantity) || quantity < 1) {
-            return { field: 'cantidad', message: 'Usa un número entero, mínimo 1.' };
+        const quantityError = this.getQuantityError(cantidad);
+        if (quantityError) {
+            return { field: 'cantidad', message: quantityError };
         }
 
-        const price = Number(precio);
-        if (precio === '' || !Number.isFinite(price) || price <= 0) {
-            return { field: 'precio', message: 'El precio debe ser mayor que 0.' };
+        const priceError = this.getPriceError(precio);
+        if (priceError) {
+            return { field: 'precio', message: priceError };
         }
 
+        return null;
+    }
+
+    /**
+     * Checks a quantity typed by the user: whole number, 1 or more.
+     * @static
+     * @param {string|number} value
+     * @returns {string|null} Error message, or null when valid
+     */
+    static getQuantityError(value) {
+        const quantity = Number(value);
+        if (value === '' || !Number.isInteger(quantity) || quantity < 1) {
+            return 'Usa un número entero, mínimo 1.';
+        }
+        return null;
+    }
+
+    /**
+     * Checks a unit price typed by the user: a number greater than 0.
+     * @static
+     * @param {string|number} value
+     * @returns {string|null} Error message, or null when valid
+     */
+    static getPriceError(value) {
+        const price = Number(value);
+        if (value === '' || !Number.isFinite(price) || price <= 0) {
+            return 'El precio debe ser mayor que 0.';
+        }
         return null;
     }
 }

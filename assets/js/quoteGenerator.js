@@ -14,8 +14,11 @@ const INPUT_KEYS = {
     precio: 'price'
 };
 
-/** Localized labels for the buttons that change state. */
+/** Label of the download button in its idle state. */
 const GENERATE_LABEL = 'Descargar cotización (PNG)';
+
+/** How long the "Deshacer" bar stays visible after removing a product. */
+const UNDO_TIMEOUT_MS = 6000;
 
 /**
  * Class responsible for generating and managing quotes.
@@ -33,6 +36,9 @@ export class QuoteGenerator {
         this.draft = new DraftStorage();
         this.currentDate = QuoteUtils.getCurrentDate();
         this.isGenerating = false;
+        this.editingCell = null;
+        this.pendingUndo = null;
+        this.undoTimer = null;
 
         // Autocomplete se registra primero para que su keydown se ejecute antes que el nuestro.
         this.initializeAutocomplete();
@@ -51,7 +57,7 @@ export class QuoteGenerator {
     }
 
     /**
-     * Sets up event listeners for the form, keyboard flow and action buttons.
+     * Sets up event listeners for the form, keyboard flow, table and action buttons.
      * @private
      */
     initializeEventListeners() {
@@ -80,10 +86,26 @@ export class QuoteGenerator {
         dom.get('add').addEventListener('click', () => this.addProduct());
         dom.get('generate').addEventListener('click', () => this.generateQuoteImage());
         dom.get('new_quote').addEventListener('click', () => this.startNewQuote());
+        dom.get('undo_button').addEventListener('click', () => this.undoRemove());
+
+        // Edición de cantidad y precio en la tabla (delegación: las filas se re-renderizan).
+        const tbody = dom.get('products_table');
+        tbody.addEventListener('click', (e) => {
+            const cell = e.target.closest('td.editable');
+            if (cell) this.startEdit(cell);
+        });
+        tbody.addEventListener('keydown', (e) => {
+            const cell = e.target;
+            if (cell.tagName !== 'TD' || !cell.classList.contains('editable')) return;
+            if (e.key === 'Enter' || e.key === 'F2') {
+                e.preventDefault();
+                this.startEdit(cell);
+            }
+        });
     }
 
     /* ------------------------------------------------------------------
-     * Teclado
+     * Teclado del formulario
      * ------------------------------------------------------------------ */
 
     /**
@@ -161,7 +183,7 @@ export class QuoteGenerator {
     }
 
     /* ------------------------------------------------------------------
-     * Productos
+     * Agregar, eliminar y deshacer
      * ------------------------------------------------------------------ */
 
     /**
@@ -204,20 +226,176 @@ export class QuoteGenerator {
     }
 
     /**
-     * Removes a product by index and refreshes the table.
+     * Removes a product and offers a short window to undo the removal.
      * @private
      * @param {number} index
      */
     removeProduct(index) {
-        this.state.removeProduct(index);
+        const product = this.state.products[index];
+        if (!product || !this.state.removeProduct(index)) return;
+
         this.renderProducts();
+        this.saveDraft();
+        this.showUndo(product, index);
+    }
+
+    /**
+     * Shows the "Deshacer" bar for a removed product. Only the most recent removal can be undone.
+     * @private
+     * @param {Object} product - The removed product
+     * @param {number} index - Its position before removal
+     */
+    showUndo(product, index) {
+        this.pendingUndo = { product, index };
+        this.dom.get('undo_message').textContent = `Producto eliminado: ${product.nombre}`;
+        this.dom.get('undo_bar').hidden = false;
+
+        clearTimeout(this.undoTimer);
+        this.undoTimer = setTimeout(() => this.hideUndo(), UNDO_TIMEOUT_MS);
+    }
+
+    /**
+     * Hides the "Deshacer" bar and forgets the pending removal.
+     * @private
+     */
+    hideUndo() {
+        clearTimeout(this.undoTimer);
+        this.pendingUndo = null;
+        this.dom.get('undo_bar').hidden = true;
+    }
+
+    /**
+     * Restores the last removed product at its original position.
+     * @private
+     */
+    undoRemove() {
+        if (!this.pendingUndo) return;
+
+        const { product, index } = this.pendingUndo;
+        this.hideUndo();
+        this.state.insertProduct(index, product);
+        this.renderProducts(Math.min(index, this.state.products.length - 1));
         this.saveDraft();
     }
 
     /**
+     * Clears the product fields but keeps the client name.
+     * @private
+     */
+    clearProductInputs() {
+        ['product', 'quantity', 'price'].forEach(field => {
+            this.dom.get(field).value = '';
+            this.clearFieldError(field);
+        });
+    }
+
+    /* ------------------------------------------------------------------
+     * Edición en línea de cantidad y precio
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Replaces a quantity or price cell with a numeric input.
+     * Enter or leaving the cell saves; Escape cancels.
+     * @private
+     * @param {HTMLTableCellElement} cell - The td with data-field "cantidad" or "precio"
+     */
+    startEdit(cell) {
+        if (this.editingCell || cell.querySelector('input')) return;
+
+        const index = Number(cell.closest('tr').dataset.index);
+        const field = cell.dataset.field;
+        const product = this.state.products[index];
+        if (!product) return;
+
+        const isPrice = field === 'precio';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'cell-input';
+        input.min = isPrice ? '0.01' : '1';
+        input.step = isPrice ? '0.01' : '1';
+        input.inputMode = isPrice ? 'decimal' : 'numeric';
+        input.value = product[field];
+        input.setAttribute('aria-label', isPrice ? 'Precio unitario' : 'Cantidad');
+
+        cell.textContent = '';
+        cell.appendChild(input);
+        this.editingCell = { index, field };
+        input.focus();
+        input.select();
+
+        let finished = false;
+        const finish = (save, keepFocus) => {
+            if (finished) return; // Enter/Escape re-renderizan y disparan blur: solo una vez
+            finished = true;
+            this.finishEdit(save ? input.value : null, index, field, keepFocus);
+        };
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                finish(true, true);
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                finish(false, true);
+            }
+        });
+        input.addEventListener('blur', () => finish(true, false));
+    }
+
+    /**
+     * Validates and applies an edited value, then re-renders the table.
+     * @private
+     * @param {string|null} raw - Typed value, or null when cancelled
+     * @param {number} index - Row being edited
+     * @param {string} field - 'cantidad' or 'precio'
+     * @param {boolean} keepFocus - Return keyboard focus to the cell afterwards
+     */
+    finishEdit(raw, index, field, keepFocus) {
+        this.editingCell = null;
+        let highlight = null;
+
+        if (raw !== null) {
+            const error = field === 'precio'
+                ? Validations.getPriceError(raw)
+                : Validations.getQuantityError(raw);
+
+            if (error) {
+                Validations.notyf.error(error);
+            } else {
+                const value = field === 'precio' ? parseFloat(raw) : parseInt(raw, 10);
+                if (value !== this.state.products[index][field]) {
+                    this.state.updateProduct(index, { [field]: value });
+                    this.saveDraft();
+                    highlight = index;
+                }
+            }
+        }
+
+        this.renderProducts(highlight);
+        if (keepFocus) {
+            this.focusCell(index, field);
+        }
+    }
+
+    /**
+     * Moves keyboard focus to a table cell.
+     * @private
+     * @param {number} index - Row index
+     * @param {string} field - data-field of the cell
+     */
+    focusCell(index, field) {
+        const row = this.dom.get('products_table').querySelector(`tr[data-index="${index}"]`);
+        row?.querySelector(`td[data-field="${field}"]`)?.focus();
+    }
+
+    /* ------------------------------------------------------------------
+     * Render de la tabla
+     * ------------------------------------------------------------------ */
+
+    /**
      * Renders the product table, client name, date, total and action buttons.
      * @private
-     * @param {number|null} [highlightIndex=null] - Row to flash as newly added
+     * @param {number|null} [highlightIndex=null] - Row to flash after an add or edit
      */
     renderProducts(highlightIndex = null) {
         const productsTable = this.dom.get('products_table');
@@ -254,6 +432,7 @@ export class QuoteGenerator {
 
     /**
      * Creates a table row for a product in the quote.
+     * Quantity and price cells are editable.
      * @private
      * @param {Object} product - The product to create a row for
      * @param {number} subtotal - The subtotal for this product (quantity * price)
@@ -262,15 +441,18 @@ export class QuoteGenerator {
      */
     createProductRow(product, subtotal, index) {
         const row = document.createElement('tr');
+        row.dataset.index = index;
+
         const cells = [
-            { text: product.cantidad },
+            { text: product.cantidad, field: 'cantidad' },
             { text: product.nombre },
-            { text: QuoteUtils.formatCurrency(product.precio), className: 'money-cell' },
+            { text: QuoteUtils.formatCurrency(product.precio), className: 'money-cell', field: 'precio' },
             { text: QuoteUtils.formatCurrency(subtotal), className: 'money-cell' },
             {
                 element: this.createDeleteButton(() => this.removeProduct(index), product.nombre)
             }
         ];
+
         cells.forEach(cell => {
             const td = document.createElement('td');
             if (cell.text !== undefined) {
@@ -278,6 +460,12 @@ export class QuoteGenerator {
                 if (cell.className) td.classList.add(cell.className);
             } else if (cell.element) {
                 td.appendChild(cell.element);
+            }
+            if (cell.field) {
+                td.classList.add('editable');
+                td.dataset.field = cell.field;
+                td.tabIndex = 0;
+                td.title = 'Clic o Enter para editar';
             }
             row.appendChild(td);
         });
@@ -306,17 +494,6 @@ export class QuoteGenerator {
         button.addEventListener('click', onClick);
 
         return button;
-    }
-
-    /**
-     * Clears the product fields but keeps the client name.
-     * @private
-     */
-    clearProductInputs() {
-        ['product', 'quantity', 'price'].forEach(field => {
-            this.dom.get(field).value = '';
-            this.clearFieldError(field);
-        });
     }
 
     /* ------------------------------------------------------------------
@@ -384,6 +561,7 @@ export class QuoteGenerator {
             return;
         }
 
+        this.hideUndo();
         this.dom.get('client').value = '';
         this.state.clearProducts();
         this.state.setClient('');

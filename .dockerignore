@@ -1,0 +1,8 @@
+# Nada de control de versiones ni archivos de despliegue dentro de la imagen
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+README.md
+LICENSE

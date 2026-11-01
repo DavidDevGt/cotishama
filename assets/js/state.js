@@ -77,6 +77,19 @@ export class QuoteState {
     }
 
     /**
+     * Puts a previously removed product back at the given position (used by undo).
+     * @param {number} index - Position where the product should go
+     * @param {Object} product - The product object as it was removed
+     * @returns {boolean} Success status
+     */
+    insertProduct(index, product) {
+        const position = Math.max(0, Math.min(index, this.products.length));
+        this.products.splice(position, 0, product);
+        this.updateMetadata();
+        return true;
+    }
+
+    /**
      * Updates a product by index
      * @param {number} index - Index of product to update
      * @param {Object} updates - Fields to update

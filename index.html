@@ -19,12 +19,12 @@
     <!-- Estilos no críticos con media query -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
           media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css" 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3.10.0/notyf.min.css"
           media="print" onload="this.media='all'">
 
     <!-- Scripts con prioridad de carga optimizada -->
     <script src="assets/js/html2canvas.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3.10.0/notyf.min.js" defer></script>
     <script type="module" src="assets/js/main.js" defer></script>
 
     <!-- Preload de recursos externos -->
@@ -170,6 +170,12 @@
             </button>
         </div>
         <p class="save-hint">Tu avance se guarda automáticamente en este navegador.</p>
+
+        <!-- DESHACER (aparece al eliminar un producto) -->
+        <div id="undo-bar" class="undo-bar" role="status" aria-live="polite" hidden>
+            <span id="undo-message"></span>
+            <button type="button" id="undo-button" class="btn-undo">Deshacer</button>
+        </div>
 
         <!-- FOOTER -->
         <footer>

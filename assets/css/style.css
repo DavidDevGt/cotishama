@@ -357,6 +357,76 @@ td {
   border: none !important;
 }
 
+/* Celdas de cantidad y precio editables */
+td.editable {
+  cursor: pointer;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+}
+
+.cell-input {
+  inline-size: 100%;
+  min-inline-size: 4.5rem;
+  padding: var(--space-xs) var(--space-sm);
+  font: inherit;
+  text-align: end;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+/* Barra "Deshacer" tras eliminar un producto */
+.undo-bar {
+  position: fixed;
+  inset-block-end: var(--space-md);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  max-inline-size: calc(100% - 2 * var(--space-md));
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--secondary);
+  color: white;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  &[hidden] {
+    display: none;
+  }
+
+  #undo-message {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+button.btn-undo {
+  padding: var(--space-xs) var(--space-md);
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  font-weight: 700;
+
+  &:hover {
+    background-color: var(--primary);
+    color: var(--secondary);
+  }
+}
+
 .col-actions {
   inline-size: 3.5rem;
   text-align: center;
@@ -458,6 +528,7 @@ footer a {
   .form-section:not(.cotizacion-preview),
   .button-container,
   .save-hint,
+  .undo-bar,
   footer {
     display: none;
   }
